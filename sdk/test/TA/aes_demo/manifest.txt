@@ -1,0 +1,7 @@
+gpd.ta.appID:                 b3cb259b-a92c-478a-94e1-4ccb7406d25a
+gpd.ta.service_name:          aes-demo
+gpd.ta.singleInstance:        true
+gpd.ta.multiSession:          false
+gpd.ta.instanceKeepAlive:     false
+gpd.ta.dataSize:              81920
+gpd.ta.stackSize:             4096
