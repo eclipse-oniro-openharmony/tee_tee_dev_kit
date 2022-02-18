@@ -1,7 +1,0 @@
-gpd.ta.appID:               42a00d89-1b0b-4423-9a8d-74e3ae016c8c
-gpd.ta.service_name:        mac-demo
-gpd.ta.singleInstance:      true
-gpd.ta.multiSession:        false
-gpd.ta.instanceKeepAlive:   false
-gpd.ta.dataSize:            81920
-gpd.ta.stackSize:           32768
