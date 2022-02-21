@@ -26,8 +26,18 @@ import subprocess
 import configparser
 
 CONFIG_VERSION = 1
-POLICY_VERSION = 2
 CONFIG_CERT_PATH = './config_cert'
+
+BASE_POLICY_VERSION_OH = 0b101
+
+XML2TLV_PARSE_TOOL_INDEX = 1
+#use python parse xml
+XML2TLV_PY_VALUE = 1 << XML2TLV_PARSE_TOOL_INDEX
+
+
+def get_policy_version():
+    policy_ver = BASE_POLICY_VERSION_OH | XML2TLV_PY_VALUE
+    return policy_ver
 
 
 def integer_check(intput_str):
@@ -188,13 +198,21 @@ def gen_config_sign(sign_conf_alg, input_path_gen, header,
     return
 
 
-def convert_xml2tlv(xml_file, tlv_file):
-    cmd = ["java", "-jar", "xml2tlv.jar", xml_file, tlv_file]
-    run_cmd(cmd)
-    if os.path.isfile(tlv_file):
-        print('convert xml to tlv success')
+def convert_xml2tlv(xml_file, tlv_file, input_path, config_file):
+    if (get_policy_version() & (1 << XML2TLV_PARSE_TOOL_INDEX)) == XML2TLV_PY_VALUE:
+        sys.path.append('../signtools')
+        from dyn_conf_parser import parser_config_xml
+        csv_dir = os.path.abspath(os.path.join(os.getcwd(), '../signtools'))
+        tag_parse_dict_file_path = \
+            os.path.join(csv_dir, '../signtools/tag_parse_dict.csv')
+        parser_config_xml(xml_file, tag_parse_dict_file_path, tlv_file, input_path)
+        if os.path.isfile(tlv_file):
+            print('convert xml to tlv success')
+        else:
+            print('convert xml to tlv failed')
+            raise RuntimeError
     else:
-        print('convert xml to tlv failed')
+        print('invlid policy version')
         raise RuntimeError
 
 
@@ -271,7 +289,7 @@ def pack_signature(signature_path, signature_size):
         signature_file.write(signature_buf)
 
 
-def gen_config_section(input_path, cert_path, policy_version, config_section):
+def gen_config_section(input_path, cert_path, config_section):
 
     creat_temp_folder(input_path)
     config_path = input_path + '/../..'
@@ -292,16 +310,16 @@ def gen_config_section(input_path, cert_path, policy_version, config_section):
         dyn_conf_xml_file_path = os.path.join(input_path, 'temp/dyn_perm.xml')
         csv_dir = os.path.abspath(os.path.join(os.getcwd(), '../signtools'))
         tag_parse_dict_file_path = \
-            os.path.join(csv_dir, 'tag_parse_dict.csv')
+            os.path.join(csv_dir, '../signtools/tag_parse_dict.csv')
         parser_dyn_conf(dyn_conf_xml_file_path, "", \
             tag_parse_dict_file_path, input_path)
-        convert_xml2tlv(xml_config_file, tlv_config_file)
+        convert_xml2tlv(xml_config_file, tlv_config_file, input_path, config_file)
 
         src_file_path = os.path.join(input_path, 'temp/configs_bak.xml')
         cmd = ["mv", src_file_path, xml_config_file]
         run_cmd(cmd)
     else:
-        convert_xml2tlv(xml_config_file, tlv_config_file)
+        convert_xml2tlv(xml_config_file, tlv_config_file, input_path, config_file)
         get_target_type_in_config(xml_config_file, input_path)
 
     if os.path.exists(tlv_dynconf_data):
@@ -340,7 +358,7 @@ def gen_config_section(input_path, cert_path, policy_version, config_section):
     config_context_size = config_content_size + ta_cert_size \
             + config_sign_size + config_cert_size
     config_header = pkg_config_header(config_hd_len, 0xABCDABCD, \
-            CONFIG_VERSION, policy_version, config_context_size, \
+            CONFIG_VERSION, get_policy_version(), config_context_size, \
             ta_cert_size, config_content_size, config_sign_size, \
             config_cert_size)
     output_file = input_path + '/temp/config_sign'
@@ -378,8 +396,7 @@ if __name__ == '__main__':
     argv_data = sys.argv
     ta_input_path = argv_data[1]
     ta_cert_path = argv_data[2]
-    ta_policy_version = int(argv_data[3])
-    ta_config_section = argv_data[4]
+    ta_config_section = argv_data[3]
 
     if not os.path.exists(ta_input_path):
         print("ta_input_path does not exist.")
@@ -397,10 +414,5 @@ if __name__ == '__main__':
     if whitelist_check(ta_config_section):
         print("ta_config_section is incorrect.")
         exit()
-    if integer_check(ta_policy_version):
-        print("the input policy version is incorrect.")
-        exit()
-    if ta_policy_version != POLICY_VERSION:
-        ta_policy_version = POLICY_VERSION
-    gen_config_section(ta_input_path, ta_cert_path, ta_policy_version, \
+    gen_config_section(ta_input_path, ta_cert_path, \
             ta_config_section)

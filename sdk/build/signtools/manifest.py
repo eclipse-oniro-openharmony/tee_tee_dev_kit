@@ -367,3 +367,17 @@ def parser_manifest(manifest, manifest_data_path, mani_ext):
 
     return (True, product_name, uuid_str)
 
+
+def process_manifest_file(xml_config_path, manifest_path, \
+    manifest_data_path, mani_ext):
+
+    manifest_txt_exist = True
+    if not os.path.exists(manifest_path):
+        print("xml trans manifest cfg")
+        manifest_txt_exist = False
+        from xml_trans_manifest import trans_xml_to_manifest
+        trans_xml_to_manifest(xml_config_path, manifest_path)
+
+    ret, product_name, uuid_str = parser_manifest(manifest_path, \
+        manifest_data_path, mani_ext)
+    return (ret, product_name, uuid_str, manifest_txt_exist)

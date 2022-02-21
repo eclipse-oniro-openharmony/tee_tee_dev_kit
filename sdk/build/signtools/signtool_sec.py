@@ -24,7 +24,7 @@ import configparser
 import re
 
 
-from manifest import parser_manifest
+from manifest import process_manifest_file
 from generate_signature import gen_ta_signature
 from Cryptodome.Hash import SHA256
 from Cryptodome.Cipher import PKCS1_OAEP
@@ -432,10 +432,8 @@ def pack_signature(signature_path, signature_size):
         signature_file.write(signature_buf)
 
 
-def check_if_is_drv(in_path):
-
-    manifest = os.path.join(in_path, "manifest.txt")
-    with open(manifest, 'r') as mani_fp:
+def check_if_is_drv(manifest_path):
+    with open(manifest_path, 'r') as mani_fp:
         for each_line in mani_fp:
             if each_line.startswith("#") or not len(each_line.strip()):
                 continue
@@ -469,14 +467,15 @@ def gen_sec_image(in_path, out_path, cfg):
     cmake_cfg_path = os.path.join(in_path, "config.cmake")
     dyn_conf_xml_file_path = os.path.join(in_path, "dyn_perm.xml")
     tag_parse_dict_file_path = os.path.join(os.getcwd(), "tag_parse_dict.csv")
+    xml_config_path = os.path.join(in_path, "configs.xml")
 
     is_encrypt_sec = True
 
     if cfg.public_key == "" or cfg.pub_key_len == "":
         is_encrypt_sec = False
 
-    ret, product_name, uuid_str = parser_manifest(manifest_path, \
-            manifest_data_path, manifest_ext_path)
+    ret, product_name, uuid_str, manifest_txt_exist = process_manifest_file(xml_config_path, \
+            manifest_path, manifest_data_path, manifest_ext_path)
     if ret is False:
         raise RuntimeError
 
@@ -491,7 +490,7 @@ def gen_sec_image(in_path, out_path, cfg):
         parser_dyn_conf(dyn_conf_xml_file_path, manifest_ext_path, \
                         tag_parse_dict_file_path, in_path)
     else:
-        if check_if_is_drv(in_path) == 1:
+        if check_if_is_drv(manifest_path) == 1:
             if not os.path.exists(cfg.config_path):
                 ans = "gpd.ta.dynConf:00000\n"
                 manifest_ext_path_fd = os.open(manifest_ext_path, \
@@ -586,6 +585,9 @@ def gen_sec_image(in_path, out_path, cfg):
     print("generate TA(V3 format) load image success: ")
     print(sec_img_path)
     print("============================================================")
+
+    if manifest_txt_exist is False and os.path.exists(manifest_path):
+        os.remove(manifest_path)
 
     #remove temp files
     shutil.rmtree(temp_path)
