@@ -53,8 +53,6 @@ enum Object_Storage_Constants {
     TEE_OBJECT_STORAGE_PERSO   = 0x00000002, /* Separate perso storage space for application */
     /** 添加以实现安全闪存存储 */
     TEE_OBJECT_SEC_FLASH       = 0x80000000, /* Add for secure flash storage */
-    /** 添加用于rpmb存储 */
-    TEE_OBJECT_STORAGE_RPMB    = 0x80000001, /* Add for rpmb storage */
     /** 添加用于存储ce */
     TEE_OBJECT_STORAGE_CE      = 0x80000002, /* Add for storage ce */
 };
