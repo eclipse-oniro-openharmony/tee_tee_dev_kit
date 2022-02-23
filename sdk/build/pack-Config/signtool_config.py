@@ -199,13 +199,15 @@ def gen_config_sign(sign_conf_alg, input_path_gen, header,
 
 
 def convert_xml2tlv(xml_file, tlv_file, input_path, config_file):
-    if (get_policy_version() & (1 << XML2TLV_PARSE_TOOL_INDEX)) == XML2TLV_PY_VALUE:
+    policy_ver = get_policy_version()
+    if (policy_ver & (1 << XML2TLV_PARSE_TOOL_INDEX)) == XML2TLV_PY_VALUE:
         sys.path.append('../signtools')
         from dyn_conf_parser import parser_config_xml
         csv_dir = os.path.abspath(os.path.join(os.getcwd(), '../signtools'))
         tag_parse_dict_file_path = \
             os.path.join(csv_dir, '../signtools/tag_parse_dict.csv')
-        parser_config_xml(xml_file, tag_parse_dict_file_path, tlv_file, input_path)
+        parser_config_xml(xml_file, tag_parse_dict_file_path, \
+            tlv_file, input_path)
         if os.path.isfile(tlv_file):
             print('convert xml to tlv success')
         else:
@@ -313,13 +315,15 @@ def gen_config_section(input_path, cert_path, config_section):
             os.path.join(csv_dir, '../signtools/tag_parse_dict.csv')
         parser_dyn_conf(dyn_conf_xml_file_path, "", \
             tag_parse_dict_file_path, input_path)
-        convert_xml2tlv(xml_config_file, tlv_config_file, input_path, config_file)
+        convert_xml2tlv(xml_config_file, tlv_config_file, \
+            input_path, config_file)
 
         src_file_path = os.path.join(input_path, 'temp/configs_bak.xml')
         cmd = ["mv", src_file_path, xml_config_file]
         run_cmd(cmd)
     else:
-        convert_xml2tlv(xml_config_file, tlv_config_file, input_path, config_file)
+        convert_xml2tlv(xml_config_file, tlv_config_file, \
+            input_path, config_file)
         get_target_type_in_config(xml_config_file, input_path)
 
     if os.path.exists(tlv_dynconf_data):

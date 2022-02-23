@@ -349,7 +349,7 @@ def parser_api_level(mk_compile_cfg, cmake_compile_cfg):
     elif os.path.exists(cmake_compile_cfg):
         compile_cfg_file = cmake_compile_cfg
     else:
-        print("TA build Config file doesn't exist, ignore it")
+        print("Build config file doesn't exist, ignore it")
         return default_api_level
 
     with open(compile_cfg_file) as file_op:
@@ -362,7 +362,7 @@ def parser_api_level(mk_compile_cfg, cmake_compile_cfg):
                 return default_api_level
             return value[0]
 
-    print("TA build Config file doesn't define API_LEVEL")
+    print("Build Config file doesn't define API_LEVEL")
     return default_api_level
 
 
@@ -474,7 +474,8 @@ def gen_sec_image(in_path, out_path, cfg):
     if cfg.public_key == "" or cfg.pub_key_len == "":
         is_encrypt_sec = False
 
-    ret, product_name, uuid_str, manifest_txt_exist = process_manifest_file(xml_config_path, \
+    ret, product_name, uuid_str, manifest_txt_exist = \
+            process_manifest_file(xml_config_path, \
             manifest_path, manifest_data_path, manifest_ext_path)
     if ret is False:
         raise RuntimeError
@@ -582,7 +583,7 @@ def gen_sec_image(in_path, out_path, cfg):
     sec_image.close()
 
     print("=========================SUCCESS============================")
-    print("generate TA(V3 format) load image success: ")
+    print("generate sec(common format) load image success: ")
     print(sec_img_path)
     print("============================================================")
 

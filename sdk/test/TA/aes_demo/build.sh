@@ -27,7 +27,7 @@ get_config()
 {
     while read line;do
         eval "$line"
-    done < config
+    done < defconfig
 }
 
 cmake_build()

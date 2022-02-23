@@ -399,12 +399,6 @@ def check_ta_config_heap_size(heap_size):
         raise Exception("heap size is invalid", heap_size)
 
 
-def check_ta_config_rpmb_size(rpmb_size):
-
-    if int(rpmb_size, 10) > 0xffffffff or int(rpmb_size, 10) <= 0:
-        raise Exception("rpmb size is invalid", rpmb_size)
-
-
 def check_ta_config_device_id(device_id):
 
     if len(device_id) != 64:
@@ -473,9 +467,8 @@ def dyn_perm_check(dyn_key, attrib, value, origin_value):
         check_ta_config_stack_size(value)
     elif dyn_key == 'ConfigInfo/TA_Manifest_Info/heap_size/heap_size':
         check_ta_config_heap_size(value)
-    elif dyn_key == 'ConfigInfo/TA_Control_Info/RPMB_Info/RPMB_size/RPMB_size':
-        check_ta_config_rpmb_size(value)
-    elif dyn_key == 'ConfigInfo/TA_Control_Info/DEBUG_Info/DEBUG_device_id/DEBUG_device_id':
+    elif dyn_key == \
+        'ConfigInfo/TA_Control_Info/DEBUG_Info/DEBUG_device_id/DEBUG_device_id':
         check_ta_config_device_id(value)
     else:
         return
@@ -496,10 +489,6 @@ ta_config_item_list = [
     'ConfigInfo/TA_Manifest_Info/multi_command/',
     'ConfigInfo/TA_Manifest_Info/multi_session/',
     'ConfigInfo/TA_Manifest_Info/single_instance/',
-    'ConfigInfo/TA_Control_Info/RPMB_Info/RPMB_size/',
-    'ConfigInfo/TA_Control_Info/RPMB_Info/RPMB_Permission/RPMB_general/',
-    'ConfigInfo/TA_Control_Info/SE_Info/SE_open_session/',
-    'ConfigInfo/TA_Control_Info/TUI_Info/TUI_general/',
     'ConfigInfo/TA_Control_Info/DEBUG_Info/debug_status/',
     'ConfigInfo/TA_Control_Info/DEBUG_Info/DEBUG_device_id/']
 
