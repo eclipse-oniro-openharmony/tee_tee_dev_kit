@@ -92,6 +92,14 @@ def run_cmd(command):
         exit()
 
 
+def run_cmd_pip(command, cfg):
+    p1 = subprocess.Popen(["echo", cfg.password], stdout=subprocess.PIPE)
+    ret = subprocess.run(command, shell=False, check=True, stdin=p1.stdout)
+    if ret.returncode != 0:
+        print("run command failed.")
+        exit()
+
+
 def get_config_cert(cfg, in_path, out_path):
     cmd = []
     if cfg.ca_type == '0': # ca_public
@@ -207,26 +215,18 @@ def gen_sec_key_and_cert(cfg, in_path, out_path):
     # generate private key and ta_cert.der
     if (cfg.ca_alg == '0'): # rsa
         outfile = os.path.join(out_path, "ta_cert_priv.pem")
-        cmd = "openssl genrsa -aes256 -passout pass:{} -out {} {}" .\
-            format(cfg.password, outfile, cfg.sec_sign_key_len)
-        try:
-            subprocess.check_output(cmd.split(), shell=False)
-        except Exception:
-            print("generate ta cert private key failed")
-            raise RuntimeError
+        cmd = ["openssl", "genrsa", "-aes256", "-passout", \
+                "stdin", "-out", outfile, cfg.sec_sign_key_len]
+        run_cmd_pip(cmd, cfg)
 
         temp_ou = cfg.ou
         temp_cn = cfg.cn
         temp_sub = "/C=CN/L=beijing_test/O=test/OU=" + temp_ou + "/CN=" \
             + temp_cn
         dest_file = os.path.join(out_path, "ta_cert.csr")
-        cmd = "openssl req -new -key {} -out {} -subj {} -passin pass:{}" .\
-            format(outfile, dest_file, temp_sub, cfg.password)
-        try:
-            subprocess.check_output(cmd.split(), shell=False)
-        except Exception:
-            print("generate ta cert csr failed")
-            raise RuntimeError
+        cmd = ["openssl", "req", "-new", "-key", outfile, "-out", dest_file, \
+               "-subj", temp_sub, "-passin", "stdin"]
+        run_cmd_pip(cmd, cfg)
 
         openssl_conf_ta = os.path.join(in_path, "./../data/openssl-ta.cnf")
         if cfg.ca_type == '0': # ca_public
@@ -245,39 +245,27 @@ def gen_sec_key_and_cert(cfg, in_path, out_path):
             cmd = ["rm", outfile]
             run_cmd(cmd)
         cert_out_file = os.path.join(out_path, "ta_cert.der")
-        cmd = "openssl x509 -req -extfile {} -extensions v3_ca -days 3600 "\
-            "-sha256 -CA {} -CAkey {} -CAcreateserial -CAserial {} -in {} "\
-            "-out {} -passin pass:{} -outform der" .\
-            format(openssl_conf_ta, ca_file, ca_key_file, serial_file, \
-                dest_file, cert_out_file, cfg.password)
-        try:
-            subprocess.check_output(cmd.split(), shell=False)
-        except Exception:
-            print("generate ta cert failed")
-            raise RuntimeError
+        cmd = ["openssl", "x509", "-req", "-extfile", openssl_conf_ta, \
+                "-extensions", "v3_ca", "-days", "3600", "-sha256", "-CA", \
+                ca_file, "-CAkey", ca_key_file, "-CAcreateserial", \
+                "-CAserial", serial_file, "-in", dest_file, "-out", \
+                cert_out_file, "-passin", "stdin", "-outform", "der"]
+        run_cmd_pip(cmd, cfg)
     else: # ecdsa
         outfile = os.path.join(out_path, "ta_cert_priv.pem")
-        cmd = "openssl genpkey -out {} -outform PEM -pass pass:{} "\
-            "-aes-256-cbc -algorithm EC -pkeyopt ec_paramgen_curve:"\
-            "prime256v1".format(outfile, cfg.password)
-        try:
-            subprocess.check_output(cmd.split(), shell=False)
-        except Exception:
-            print("generate ta cert private key failed")
-            raise RuntimeError
+        cmd = ["openssl", "genpkey", "-out", outfile, "-outform", "PEM", \
+                "-pass", "stdin", "-aes-256-cbc", "-algorithm", "EC", \
+                "-pkeyopt", "ec_paramgen_curve:prime256v1"]
+        run_cmd_pip(cmd, cfg)
 
         temp_ou = cfg.ou
         temp_cn = cfg.cn
         temp_sub = "/C=CN/L=beijing_test/O=test/OU=" + temp_ou + "/CN=" \
             + temp_cn
         dest_file = os.path.join(out_path, "ta_cert.csr")
-        cmd = "openssl req -new -key {} -out {} -subj {} -passin pass:{}" .\
-            format(outfile, dest_file, temp_sub, cfg.password)
-        try:
-            subprocess.check_output(cmd.split(), shell=False)
-        except Exception:
-            print("generate ta cert csr failed")
-            raise RuntimeError
+        cmd = ["openssl", "req", "-new", "-key", outfile, "-out", dest_file, \
+                "-subj", temp_sub, "-passin", "stdin"]
+        run_cmd_pip(cmd, cfg)
 
         openssl_conf_ta = os.path.join(in_path, "./../data/openssl-ta.cnf")
         if cfg.ca_type == '0': # ca_public
@@ -296,16 +284,13 @@ def gen_sec_key_and_cert(cfg, in_path, out_path):
             cmd = ["rm", outfile]
             run_cmd(cmd)
         cert_out_file = os.path.join(out_path, "ta_cert.der")
-        cmd = "openssl x509 -req -extfile {} -extensions v3_ca -days 3600 " \
-            "-sha256 -CA {} -CAkey {} -CAcreateserial -CAserial {} -in {} " \
-            "-out {} -passin pass:{} -outform der" .\
-            format(openssl_conf_ta, ca_file, ca_key_file, serial_file, \
-                dest_file, cert_out_file, cfg.password)
-        try:
-            subprocess.check_output(cmd.split(), shell=False)
-        except Exception:
-            print("generate ta cert failed")
-            raise RuntimeError
+        cmd = ["openssl", "x509", "-req", "-extfile", openssl_conf_ta, \
+                "-extensions", "v3_ca", "-days", "3600", "-sha256", \
+                "-CA", ca_file, "-CAkey", ca_key_file, "-CAcreateserial", \
+                "-CAserial", serial_file, "-in", dest_file, "-out", \
+                cert_out_file, "-passin", "stdin", "-outform", "der"]
+        run_cmd_pip(cmd, cfg)
+
     # remove temp files
     shutil.rmtree(temp_path)
     return
