@@ -22,11 +22,11 @@ from dyn_conf_checker import check_and_classify_attr
 from dyn_conf_checker import check_csv_sym
 from dyn_conf_checker import check_ta_config
 
-type_trans = {"TYPE_NONE":"-1",
-              "TYPE_CLASS":"0",
-              "TYPE_BOOL":"1",
-              "TYPE_INT":"2",
-              "TYPE_CHAR":"3"}
+type_trans = {"TYPE_NONE": "-1",
+              "TYPE_CLASS": "0",
+              "TYPE_BOOL": "1",
+              "TYPE_INT": "2",
+              "TYPE_CHAR": "3"}
 
 # the length len in tlv
 DYN_CONF_LEN_LEN = 4
@@ -259,7 +259,7 @@ def parser_dyn_conf(dyn_conf_xml_file_path, manifest_ext_path,
                     tag_parse_dict_path, in_path):
 
     if not os.path.exists(dyn_conf_xml_file_path):
-        print("TA dyn perm xml file doesn't exist")
+        print("dyn perm xml file doesn't exist")
         return
 
     if not os.path.exists(tag_parse_dict_path):
@@ -287,7 +287,8 @@ def parser_dyn_conf(dyn_conf_xml_file_path, manifest_ext_path,
             mani_ext_fp.write(ans)
 
 
-def parser_config_xml(config_xml_file_path, tag_parse_dict_path, out_path, in_path):
+def parser_config_xml(config_xml_file_path, tag_parse_dict_path, \
+    out_path, in_path):
 
     if not os.path.exists(config_xml_file_path):
         print("config xml file doesn't exist")

@@ -13,7 +13,7 @@
 CONFIG_BUILD_TOOL=make
 
 #set CONFIG_GCC (y / n)
-CONFIG_GCC=y
+CONFIG_GCC=n
 
 #set TARGET_IS_ARM64 (y / n)
 TARGET_IS_ARM64=n

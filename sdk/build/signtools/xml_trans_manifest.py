@@ -19,14 +19,14 @@ import os
 from defusedxml import ElementTree as ET
 
 
-type_trans = {"TYPE_NONE":"-1",
-              "TYPE_CLASS":"0",
-              "TYPE_BOOL":"1",
-              "TYPE_INT":"2",
-              "TYPE_CHAR":"3"}
+type_trans = {"TYPE_NONE": "-1",
+              "TYPE_CLASS": "0",
+              "TYPE_BOOL": "1",
+              "TYPE_INT": "2",
+              "TYPE_CHAR": "3"}
 
 type_dict = {}
-manifest_dict={}
+manifest_dict = {}
 
 
 def get_csv_size(path):
@@ -64,17 +64,17 @@ def handle_manifest_tag_dict(path):
         manifest_dict[dyn_sym] = get_csv_data(path, index, 3)
 
 
-def procee_xml_to_manifest(config_xml_file_path, manifest_path):
+def process_xml_to_manifest(config_xml_file_path, manifest_path):
     tree = ET.parse(config_xml_file_path)
     root = tree.getroot()
     #Layer 1 node name
     old_item = root.tag
     attrs = ""
     write_data = False
-    
+
     #write items to manifest.txt
     manifest_fd = os.open(manifest_path, os.O_CREAT | os.O_RDWR, 0o600)
-    manifest_fp = os.fdopen(manifest_fd, "wb")   
+    manifest_fp = os.fdopen(manifest_fd, "wb")
 
     #Traversing the second layer of the xml file
     for child in root:
@@ -106,4 +106,4 @@ def trans_xml_to_manifest(config_xml_file_path, manifest_path):
         return
 
     handle_manifest_tag_dict("./manifest_tag_parse_dict.csv")
-    procee_xml_to_manifest(config_xml_file_path, manifest_path)
+    process_xml_to_manifest(config_xml_file_path, manifest_path)
