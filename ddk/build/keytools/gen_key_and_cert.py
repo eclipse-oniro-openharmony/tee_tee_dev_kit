@@ -23,7 +23,6 @@ import hashlib
 import configparser
 import subprocess
 import re
-import subprocess
 
 
 def whitelist_check(intput_str):
