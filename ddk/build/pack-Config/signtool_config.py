@@ -329,7 +329,7 @@ def gen_config_section(input_path, cert_path, config_section):
     if os.path.exists(tlv_dynconf_data):
         with open(tlv_config_file, 'rb') as tlv_config_fp:
             tlv_config_buf = \
-                tlv_config_fp.read(os.path.getsize(tlv_config_file)) + b"\n"
+                tlv_config_fp.read(os.path.getsize(tlv_config_file))
         with open(tlv_dynconf_data, 'rb') as tlv_dynconf_fp:
             tlv_config_buf = tlv_config_buf + \
                 tlv_dynconf_fp.read(os.path.getsize(tlv_dynconf_data)) + b"\n"
