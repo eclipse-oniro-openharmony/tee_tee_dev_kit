@@ -183,7 +183,7 @@ cmake_build()
         echo "Invalid tool chain" ; exit -1
     fi
 
-    cmake --verbose \
+    cmake \
           -DCMAKE_VERBOSE_MAKEFILE=on \
           -DTARGET_IS_ARM64=${TARGET_IS_ARM64} \
           -DCONFIG_GCC=${CONFIG_GCC} \
