@@ -19,6 +19,6 @@ export PATH="/path/to/gcc-linaro-aarch64-linux-gnu/bin/":$PATH
 如果需要使用GCC来构建可信应用程序，请在shell脚本中使用aarch64_toolchain.cmake。<br>
 例如:
 ```
-cmake --verbose -DCMAKE_TOOLCHAIN_FILE=${TEE_BUILD_PATH}/build/cmake/arm_toolchain.cmake CMakeListsFilePath
+cmake -DCMAKE_TOOLCHAIN_FILE=${TEE_BUILD_PATH}/build/cmake/arm_toolchain.cmake CMakeListsFilePath
 ```
 

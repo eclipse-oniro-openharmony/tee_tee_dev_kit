@@ -76,7 +76,7 @@
 </tbody>
 </table>
 
-使用CMake编译框架，请在编译环境上安装cmake，并确保cmake版本不低于3.16，安装包可在cmake网站下载  [http://www.cmake.org/files/](http://www.cmake.org/files/)。
+使用CMake编译框架，请在编译环境上安装cmake，cmake建议使用3.16.5-3.20.5版本，安装包可在cmake网站下载  [http://www.cmake.org/files/](http://www.cmake.org/files/)。
 
 ## 签名开发环境准备<a name="section7597183533818"></a>
 
@@ -183,7 +183,7 @@ cmake_build()
         echo "Invalid tool chain" ; exit -1
     fi
 
-    cmake --verbose \
+    cmake \
           -DCMAKE_VERBOSE_MAKEFILE=on \
           -DTARGET_IS_ARM64=${TARGET_IS_ARM64} \
           -DCONFIG_GCC=${CONFIG_GCC} \
