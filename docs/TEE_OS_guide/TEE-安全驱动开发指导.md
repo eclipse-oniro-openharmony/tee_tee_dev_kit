@@ -283,7 +283,7 @@ TA或驱动进行申请访问驱动操作需要的接口列表。
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18123720154011"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p653301612373"><a name="p653301612373"></a><a name="p653301612373"></a>cmake（3.16版本以上）</p>
+<tbody><tr id="row18123720154011"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p653301612373"><a name="p653301612373"></a><a name="p653301612373"></a>cmake（建议使用3.16.5-3.20.5版本）</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p10534131612374"><a name="p10534131612374"></a><a name="p10534131612374"></a>GCC（gcc-linaro-7.4.1）</p>
 </td>

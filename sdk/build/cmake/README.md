@@ -20,5 +20,5 @@ we suggest to use LLVM as it support more security compile options, in this SDK 
 if you need to use GCC to build your Trusted Application,
 please use aarch64_toolchain.cmake in your shell script, as:
 ```
-cmake --verbose -DCMAKE_TOOLCHAIN_FILE=${TEE_BUILD_PATH}/build/cmake/arm_toolchain.cmake CMakeListsFilePath
+cmake -DCMAKE_TOOLCHAIN_FILE=${TEE_BUILD_PATH}/build/cmake/arm_toolchain.cmake CMakeListsFilePath
 ```
