@@ -62,7 +62,7 @@
 
 ### 场景介绍<a name="section148731215195617"></a>
 
-本节指导开发可以被TEE子系统动态加载的安全驱动。
+本节用来指导驱动开发者开发可以被TEE子系统动态加载的安全驱动。
 
 ## 开发环境准备<a name="section20994326588"></a>
 
@@ -800,7 +800,7 @@ configs.xml文件举例如下：
 </ConfigInfo>
 ```
 
-**表 7**  示例configs.xml文件说明
+**表 8**  示例configs.xml文件说明
 
 <a></a>
 <table><thead align="left"><tr><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p>输出</p>
@@ -867,7 +867,7 @@ configs.xml文件举例如下：
 
 在使用keytools工具前，需要对build/keytools/input/profile.ini进行配置，各字段含义如下表所示：
 
-**表 8**  keytools工具的字段配置说明
+**表 9**  keytools工具的字段配置说明
 
 <a name="table17235151720215"></a>
 <table><thead align="left"><tr id="row1823521714214"><th class="cellrowborder" valign="top" width="14.87%" id="mcps1.2.5.1.1"><p id="p138501929726"><a name="p138501929726"></a><a name="p138501929726"></a>字段</p>
@@ -964,7 +964,7 @@ configs.xml文件举例如下：
 
 keytools工具输出产物将放于build/keytools/output目录下，输出及用途如下表所示：
 
-**表 9**  keytools工具输出说明
+**表 10**  keytools工具输出说明
 
 <a name="table11862185716131"></a>
 <table><thead align="left"><tr id="row586285719132"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p132517171145"><a name="p132517171145"></a><a name="p132517171145"></a>输出</p>
@@ -1068,7 +1068,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 
 结构体struct tee_driver_module便是每个驱动业务开发时需要注册的信息，各个变量说明如下：
 
-**表 10** 驱动业务开发注册信息表
+**表 11** 驱动业务开发注册信息表
 
 <a></a>
 <table><thead align="left"><tr><th class="cellrowborder" valign="top" width="33.33333333333333%"><p>变量名</p>
@@ -1122,7 +1122,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 </tbody>
 </table>
 
-**表 11** 驱动业务框架接口说明
+**表 12** 驱动业务框架接口说明
 <a></a>
 <table><thead><tr><th class="cellrowborder" valign="top" width="50%"><p>接口名</p>
 </th>
@@ -1185,7 +1185,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 
 驱动访问时，驱动访问者先调用tee_drv_open函数获取驱动唯一标记fd；再调用tee_drv_ioctl函数，传入cmd信息，访问该驱动对应cmd执行流，如果针对某个fd有多个ioctl执行流，多次调用tee_drv_ioctl即可；如果访问结束，驱动访问者还需要调用tee_drv_close函数关闭该fd信息。
 
-**表 12** 驱动访问者框架接口说明
+**表 13** 驱动访问者框架接口说明
 
 <a></a>
 <table><thead><tr><th class="cellrowborder" valign="top" width="50%"><p>接口名</p>
@@ -1231,7 +1231,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 
 驱动进行地址转换操作需要使用的接口列表。
 
-**表 13**  地址转换接口列表
+**表 14**  地址转换接口列表
 
 <a name="table13739184111427"></a>
 <table><thead align="left"><tr id="row2739154118421"><th class="cellrowborder" valign="top" width="54.31%" id="mcps1.2.3.1.1"><p id="p462103214410"><a name="p462103214410"></a><a name="p462103214410"></a>接口名</p>
@@ -1252,7 +1252,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 
 驱动进行内存映射操作所需要的接口列表。
 
-**表 14**  map接口列表
+**表 15**  map接口列表
 
 <a name="table1690431511432"></a>
 <table><thead align="left"><tr id="row189041315194317"><th class="cellrowborder" valign="top" width="54.67999999999999%" id="mcps1.2.3.1.1"><p id="p34281633124413"><a name="p34281633124413"></a><a name="p34281633124413"></a>接口名</p>
@@ -1278,7 +1278,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 
 驱动进行IO操作所需要的接口列表。
 
-**表 15**  IO操作接口列表
+**表 16**  IO操作接口列表
 
 <a name="table6311346194315"></a>
 <table><thead align="left"><tr id="row831212462439"><th class="cellrowborder" valign="top" width="54.730000000000004%" id="mcps1.2.3.1.1"><p id="p7945143412442"><a name="p7945143412442"></a><a name="p7945143412442"></a>接口名</p>
@@ -1314,7 +1314,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 
 驱动进行内存拷贝操作所需要的接口列表。
 
-**表 16**  内存拷贝接口列表
+**表 17**  内存拷贝接口列表
 
 <a name="table7469133214314"></a>
 <table><thead align="left"><tr id="row24693321135"><th class="cellrowborder" valign="top" width="55.35%" id="mcps1.2.3.1.1"><p id="p109015511039"><a name="p109015511039"></a><a name="p109015511039"></a>接口名</p>
@@ -1340,7 +1340,7 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 
 驱动进行共享内存操作所需要的接口列表。
 
-**表 17**  共享内存接口列表
+**表 18**  共享内存接口列表
 
 <a name="table186909151063"></a>
 <table><thead align="left"><tr id="row369016151263"><th class="cellrowborder" valign="top" width="55.620000000000005%" id="mcps1.2.3.1.1"><p id="p1033416207618"><a name="p1033416207618"></a><a name="p1033416207618"></a>接口名</p>
@@ -1547,7 +1547,7 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 
 目前使用的musl-1.2.0/libc库。
 
-**表 17**  标准C支持列表
+**表 19**  标准C支持列表
 
 <a name="table7336617112614"></a>
 <table><thead align="left"><tr id="row1633681714266"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p1653154512717"><a name="p1653154512717"></a><a name="p1653154512717"></a>模块</p>
@@ -1968,7 +1968,7 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 
 危险函数依赖于程序员对参数进行检查或保证空间能足够容纳所产生的结果，函数本身不对这些情况进行判断，即使有问题也不会给出错误的指示。C11标准中对于过时的不安全的危险函数定义了对应的安全函数（\_s版本的函数），相比危险函数，安全函数对照C11标准进行了相应的安全增强，会对入参以及不同的错误情况进行判断，降低操作不当所引入的安全风险。下表列举了危险函数以及对应的安全函数，TA代码中涉及到相关危险函数的必须使用安全函数。
 
-**表 18**  危险函数以及对应的安全函数
+**表 20**  危险函数以及对应的安全函数
 
 <a name="table18216829674"></a>
 <table><thead align="left"><tr id="row1221612296715"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p1280043317715"><a name="p1280043317715"></a><a name="p1280043317715"></a>危险函数</p>
@@ -2460,7 +2460,7 @@ errno_t strtok_s(char* strToken, const char* strDelimit, char** context);
 >-   当在被分割字符串中没有找到分隔符时，如果被分割字符串长度大于0，会返回被分割字符串首地址，否则返回NULL。
 >-   以逗号分隔符为例，顺序调用strtok\_s\(str,&p\), strtok\_s\(NULL,&p\),  strtok\_s\(NULL,&p\)函数的返回值与不同分割字符串的关系如下：
 
-**表 19**  返回值与字符串关系
+**表 21**  返回值与字符串关系
 
 <a name="table18556455195912"></a>
 <table><tbody><tr id="row7556165595917"><td class="cellrowborder" rowspan="2" valign="top"><p id="p156641710803"><a name="p156641710803"></a><a name="p156641710803"></a><strong id="b86641109012"><a name="b86641109012"></a><a name="b86641109012"></a><span>被分割字符串</span></strong></p>
