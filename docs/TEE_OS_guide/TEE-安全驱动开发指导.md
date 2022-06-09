@@ -27,7 +27,7 @@
     -   [密钥及证书生成](#section1046723143114)
     -   [perm\_config文件生产](#section11327454193517)
 
-    [驱动开发框架](#section12432132218372)
+-   [驱动开发框架](#section12432132218372)
     -   [驱动业务框架](#section6705194712373)
     -   [驱动访问者框架](#section18123151133811)
 
@@ -49,13 +49,11 @@
     -   [字符串分割](#section85731515152610)
     -   [格式化输出](#section1696173315284)
 
--   [\#section4621555277](#section4621555277)
-
 ## 概述<a name="section351681313544"></a>
 
 ### 功能简介<a name="section167701178548"></a>
 
-本文对TEE安全驱动的开发流程、接口、函数库等进行说明，指导驱动开发者进行可信驱动程序的开发与调试工作。
+本文对TEE安全驱动的开发流程、接口、函数库等进行说明，指导驱动开发者进行安全驱动程序的开发与调试工作。
 
 ### 约束与限制<a name="section67447370556"></a>
 
@@ -64,7 +62,7 @@
 
 ### 场景介绍<a name="section148731215195617"></a>
 
-本节指导开发可以被TEE子系统动态加载的最简驱动。
+本节指导开发可以被TEE子系统动态加载的安全驱动。
 
 ## 开发环境准备<a name="section20994326588"></a>
 
@@ -150,7 +148,7 @@
 
 驱动开发者可以使用DDK将源码通过编译和签名生成TEE子系统可动态加载的sec文件。
 
-### 添加编译配置文件至build目录<a name="section449714160615"></a>
+ **1 添加编译配置文件至build目录** 
 
 用户根据本地开发环境与需求，更改demo/build/[defconfig](#section21267445213)文件中相关配置项的内容，决定编译器与编译工具链等信息。
 
@@ -158,11 +156,11 @@
 
 根据配置文件的编译器参数，在[Makefile](#section15184100432)或[CMakeLists.txt](#section31566231037)中添加需要编译的源文件、编译选项、链接选项等信息。
 
-### 添加头文件至include目录<a name="section179732211510"></a>
+ **2 添加头文件至include目录** 
 
 include文件夹中包含驱动动态库接口头文件，编译第三方驱动时需要将第三方驱动所需头文件添加至本文件夹下。
 
-### 添加源文件至src目录<a name="section13984839152"></a>
+ **3 添加源文件至src目录** 
 
 src目录中包含驱动源代码与权限配置文件。
 
@@ -170,7 +168,7 @@ src目录中包含驱动源代码与权限配置文件。
 
 [签名文件生成](#section793382693010)后，将SEC签名密钥[sign\_sec\_priv.pem](#table11862185716131)从build/keytools/output目录拷贝至demo/src目录，将签名文件[perm\_config](#section11327454193517)从build/pack-Config/output目录拷贝至demo/src目录。
 
-### 触发构建<a name="section885817169712"></a>
+ **4 触发构建** 
 
 在demo/build目录下执行[build.sh](#section1751202026)，触发编译、签名流程，输入[profile.ini](#section1046723143114)文件中配置的pass字段签名口令，输出生成文件至demo/output目录下。
 
@@ -279,7 +277,7 @@ bash build.sh
 <td class="cellrowborder" valign="top" width="27.18%" headers="mcps1.2.6.1.5 "><p id="p4930420182517"><a name="p4930420182517"></a><a name="p4930420182517"></a>make添加编译文件</p>
 </td>
 </tr>
-<tr id="row119829192416"><td class="cellrowborder" valign="top" width="27.060000000000002%" headers="mcps1.2.6.1.1 "><p id="p3930172017253"><a name="p3930172017253"></a><a name="p3930172017253"></a>compile_drv("${SOURCE_FILE}" "${FLAGS}" "${INC_DIR}" "${LD_FLAGS}")</p>
+<tr id="row119829192416"><td class="cellrowborder" valign="top" width="27.060000000000002%" headers="mcps1.2.6.1.1 "><p id="p3930172017253"><a name="p3930172017253"></a><a name="p3930172017253"></a>compile_drv("\${SOURCE_FILE}" "\${FLAGS}" "\${INC_DIR}" "\${LD_FLAGS}")</p>
 </td>
 <td class="cellrowborder" valign="top" width="10.85%" headers="mcps1.2.6.1.2 "><p id="p0930172020255"><a name="p0930172020255"></a><a name="p0930172020255"></a>cmake函数</p>
 </td>
@@ -307,9 +305,9 @@ build.sh文件是可信驱动程序编译的触发入口，用户配置完编译
 
 defconfig文件为编译配置文件，该文件中可以指定使用的编译器、编译工具链、指定编译32位或64位。
 
-CONFIG\_BUILD\_TOOL为指定编译器，其值为make代表使用make编译，其值为cmake代表使用cmake编译；
+CONFIG\_BUILD\_TOOL为指定编译器，其值为make代表使用make编译，其值为cmake代表使用cmake编译。
 
-CONFIG\_GCC为指定编译工具链，其值为y代表使用GCC编译，其值为n代表使用LLVM编译；
+CONFIG\_GCC为指定编译工具链，其值为y代表使用GCC编译，其值为n代表使用LLVM编译。
 
 TARGET\_IS\_ARM64为指定编译版本，其值为y时编译64位驱动，为其值为n时编译32位驱动。
 
@@ -449,11 +447,9 @@ gpd.ta.stackSize: 8192
 gpd.ta.target_type: 1
 ```
 
-注意事项：
-
-必须保证每个可信驱动程序的service\_name和appID是唯一的，其中service\_name只能由字母、数字和'\_'组成，其他无法识别。
-
-可信驱动程序生成时，如果不存在manifest.txt文件，或manifest.txt文件格式错误，生成将会终止。
+>![](public_sys-resources/icon-caution.gif) **注意：** 
+>-   必须保证每个可信驱动程序的service\_name和appID是唯一的，其中service\_name只能由字母、数字和'\_'组成，其他无法识别。
+>-   可信驱动程序生成时，如果不存在manifest.txt文件，或manifest.txt文件格式错误，生成将会终止。
 
 ### 宏定义表文件介绍<a name="section449462816414"></a>
 
@@ -488,7 +484,7 @@ gpd.ta.target_type: 1
 </td>
 <td class="cellrowborder" valign="top" width="68.75687568756875%" headers="mcps1.2.4.1.3 "><p id="p107633114719"><a name="p107633114719"></a><a name="p107633114719"></a>必须为字符串类型，且不能为空。excel中单元格需设置为文本类型。</p>
 <p id="p0768312474"><a name="p0768312474"></a><a name="p0768312474"></a>驱动命令和驱动权限实际数字必须与驱动代码逻辑保持一致。</p>
-<p id="p632422216436"><a name="p632422216436"></a><a name="p632422216436"></a>驱动命令数字使用十六进制数字，范围为0x1到0x40；</p>
+<p id="p632422216436"><a name="p632422216436"></a><a name="p632422216436"></a>驱动命令数字使用十六进制数字，范围为0x1到0x40。</p>
 <p id="p167663124712"><a name="p167663124712"></a><a name="p167663124712"></a>驱动权限数字使用十进制数字，范围为1到64。</p>
 </td>
 </tr>
@@ -804,16 +800,57 @@ configs.xml文件举例如下：
 </ConfigInfo>
 ```
 
->![](public_sys-resources/icon-note.gif) **说明：** 
->示例configs.xml文件说明：
->drv\_basic\_info：驱动运行模式是最多支持三个线程并发，支持动态升级，该驱动崩溃后不会重启，支持地址转换接口调用。
->drv\_io\_map：驱动在chip\_type1和chip\_type2平台上支持映射\[0x30000, 0x31000\]段的io地址空间；驱动在所有平台上都支持映射\[0x90000, 0x91000\]和\[0xa0000, 0xa1000\]段的io地址空间。
->irq：驱动在chip\_type1和chip\_type2平台上的irq num为103；驱动在所有平台上面的irq num为32和1000。
->map\_secure：驱动在chip\_type1和chip\_type2支持uuid为030303的驱动访问者映射\[0x12340000，0x12350000\]的安全地址范围；驱动在所有平台上都支持uuid为04040404的驱动访问者映射\[0x45670000,0x789a0000\]和\[0x22330000,0x44550000\]两段安全地址范围。
->map\_nosecure：驱动在chip\_type1和chip\_type2支持uuid为010101的驱动访问者映射非安全内存地址；驱动在所有平台上都支持uuid为030303、040404和060606的驱动访问者映射非安全内存地址。
->drv\_cmd\_perm\_info：驱动配置拥有特殊权限的命令，IOMAP\_TEST\_ID命令具有iomap\_perm特殊权限。
->drv\_mac\_info：驱动强制配置能访问自身的驱动访问者uuid和特殊权限。uuid为03030303的驱动访问者除了拥有驱动基础权限外，还拥有特殊权限iomap\_perm，可以访问驱动基础命令和iomap\_perm对应的IOMAP\_TEST\_ID命令；uuid为04040404的驱动访问者没有配置特殊权限，即只能访问驱动基础命令，无权限访问iomap\_perm对应的IOMAP\_TEST\_ID命令。
->drvcall\_perm\_apply：本驱动作为驱动访问者，申请访问名为drv1\_name的驱动并注册特殊权限iomap\_perm，申请访问名为drv2\_name的驱动并不另外注册特殊权限。
+**表 7**  示例configs.xml文件说明
+
+<a></a>
+<table><thead align="left"><tr><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p>输出</p>
+</th>
+<th class="cellrowborder" valign="top" width="50%"><p>用途</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%"><p>drv_basic_info</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动运行模式是最多支持三个线程并发，支持动态升级，该驱动崩溃后不会重启，支持地址转换接口调用。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drv_io_map</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2平台上支持映射[0x30000, 0x31000]段的io地址空间；驱动在所有平台上都支持映射[0x90000, 0x91000]和[0xa0000, 0xa1000]段的io地址空间。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>irq</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2平台上的irq num为103；驱动在所有平台上面的irq num为32和1000。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>map_secure</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2支持uuid为030303的驱动访问者映射[0x12340000，0x12350000]的安全地址范围；驱动在所有平台上都支持uuid为04040404的驱动访问者映射[0x45670000,0x789a0000]和[0x22330000,0x44550000]两段安全地址范围。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>map_nosecure</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2支持uuid为010101的驱动访问者映射非安全内存地址；驱动在所有平台上都支持uuid为030303、040404和060606的驱动访问者映射非安全内存地址。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drv_cmd_perm_info</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动配置拥有特殊权限的命令，IOMAP_TEST_ID命令具有iomap_perm特殊权限。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drv_mac_info</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动强制配置能访问自身的驱动访问者uuid和特殊权限。uuid为03030303的驱动访问者除了拥有驱动基础权限外，还拥有特殊权限iomap_perm，可以访问驱动基础命令和iomap_perm对应的IOMAP_TEST_ID命令；uuid为04040404的驱动访问者没有配置特殊权限，即只能访问驱动基础命令，无权限访问iomap_perm对应的IOMAP_TEST_ID命令。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drvcall_perm_apply</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>本驱动作为驱动访问者，申请访问名为drv1_name的驱动并注册特殊权限iomap_perm，申请访问名为drv2_name的驱动并不另外注册特殊权限。</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 >![](public_sys-resources/icon-caution.gif) **注意：** 
 >-   驱动访问者可以是TA或驱动。
@@ -1575,8 +1612,7 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p75354454278"><a name="p75354454278"></a><a name="p75354454278"></a>printf</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p45358458274"><a name="p45358458274"></a><a name="p45358458274"></a>说明：</p>
-<p id="p4535134517270"><a name="p4535134517270"></a><a name="p4535134517270"></a>1.目前不支持文件系统，文件操作只支持标准输入输出。</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p4535134517270"><a name="p4535134517270"></a><a name="p4535134517270"></a>目前不支持文件系统，文件操作只支持标准输入输出。</p>
 </td>
 </tr>
 <tr id="row63421517192616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p2535154592716"><a name="p2535154592716"></a><a name="p2535154592716"></a>scanf</p>
@@ -2025,6 +2061,8 @@ errno_t memcpy_s(void* dest, size_t destMax, const void* src, size_t count);
 
 -   示例
 
+<figure>
+
 ```
  #include "securec.h" 
  #include <string.h> 
@@ -2061,6 +2099,8 @@ rc =  0, 0123456789
 rc =  182
 ```
 
+</figure>
+
 memmove\_s：
 
 ```
@@ -2077,6 +2117,8 @@ errno_t memmove_s(void* dest,size_t destMax, const void* src, size_t count);
 >-   某些出错情况下，会对目的缓冲区清0，具体参考如上**表2**。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2112,6 +2154,8 @@ After: rc = 0,  123456789
 Later: rc =  162
 ```
 
+</figure>
+
 ### 内存初始化<a name="section9113185921817"></a>
 
 memset\_s：
@@ -2127,6 +2171,8 @@ errno_t memset_s(void* dest, size_t destMax, int c, size_t count);
 >-   调用函数时，注意判断返回值是否成功，否则有可能操作结果和预期不一致。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2157,6 +2203,8 @@ errno_t memset_s(void* dest, size_t destMax, int c, size_t count);
  Later: rc = 162,  ****************************************
 ```
 
+</figure>
+
 ### 字符串复制<a name="section320518115198"></a>
 
 strcpy\_s：
@@ -2174,6 +2222,8 @@ errno_t strcpy_s(char* strDest, size_t destMax, const char* strSrc);
 >源字符串必须含有结束符。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2210,6 +2260,8 @@ rc  = 162,
 rc  = 182,
 ```
 
+</figure>
+
 strncpy\_s：
 
 ```
@@ -2228,6 +2280,8 @@ errno_t strncpy_s(char* strDest, size_t destMax, const char* strSrc, size_t coun
 >-   当  count 大于 strlen\(strSrc\)  时，  strncpy函数会复制完字符串后在strDest中填充count-strlen\(strSrc\)个’\\0’字符，而strncpy\_s函数不做填充。
 
 -   示例
+
+<figure>
 
 ```
  #define SMALL_BUF_SIZE 10
@@ -2262,6 +2316,8 @@ rc =  162,
 rc =  182,
 ```
 
+</figure>
+
 ### 字符串连接<a name="section3307826101911"></a>
 
 strcat\_s：
@@ -2280,6 +2336,8 @@ errno_t strcat_s(char* strDest, size_t destMax, const char* strSrc);
 >-   某些出错情况下，会对目的缓冲区的首字符置0，具体参考如上**表1**。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2323,6 +2381,8 @@ rc = 162,
 rc = 182,
 ```
 
+</figure>
+
 strncat\_s：
 
 ```
@@ -2339,6 +2399,8 @@ errno_t strncat_s(char* strDest, size_t destMax, const char* strSrc, size_t coun
 >-   某些出错情况下，会对目的缓冲区的首字符置0，具体参考如上**表2**。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2380,6 +2442,8 @@ rc  = 150,
 rc  = 162,
 rc  = 182,
 ```
+
+</figure>
 
 ### 字符串分割<a name="section85731515152610"></a>
 
@@ -2524,6 +2588,8 @@ errno_t strtok_s(char* strToken, const char* strDelimit, char** context);
 
 -   示例
 
+<figure>
+
 ```
  #include "securec.h" 
  #include <stdio.h> 
@@ -2581,6 +2647,8 @@ time.
 tokens
 ```
 
+</figure>
+
 ### 格式化输出<a name="section1696173315284"></a>
 
 snprintf\_s：
@@ -2603,6 +2671,8 @@ int snprintf_s(char* strDest, size_t destMax, size_t count, const char* format, 
 >输入源数据的类型、个数必须与格式化控制字符串（format）中的类型、个数保持一致。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2644,6 +2714,8 @@ iRet = -1, buffer  = .
 iRet = -1, buffer  = 12.
 ```
 
+</figure>
+
 vsnprintf\_s：
 
 ```
@@ -2664,6 +2736,8 @@ int vsnprintf_s(char* strDest, size_t destMax, size_t count, const char* format,
 >-   输入源数据的类型、个数必须与格式化控制字符串（format）中的类型、个数保持一致。
 
 -   示例1
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2692,7 +2766,11 @@ nSize: 8, buff: Hi there
 nSize: -1, buff: Hi there
 ```
 
+</figure>
+
 -   示例2
+
+<figure>
 
 ```
  void vsnprintf_base(char * format, ...)
@@ -2732,4 +2810,6 @@ nSize: -1, buff: Hi there
 iRet = 16, buffer = computer,Unicode.
 iRet = -1, buffer = 12345678901234567890.
 ```
+
+</figure>
 
