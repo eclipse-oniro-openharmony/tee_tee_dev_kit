@@ -5,15 +5,6 @@
     -   [约束与限制](#section67447370556)
     -   [场景介绍](#section148731215195617)
 
--   [接口说明](#section1748173625619)
-    -   [驱动框架接口说明](#section2291194235618)
-    -   [地址转换接口说明](#section101297155716)
-    -   [map接口说明](#section1831091675716)
-    -   [IO操作接口说明](#section6512133012574)
-    -   [内存拷贝接口说明](#section75381736318)
-    -   [共享内存接口说明](#section5891654459)
-    -   [驱动访问接口说明](#section69627498287)
-
 -   [开发环境准备](#section20994326588)
 -   [开发步骤](#section943512417516)
     -   [添加编译配置文件至build目录](#section449714160615)
@@ -36,6 +27,17 @@
     -   [密钥及证书生成](#section1046723143114)
     -   [perm\_config文件生产](#section11327454193517)
 
+-   [驱动开发框架](#section12432132218372)
+    -   [驱动业务框架](#section6705194712373)
+    -   [驱动访问者框架](#section18123151133811)
+
+-   [接口说明](#section1748173625619)
+    -   [地址转换接口说明](#section101297155716)
+    -   [map接口说明](#section1831091675716)
+    -   [IO操作接口说明](#section6512133012574)
+    -   [内存拷贝接口说明](#section75381736318)
+    -   [共享内存接口说明](#section5891654459)
+
 -   [开发示例](#section198361520981)
 -   [标准C库支持](#section14109139161012)
 -   [安全函数库](#section127921457151719)
@@ -47,232 +49,26 @@
     -   [字符串分割](#section85731515152610)
     -   [格式化输出](#section1696173315284)
 
--   [\#section4621555277](#section4621555277)
-
 ## 概述<a name="section351681313544"></a>
 
 ### 功能简介<a name="section167701178548"></a>
 
-本文档指导驱动开发者进行可信驱动程序的开发，驱动可在TEE可信执行环境子系统上动态加载、运行。
+本文对TEE安全驱动的开发流程、接口、函数库等进行说明，指导驱动开发者进行安全驱动程序的开发与调试工作。
 
 ### 约束与限制<a name="section67447370556"></a>
 
 -   目前仅支持Linux环境下进行安全驱动的编译打包和运行。
--   需搭配TEE可信执行环境子系统。
+-   开发的驱动程序仅支持在TEE可信执行环境子系统上加载和运行。
 
 ### 场景介绍<a name="section148731215195617"></a>
 
-本节指导开发可以被TEE子系统动态加载的最简驱动。
-
-## 接口说明<a name="section1748173625619"></a>
-
-### 驱动框架接口说明<a name="section2291194235618"></a>
-
-注册驱动需要使用的接口列表。
-
-**表 1**  驱动框架接口列表
-
-<a name="table14351420151819"></a>
-<table><thead align="left"><tr id="row03512207186"><th class="cellrowborder" valign="top" width="53.910000000000004%" id="mcps1.2.3.1.1"><p id="p1935115201184"><a name="p1935115201184"></a><a name="p1935115201184"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="46.089999999999996%" id="mcps1.2.3.1.2"><p id="p1351320191812"><a name="p1351320191812"></a><a name="p1351320191812"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row97602181635"><td class="cellrowborder" valign="top" width="53.910000000000004%" headers="mcps1.2.3.1.1 "><p id="p107607186314"><a name="p107607186314"></a><a name="p107607186314"></a>int32_t init(void);</p>
-</td>
-<td class="cellrowborder" valign="top" width="46.089999999999996%" headers="mcps1.2.3.1.2 "><p id="p1076016181319"><a name="p1076016181319"></a><a name="p1076016181319"></a>驱动加载完后被驱动框架调用的初始化函数，其主要作用是在该驱动被访问之前进行的初始化操作。</p>
-</td>
-</tr>
-<tr id="row108945712510"><td class="cellrowborder" valign="top" width="53.910000000000004%" headers="mcps1.2.3.1.1 "><p id="p4891557451"><a name="p4891557451"></a><a name="p4891557451"></a>int32_t suspend(void);</p>
-</td>
-<td class="cellrowborder" valign="top" width="46.089999999999996%" headers="mcps1.2.3.1.2 "><p id="p12905571759"><a name="p12905571759"></a><a name="p12905571759"></a>驱动休眠状态下的一系列操作，其会在系统休眠时由驱动框架自行调用。</p>
-</td>
-</tr>
-<tr id="row16935185712"><td class="cellrowborder" valign="top" width="53.910000000000004%" headers="mcps1.2.3.1.1 "><p id="p10931183713"><a name="p10931183713"></a><a name="p10931183713"></a>int32_t resume(void);</p>
-</td>
-<td class="cellrowborder" valign="top" width="46.089999999999996%" headers="mcps1.2.3.1.2 "><p id="p159391814718"><a name="p159391814718"></a><a name="p159391814718"></a>驱动唤醒状态下的一系列操作，其会在系统唤醒流程中由驱动框架自行调用，与suspend函数对应。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-### 地址转换接口说明<a name="section101297155716"></a>
-
-驱动进行地址转换操作需要使用的接口列表。
-
-**表 2**  地址转换接口列表
-
-<a name="table13739184111427"></a>
-<table><thead align="left"><tr id="row2739154118421"><th class="cellrowborder" valign="top" width="54.31%" id="mcps1.2.3.1.1"><p id="p462103214410"><a name="p462103214410"></a><a name="p462103214410"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="45.69%" id="mcps1.2.3.1.2"><p id="p1762163219448"><a name="p1762163219448"></a><a name="p1762163219448"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row7739441104213"><td class="cellrowborder" valign="top" width="54.31%" headers="mcps1.2.3.1.1 "><p id="p137395418427"><a name="p137395418427"></a><a name="p137395418427"></a>uint64_t drv_virt_to_phys(uintptr_t addr);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.69%" headers="mcps1.2.3.1.2 "><p id="p177391841124218"><a name="p177391841124218"></a><a name="p177391841124218"></a>虚拟地址转换为物理地址。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-### map接口说明<a name="section1831091675716"></a>
-
-驱动进行内存映射操作所需要的接口列表。
-
-**表 3**  map接口列表
-
-<a name="table1690431511432"></a>
-<table><thead align="left"><tr id="row189041315194317"><th class="cellrowborder" valign="top" width="54.67999999999999%" id="mcps1.2.3.1.1"><p id="p34281633124413"><a name="p34281633124413"></a><a name="p34281633124413"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="45.32%" id="mcps1.2.3.1.2"><p id="p4428133174412"><a name="p4428133174412"></a><a name="p4428133174412"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row9904121594312"><td class="cellrowborder" valign="top" width="54.67999999999999%" headers="mcps1.2.3.1.1 "><p id="p1090471594316"><a name="p1090471594316"></a><a name="p1090471594316"></a>int32_t tee_map_secure(paddr_t paddr, uint64_t size, uintptr_t *vaddr, cache_mode_type cache_mode);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.32%" headers="mcps1.2.3.1.2 "><p id="p583mcpsimp"><a name="p583mcpsimp"></a><a name="p583mcpsimp"></a>给驱动访问者映射一段安全属性的物理内存。</p>
-</td>
-</tr>
-<tr id="row190417158431"><td class="cellrowborder" valign="top" width="54.67999999999999%" headers="mcps1.2.3.1.1 "><p id="p4904715174317"><a name="p4904715174317"></a><a name="p4904715174317"></a>int32_t tee_map_nonsecure(paddr_t paddr, uint64_t size, uintptr_t *vaddr, cache_mode_type cache_mode);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.32%" headers="mcps1.2.3.1.2 "><p id="p10904115204310"><a name="p10904115204310"></a><a name="p10904115204310"></a>给驱动访问者映射一段非安全属性的物理内存，其中映射属性是只读不能写。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-### IO操作接口说明<a name="section6512133012574"></a>
-
-驱动进行IO操作所需要的接口列表。
-
-**表 4**  IO操作接口列表
-
-<a name="table6311346194315"></a>
-<table><thead align="left"><tr id="row831212462439"><th class="cellrowborder" valign="top" width="54.730000000000004%" id="mcps1.2.3.1.1"><p id="p7945143412442"><a name="p7945143412442"></a><a name="p7945143412442"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="45.269999999999996%" id="mcps1.2.3.1.2"><p id="p7945183494416"><a name="p7945183494416"></a><a name="p7945183494416"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row143121846164318"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p133121246194317"><a name="p133121246194317"></a><a name="p133121246194317"></a>void *ioremap(uintptr_t phys_addr, unsigned long size, int32_t prot);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p133126466437"><a name="p133126466437"></a><a name="p133126466437"></a>将IO地址映射至虚拟地址。</p>
-</td>
-</tr>
-<tr id="row1431214468430"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p103122046114317"><a name="p103122046114317"></a><a name="p103122046114317"></a>int32_t iounmap(uintptr_t pddr, void *addr);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p4312194674313"><a name="p4312194674313"></a><a name="p4312194674313"></a>解除物理地址映射。</p>
-</td>
-</tr>
-<tr id="row1131211467433"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p63121446154315"><a name="p63121446154315"></a><a name="p63121446154315"></a>void read_from_io (void *to, const volatile void *from, unsigned long count);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p16312174619438"><a name="p16312174619438"></a><a name="p16312174619438"></a>将IO输入的值读取至驱动指定的地址，读取长度由count指定。</p>
-</td>
-</tr>
-<tr id="row1331219468434"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p8312104614437"><a name="p8312104614437"></a><a name="p8312104614437"></a>void write_to_io(volatile void *to, const void *from, unsigned long count);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p193mcpsimp"><a name="p193mcpsimp"></a><a name="p193mcpsimp"></a>将驱动指定地址的值输出至IO，读取长度由count指定。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-### 内存拷贝接口说明<a name="section75381736318"></a>
-
-驱动进行内存拷贝操作所需要的接口列表。
-
-**表 5**  内存拷贝接口列表
-
-<a name="table7469133214314"></a>
-<table><thead align="left"><tr id="row24693321135"><th class="cellrowborder" valign="top" width="55.35%" id="mcps1.2.3.1.1"><p id="p109015511039"><a name="p109015511039"></a><a name="p109015511039"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="44.65%" id="mcps1.2.3.1.2"><p id="p2090117510315"><a name="p2090117510315"></a><a name="p2090117510315"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row15469133212312"><td class="cellrowborder" valign="top" width="55.35%" headers="mcps1.2.3.1.1 "><p id="p04692032734"><a name="p04692032734"></a><a name="p04692032734"></a>int32_t copy_from_client(uint64_t src, uint32_t src_size, uintptr_t dst, uint32_t dst_size);</p>
-</td>
-<td class="cellrowborder" valign="top" width="44.65%" headers="mcps1.2.3.1.2 "><p id="p184693323311"><a name="p184693323311"></a><a name="p184693323311"></a>将驱动内存拷入client端。</p>
-</td>
-</tr>
-<tr id="row246915325319"><td class="cellrowborder" valign="top" width="55.35%" headers="mcps1.2.3.1.1 "><p id="p94881980512"><a name="p94881980512"></a><a name="p94881980512"></a>int32_t copy_to_client(uintptr_t src, uint32_t src_size, uint64_t dst, uint32_t dst_size);</p>
-</td>
-<td class="cellrowborder" valign="top" width="44.65%" headers="mcps1.2.3.1.2 "><p id="p647018327314"><a name="p647018327314"></a><a name="p647018327314"></a>将client端数据拷出至驱动。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-### 共享内存接口说明<a name="section5891654459"></a>
-
-驱动进行共享内存操作所需要的接口列表。
-
-**表 6**  共享内存接口列表
-
-<a name="table186909151063"></a>
-<table><thead align="left"><tr id="row369016151263"><th class="cellrowborder" valign="top" width="55.620000000000005%" id="mcps1.2.3.1.1"><p id="p1033416207618"><a name="p1033416207618"></a><a name="p1033416207618"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="44.379999999999995%" id="mcps1.2.3.1.2"><p id="p19334172010619"><a name="p19334172010619"></a><a name="p19334172010619"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1069019153610"><td class="cellrowborder" valign="top" width="55.620000000000005%" headers="mcps1.2.3.1.1 "><p id="p176901815266"><a name="p176901815266"></a><a name="p176901815266"></a>void *tee_alloc_sharemem_aux(const struct tee_uuid *uuid, uint32_t size);</p>
-</td>
-<td class="cellrowborder" valign="top" width="44.379999999999995%" headers="mcps1.2.3.1.2 "><p id="p11690101520612"><a name="p11690101520612"></a><a name="p11690101520612"></a>申请进程间通信共享内存。</p>
-</td>
-</tr>
-<tr id="row19690615967"><td class="cellrowborder" valign="top" width="55.620000000000005%" headers="mcps1.2.3.1.1 "><p id="p166901915464"><a name="p166901915464"></a><a name="p166901915464"></a>uint32_t tee_free_sharemem(void *addr, uint32_t size);</p>
-</td>
-<td class="cellrowborder" valign="top" width="44.379999999999995%" headers="mcps1.2.3.1.2 "><p id="p186901215366"><a name="p186901215366"></a><a name="p186901215366"></a>释放进程间通信共享内存。</p>
-</td>
-</tr>
-<tr id="row1469663510216"><td class="cellrowborder" valign="top" width="55.620000000000005%" headers="mcps1.2.3.1.1 "><p id="p06966351127"><a name="p06966351127"></a><a name="p06966351127"></a>int32_t get_tlv_sharedmem(const char *type, uint32_t type_size, void *buffer, uint32_t *size, bool clear_flag);</p>
-</td>
-<td class="cellrowborder" valign="top" width="44.379999999999995%" headers="mcps1.2.3.1.2 "><p id="p1038093194520"><a name="p1038093194520"></a><a name="p1038093194520"></a>获取loader阶段写入到共享内存中的信息。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-### 驱动访问接口说明<a name="section69627498287"></a>
-
-TA或驱动进行申请访问驱动操作需要的接口列表。
-
-**表 7**  驱动访问接口列表
-
-<a name="table452511217299"></a>
-<table><thead align="left"><tr id="row05251227294"><th class="cellrowborder" valign="top" width="56.010000000000005%" id="mcps1.2.3.1.1"><p id="p18328191918293"><a name="p18328191918293"></a><a name="p18328191918293"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="43.99%" id="mcps1.2.3.1.2"><p id="p15328181952911"><a name="p15328181952911"></a><a name="p15328181952911"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row85251722298"><td class="cellrowborder" valign="top" width="56.010000000000005%" headers="mcps1.2.3.1.1 "><p id="p1335112031818"><a name="p1335112031818"></a><a name="p1335112031818"></a>int64_t tee_drv_open(const char *drv_name, const void *param, uint32_t param_len);</p>
-</td>
-<td class="cellrowborder" valign="top" width="43.99%" headers="mcps1.2.3.1.2 "><p id="p535110205186"><a name="p535110205186"></a><a name="p535110205186"></a>打开目标驱动获取fd。</p>
-</td>
-</tr>
-<tr id="row05252214291"><td class="cellrowborder" valign="top" width="56.010000000000005%" headers="mcps1.2.3.1.1 "><p id="p735222011812"><a name="p735222011812"></a><a name="p735222011812"></a>int64_t tee_drv_ioctl(int64_t fd, uint32_t cmd_id, const void *param, uint32_t param_len);</p>
-</td>
-<td class="cellrowborder" valign="top" width="43.99%" headers="mcps1.2.3.1.2 "><p id="p102713420541"><a name="p102713420541"></a><a name="p102713420541"></a>调用目标驱动，根据cmd_id发起不同的任务。</p>
-</td>
-</tr>
-<tr id="row14525122142910"><td class="cellrowborder" valign="top" width="56.010000000000005%" headers="mcps1.2.3.1.1 "><p id="p203525206185"><a name="p203525206185"></a><a name="p203525206185"></a>int64_t tee_drv_close(int64_t fd);</p>
-</td>
-<td class="cellrowborder" valign="top" width="43.99%" headers="mcps1.2.3.1.2 "><p id="p642mcpsimp"><a name="p642mcpsimp"></a><a name="p642mcpsimp"></a>关闭目标驱动。</p>
-</td>
-</tr>
-</tbody>
-</table>
+本节用来指导驱动开发者开发可以被TEE子系统动态加载的安全驱动。
 
 ## 开发环境准备<a name="section20994326588"></a>
 
 目前支持的编译框架、编译工具链等见下表，括号内为建议版本：
 
-**表 8**  开发环境准备
+**表 1**  开发环境准备
 
 <a name="table412352084019"></a>
 <table><thead align="left"><tr id="row151231920154014"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p7533141614371"><a name="p7533141614371"></a><a name="p7533141614371"></a>编译框架</p>
@@ -302,7 +98,7 @@ TA或驱动进行申请访问驱动操作需要的接口列表。
 
 需要使用的GCC工具链可在linaro网站下载，LLVM和Clang需要在LLVM官网下载。64位可信驱动程序编译需要使用aarch64版本的交叉编译工具链，按照与32位工具链相同的方式下载、安装和配置。
 
-**表 9**  编译工具链准备
+**表 2**  编译工具链准备
 
 <a name="table176317549401"></a>
 <table><thead align="left"><tr id="row376335424011"><th class="cellrowborder" valign="top" width="70.94709470947095%" id="mcps1.2.4.1.1"><p id="p1718993710373"><a name="p1718993710373"></a><a name="p1718993710373"></a>工具链下载路径</p>
@@ -350,9 +146,9 @@ TA或驱动进行申请访问驱动操作需要的接口列表。
 
 ## 开发步骤<a name="section943512417516"></a>
 
-驱动开发者可以通过可信驱动程序编译框架将c代码编译签名为可加载的sec文件。
+驱动开发者可以使用DDK将源码通过编译和签名生成TEE子系统可动态加载的sec文件。
 
-### 添加编译配置文件至build目录<a name="section449714160615"></a>
+ **1 添加编译配置文件至build目录** 
 
 用户根据本地开发环境与需求，更改demo/build/[defconfig](#section21267445213)文件中相关配置项的内容，决定编译器与编译工具链等信息。
 
@@ -360,11 +156,11 @@ TA或驱动进行申请访问驱动操作需要的接口列表。
 
 根据配置文件的编译器参数，在[Makefile](#section15184100432)或[CMakeLists.txt](#section31566231037)中添加需要编译的源文件、编译选项、链接选项等信息。
 
-### 添加头文件至include目录<a name="section179732211510"></a>
+ **2 添加头文件至include目录** 
 
 include文件夹中包含驱动动态库接口头文件，编译第三方驱动时需要将第三方驱动所需头文件添加至本文件夹下。
 
-### 添加源文件至src目录<a name="section13984839152"></a>
+ **3 添加源文件至src目录** 
 
 src目录中包含驱动源代码与权限配置文件。
 
@@ -372,7 +168,7 @@ src目录中包含驱动源代码与权限配置文件。
 
 [签名文件生成](#section793382693010)后，将SEC签名密钥[sign\_sec\_priv.pem](#table11862185716131)从build/keytools/output目录拷贝至demo/src目录，将签名文件[perm\_config](#section11327454193517)从build/pack-Config/output目录拷贝至demo/src目录。
 
-### 触发构建<a name="section885817169712"></a>
+ **4 触发构建** 
 
 在demo/build目录下执行[build.sh](#section1751202026)，触发编译、签名流程，输入[profile.ini](#section1046723143114)文件中配置的pass字段签名口令，输出生成文件至demo/output目录下。
 
@@ -386,7 +182,7 @@ bash build.sh
 
 编译文件配置项见下表：
 
-**表 10**  编译文件配置项
+**表 3**  编译文件配置项
 
 <a name="table2173294241"></a>
 <table><thead align="left"><tr id="row018142918241"><th class="cellrowborder" valign="top" width="27.060000000000002%" id="mcps1.2.6.1.1"><p id="p177781452182211"><a name="p177781452182211"></a><a name="p177781452182211"></a>编译文件配置项</p>
@@ -481,7 +277,7 @@ bash build.sh
 <td class="cellrowborder" valign="top" width="27.18%" headers="mcps1.2.6.1.5 "><p id="p4930420182517"><a name="p4930420182517"></a><a name="p4930420182517"></a>make添加编译文件</p>
 </td>
 </tr>
-<tr id="row119829192416"><td class="cellrowborder" valign="top" width="27.060000000000002%" headers="mcps1.2.6.1.1 "><p id="p3930172017253"><a name="p3930172017253"></a><a name="p3930172017253"></a>compile_drv("${SOURCE_FILE}" "${FLAGS}" "${INC_DIR}" "${LD_FLAGS}")</p>
+<tr id="row119829192416"><td class="cellrowborder" valign="top" width="27.060000000000002%" headers="mcps1.2.6.1.1 "><p id="p3930172017253"><a name="p3930172017253"></a><a name="p3930172017253"></a>compile_drv("\${SOURCE_FILE}" "\${FLAGS}" "\${INC_DIR}" "\${LD_FLAGS}")</p>
 </td>
 <td class="cellrowborder" valign="top" width="10.85%" headers="mcps1.2.6.1.2 "><p id="p0930172020255"><a name="p0930172020255"></a><a name="p0930172020255"></a>cmake函数</p>
 </td>
@@ -509,11 +305,11 @@ build.sh文件是可信驱动程序编译的触发入口，用户配置完编译
 
 defconfig文件为编译配置文件，该文件中可以指定使用的编译器、编译工具链、指定编译32位或64位。
 
-CONFIG\_BUILD\_TOOL为指定编译器，其值为make代表使用make编译，其值为cmake代表使用cmake编译；
+- CONFIG\_BUILD\_TOOL为指定编译器，其值为make代表使用make编译，其值为cmake代表使用cmake编译。
 
-CONFIG\_GCC为指定编译工具链，其值为y代表使用GCC编译，其值为n代表使用LLVM编译；
+- CONFIG\_GCC为指定编译工具链，其值为y代表使用GCC编译，其值为n代表使用LLVM编译。
 
-TARGET\_IS\_ARM64为指定编译版本，其值为y时编译64位驱动，为其值为n时编译32位驱动。
+- TARGET\_IS\_ARM64为指定编译版本，其值为y时编译64位驱动，为其值为n时编译32位驱动。
 
 defconfig文件举例如下：
 
@@ -582,7 +378,7 @@ compile_drv("${SOURCE_FILE}" "${FLAGS}" "${INC_DIR}" "${LD_FLAGS}")
 
 可信驱动程序开发时需提供manifest.txt文本文件，该文件的主要作用是设置驱动属性，主要内容见下表：
 
-**表 11**  manifest.txt内容
+**表 4**  manifest.txt内容
 
 <a name="table14537182315286"></a>
 <table><thead align="left"><tr id="row4538112318286"><th class="cellrowborder" valign="top" width="22.932293229322934%" id="mcps1.2.4.1.1"><p id="p4803260443"><a name="p4803260443"></a><a name="p4803260443"></a>属性</p>
@@ -651,11 +447,9 @@ gpd.ta.stackSize: 8192
 gpd.ta.target_type: 1
 ```
 
-注意事项：
-
-必须保证每个可信驱动程序的service\_name和appID是唯一的，其中service\_name只能由字母、数字和'\_'组成，其他无法识别。
-
-可信驱动程序生成时，如果不存在manifest.txt文件，或manifest.txt文件格式错误，生成将会终止。
+>![](public_sys-resources/icon-caution.gif) **注意：** 
+>-   必须保证每个可信驱动程序的service\_name和appID是唯一的，其中service\_name只能由字母、数字和'\_'组成，其他无法识别。
+>-   可信驱动程序生成时，如果不存在manifest.txt文件，或manifest.txt文件格式错误，生成将会终止。
 
 ### 宏定义表文件介绍<a name="section449462816414"></a>
 
@@ -665,7 +459,7 @@ gpd.ta.target_type: 1
 
 宏定义表内容约束见下表：
 
-**表 12**  宏定义表内容
+**表 5**  宏定义表内容
 
 <a name="table17568952133112"></a>
 <table><thead align="left"><tr id="row12569165218312"><th class="cellrowborder" valign="top" width="10.371037103710371%" id="mcps1.2.4.1.1"><p id="p1836159123115"><a name="p1836159123115"></a><a name="p1836159123115"></a>列编号</p>
@@ -690,7 +484,7 @@ gpd.ta.target_type: 1
 </td>
 <td class="cellrowborder" valign="top" width="68.75687568756875%" headers="mcps1.2.4.1.3 "><p id="p107633114719"><a name="p107633114719"></a><a name="p107633114719"></a>必须为字符串类型，且不能为空。excel中单元格需设置为文本类型。</p>
 <p id="p0768312474"><a name="p0768312474"></a><a name="p0768312474"></a>驱动命令和驱动权限实际数字必须与驱动代码逻辑保持一致。</p>
-<p id="p632422216436"><a name="p632422216436"></a><a name="p632422216436"></a>驱动命令数字使用十六进制数字，范围为0x1到0x40；</p>
+<p id="p632422216436"><a name="p632422216436"></a><a name="p632422216436"></a>驱动命令数字使用十六进制数字，范围为0x1到0x40。</p>
 <p id="p167663124712"><a name="p167663124712"></a><a name="p167663124712"></a>驱动权限数字使用十进制数字，范围为1到64。</p>
 </td>
 </tr>
@@ -699,7 +493,7 @@ gpd.ta.target_type: 1
 
 宏定义表文件配置举例见下表：
 
-**表 13**  宏定义配置表
+**表 6**  宏定义配置表
 
 <a name="table113201189338"></a>
 <table><thead align="left"><tr id="row3321118143318"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p63217833318"><a name="p63217833318"></a><a name="p63217833318"></a>A列</p>
@@ -747,7 +541,7 @@ gpd.ta.target_type: 1
 
 configs.xml文件前半部分包含manifest.txt文件中驱动属性数据，用户需要在configs.xml根字段下新增dyn\_perm字段，并将驱动权限配置部分写在该字段下。
 
-**表 14**  configs.xml文件字段说明
+**表 7**  configs.xml文件字段说明
 
 <a name="table10422031435"></a>
 <table><thead align="left"><tr id="row124219311934"><th class="cellrowborder" valign="top" width="7.95%" id="mcps1.2.6.1.1"><p id="p5438311135"><a name="p5438311135"></a><a name="p5438311135"></a>配置方</p>
@@ -1006,16 +800,57 @@ configs.xml文件举例如下：
 </ConfigInfo>
 ```
 
->![](public_sys-resources/icon-note.gif) **说明：** 
->示例configs.xml文件说明：
->drv\_basic\_info：驱动运行模式是最多支持三个线程并发，支持动态升级，该驱动崩溃后不会重启，支持地址转换接口调用。
->drv\_io\_map：驱动在chip\_type1和chip\_type2平台上支持映射\[0x30000, 0x31000\]段的io地址空间；驱动在所有平台上都支持映射\[0x90000, 0x91000\]和\[0xa0000, 0xa1000\]段的io地址空间。
->irq：驱动在chip\_type1和chip\_type2平台上的irq num为103；驱动在所有平台上面的irq num为32和1000。
->map\_secure：驱动在chip\_type1和chip\_type2支持uuid为030303的驱动访问者映射\[0x12340000，0x12350000\]的安全地址范围；驱动在所有平台上都支持uuid为04040404的驱动访问者映射\[0x45670000,0x789a0000\]和\[0x22330000,0x44550000\]两段安全地址范围。
->map\_nosecure：驱动在chip\_type1和chip\_type2支持uuid为010101的驱动访问者映射非安全内存地址；驱动在所有平台上都支持uuid为030303、040404和060606的驱动访问者映射非安全内存地址。
->drv\_cmd\_perm\_info：驱动配置拥有特殊权限的命令，IOMAP\_TEST\_ID命令具有iomap\_perm特殊权限。
->drv\_mac\_info：驱动强制配置能访问自身的驱动访问者uuid和特殊权限。uuid为03030303的驱动访问者除了拥有驱动基础权限外，还拥有特殊权限iomap\_perm，可以访问驱动基础命令和iomap\_perm对应的IOMAP\_TEST\_ID命令；uuid为04040404的驱动访问者没有配置特殊权限，即只能访问驱动基础命令，无权限访问iomap\_perm对应的IOMAP\_TEST\_ID命令。
->drvcall\_perm\_apply：本驱动作为驱动访问者，申请访问名为drv1\_name的驱动并注册特殊权限iomap\_perm，申请访问名为drv2\_name的驱动并不另外注册特殊权限。
+**表 8**  示例configs.xml文件说明
+
+<a></a>
+<table><thead align="left"><tr><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p>输出</p>
+</th>
+<th class="cellrowborder" valign="top" width="50%"><p>用途</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%"><p>drv_basic_info</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动运行模式是最多支持三个线程并发，支持动态升级，该驱动崩溃后不会重启，支持地址转换接口调用。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drv_io_map</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2平台上支持映射[0x30000, 0x31000]段的io地址空间；驱动在所有平台上都支持映射[0x90000, 0x91000]和[0xa0000, 0xa1000]段的io地址空间。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>irq</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2平台上的irq num为103；驱动在所有平台上面的irq num为32和1000。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>map_secure</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2支持uuid为030303的驱动访问者映射[0x12340000，0x12350000]的安全地址范围；驱动在所有平台上都支持uuid为04040404的驱动访问者映射[0x45670000,0x789a0000]和[0x22330000,0x44550000]两段安全地址范围。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>map_nosecure</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动在chip_type1和chip_type2支持uuid为010101的驱动访问者映射非安全内存地址；驱动在所有平台上都支持uuid为030303、040404和060606的驱动访问者映射非安全内存地址。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drv_cmd_perm_info</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动配置拥有特殊权限的命令，IOMAP_TEST_ID命令具有iomap_perm特殊权限。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drv_mac_info</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>驱动强制配置能访问自身的驱动访问者uuid和特殊权限。uuid为03030303的驱动访问者除了拥有驱动基础权限外，还拥有特殊权限iomap_perm，可以访问驱动基础命令和iomap_perm对应的IOMAP_TEST_ID命令；uuid为04040404的驱动访问者没有配置特殊权限，即只能访问驱动基础命令，无权限访问iomap_perm对应的IOMAP_TEST_ID命令。</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%"><p>drvcall_perm_apply</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%"><p>本驱动作为驱动访问者，申请访问名为drv1_name的驱动并注册特殊权限iomap_perm，申请访问名为drv2_name的驱动并不另外注册特殊权限。</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 >![](public_sys-resources/icon-caution.gif) **注意：** 
 >-   驱动访问者可以是TA或驱动。
@@ -1032,7 +867,7 @@ configs.xml文件举例如下：
 
 在使用keytools工具前，需要对build/keytools/input/profile.ini进行配置，各字段含义如下表所示：
 
-**表 15**  keytools工具的字段配置说明
+**表 9**  keytools工具的字段配置说明
 
 <a name="table17235151720215"></a>
 <table><thead align="left"><tr id="row1823521714214"><th class="cellrowborder" valign="top" width="14.87%" id="mcps1.2.5.1.1"><p id="p138501929726"><a name="p138501929726"></a><a name="p138501929726"></a>字段</p>
@@ -1129,7 +964,7 @@ configs.xml文件举例如下：
 
 keytools工具输出产物将放于build/keytools/output目录下，输出及用途如下表所示：
 
-**表 16**  keytools工具输出说明
+**表 10**  keytools工具输出说明
 
 <a name="table11862185716131"></a>
 <table><thead align="left"><tr id="row586285719132"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p132517171145"><a name="p132517171145"></a><a name="p132517171145"></a>输出</p>
@@ -1186,6 +1021,351 @@ python3 signtool_config.py ./input ./ta_cert/ta_cert.der 2 ./output/perm_config
 ```
 
 在build/keytools/pack-Config/output目录下得到签名产物perm\_config。
+
+## 驱动开发框架<a name="section12432132218372"></a>
+
+驱动开发整体可以分为两部分，第一个是驱动业务开发框架，第二个是访问该驱动的驱动访问者框架。
+
+### 驱动业务框架<a name="section6705194712373"></a>
+
+为方便各个驱动开发统一，TEE可信执行环境子系统为各个驱动设计了一套基础框架，如下所示，驱动开发者结合驱动实际逻辑分别定义这些基础函数即可。
+```
+#define DRV_NAME_MAX_LEN 32U
+#define DRV_RESERVED_NUM 8U
+
+struct drv_data {
+    int32_t fd; /* unique label which alloced by driver framework */
+    uint32_t taskid; /* caller taskid */
+    void *private_data; /* the private data associated with this fd */
+    struct tee_uuid uuid; /* caller uuid */
+};
+
+typedef int32_t (*init_func)(void);
+
+typedef int32_t (*suspned_func)(void);
+typedef int32_t (*resume_func)(void);
+
+typedef int64_t (*ioctl_func)(struct drv_data *drv, uint32_t cmd, unsigned long args, uint32_t args_len);
+typedef int64_t (*open_func)(struct drv_data *drv, unsigned long args, uint32_t args_len);
+typedef int64_t (*close_func)(struct drv_data *drv);
+
+struct tee_driver_module {
+    init_func init;
+    ioctl_func ioctl;
+    open_func open;
+    close_func close;
+    suspned_func suspend;
+    resume_func resume;
+    suspned_func suspend_s4;
+    resume_func resume_s4;
+    uint64_t reserved[DRV_RESERVED_NUM]; /* has not used, just reserved */
+};
+
+#define tee_driver_declare(name, init, open, ioctl, close, suspend, resume, suspend_s4, resume_s4) \
+__attribute__((visibility("default"))) const struct tee_driver_module g_driver_##name = { \
+    init, ioctl, open, close, suspend, resume, suspend_s4, resume_s4, {0} }
+```
+
+结构体struct tee_driver_module便是每个驱动业务开发时需要注册的信息，各个变量说明如下：
+
+**表 11** 驱动业务开发注册信息表
+
+<a></a>
+<table><thead align="left"><tr><th class="cellrowborder" valign="top" width="33.33333333333333%"><p>变量名</p>
+</th>
+<th class="cellrowborder" valign="top" width="33.33333333333333%"><p>类型</p>
+</th>
+<th class="cellrowborder" valign="top" width="33.33333333333333%"><p>说明</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td><p>name</p></td>
+<td><p>常量字符串</p></td>
+<td><p>驱动名字，每个驱动必须唯一，有效长度小于32个字节，仅支持数字、字母和'_'。</p></td>
+</tr>
+<tr><td><p>init</p></td>
+<td><p>init_func函数指针</p></td>
+<td><p>驱动加载时初始化函数。</p></td>
+</tr>
+<tr><td><p>open</p></td>
+<td><p>函数指针</p></td>
+<td><p>驱动被访问时初始化函数。</p></td>
+</tr>
+<tr><td><p>ioctl</p></td>
+<td><p>函数指针</p></td>
+<td><p>驱动被访问时命令分发函数。</p></td>
+</tr>
+<tr><td><p>close</p></td>
+<td><p>函数指针</p></td>
+<td><p>驱动被访问结束时资源释放函数。</p></td>
+</tr>
+<tr><td><p>suspend</p></td>
+<td><p>函数指针</p></td>
+<td><p>驱动在系统休眠时被调用的函数。</p></td>
+</tr>
+<tr><td><p>resume</p></td>
+<td><p>函数指针</p></td>
+<td><p>驱动在系统唤醒时被调用的函数。</p></td>
+</tr>
+<tr><td><p>suspend_s4</p></td>
+<td><p>函数指针</p></td>
+<td><p>驱动在系统休眠时被调用的函数，对应linux kernel里freeze_noirq操作流程。</p></td>
+</tr>
+<tr><td><p>resume_s4</p></td>
+<td><p>函数指针</p></td>
+<td><p>驱动在系统唤醒时被调用的函数，对应linux kernel里restore_noirq操作流程。</p></td>
+</tr>
+<tr><td><p>reserved</p></td>
+<td><p>预留</p></td>
+<td><p>现有框架暂未使用。</p></td>
+</tr>
+</tbody>
+</table>
+
+**表 12** 驱动业务框架接口说明
+<a></a>
+<table><thead><tr><th class="cellrowborder" valign="top" width="50%"><p>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="50%"><p>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td><p>int32_t (*init_func)(void)</p></td>
+<td><p>该函数是在驱动加载完后便被驱动框架调用的初始化函数，其主要作用是在该驱动被访问之前进行初始化操作。该函数在驱动加载后的整个生命周期内只会被调用一次。</p>
+<p><b>返回值：</b></p>
+<p>0：初始化成功</p>
+<p>非0：初始化失败</p></td>
+</tr>
+<tr><td><p>int64_t (*open_func)(struct drv_data *drv, unsigned long args, uint32_t args_len)</p></td>
+<td><p>该函数是驱动访问者访问驱动时调用的初始化函数，其主要作用是在驱动里申请一个fd，并进行初始化。该函数在每次新增驱动访问时都会调用。</p>
+<p><b>参数：</b></p>
+<p>drv：入参，表示此次open该驱动的fd所有信息</p>
+<p>args：入参，表示给驱动传入参数对应的buffer地址，由驱动访问者设置</p>
+<p>args_len：入参，表示给驱动传入参数对应的buffer长度，由驱动访问者设置</p>
+<p><b>返回值：</b></p>
+<p>非正数：异常值</p>
+<p>其他：返回的fd信息</p></td>
+</tr>
+<tr><td><p>int64_t (*ioctl_func)(struct drv_data *drv, uint32_t cmd, unsigned long args, uint32_t args_len)</p></td>
+<td><p>该函数是驱动在open初始化之后，进行的一系列针对业务逻辑的操作。其主要作用是根据传入的drv获取fd资源信息，再执行cmd命令对应的执行流，其中[args.args_len]组成的buffer信息是给该cmd执行流传入的参数。</p>
+<p><b>参数：</b></p>
+<p>drv：入参，表示此次ioctl该驱动的fd所有信息，fd由驱动访问者传入，驱动框架根据fd传入对应drv_data结构体</p>
+<p>cmd：入参，表示此次ioctl该驱动传入的命令号，驱动可根据不同命令号执行不同的业务逻辑，由驱动访问者设置</p>
+<p>args：入参，表示给驱动传递参数的buffer基地址</p>
+<p>args_len：入参，表示给驱动传递参数的buffer长度</p>
+<p><b>返回值：</b></p>
+<p>0：操作成功</p>
+<p>-1：操作失败，框架层面返回的异常值</p>
+<p>其他值：操作失败，驱动自行定义的异常值</p></td>
+</tr>
+<tr><td><p>int64_t (*close_func)(struct drv_data *drv)</p></td>
+<td><p>该函数主要作用是在驱动业务逻辑访问结束后进行对该fd对应的资源清理操作。</p>
+<p><b>参数：</b></p>
+<p>drv：入参，表示此次ioctl该驱动的fd所有信息</p>
+<p><b>返回值：</b></p>
+<p>0：操作成功</p>
+<p>非0：操作失败</p></td>
+</tr>
+<tr><td><p>int32_t (*suspned_func)(void)</p></td>
+<td><p>该函数主要作用是此驱动休眠状态下的一些列操作，会在系统休眠时有驱动框架自行调用。</p>
+<p><b>返回值：</b></p>
+<p>0：操作成功</p>
+<p>非0：操作失败</p></td>
+</tr>
+<tr><td><p>int32_t (*resume_func)(void)</p></td>
+<td><p>该函数主要作用是此驱动唤醒态下的一系列操作，会在系统唤醒流程中由驱动框架自行调用，与suspend函数对应。</p>
+<p><b>返回值：</b></p>
+<p>0：操作成功</p>
+<p>非0：操作失败</p></td>
+</tr>
+</tbody>
+</table>
+
+### 驱动访问者框架<a name="section18123151133811"></a>
+
+驱动访问时，驱动访问者先调用tee_drv_open函数获取驱动唯一标记fd；再调用tee_drv_ioctl函数，传入cmd信息，访问该驱动对应cmd执行流，如果针对某个fd有多个ioctl执行流，多次调用tee_drv_ioctl即可；如果访问结束，驱动访问者还需要调用tee_drv_close函数关闭该fd信息。
+
+**表 13** 驱动访问者框架接口说明
+
+<a></a>
+<table><thead><tr><th class="cellrowborder" valign="top" width="50%"><p>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="50%"><p>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td><p>int64_t tee_drv_open(const char *drv_name, const void *param, uint32_t param_len)</p></td>
+<td><p>主要作用是驱动访问者通过调用该函数，访问drv_name指定的驱动，调用驱动的open函数，返回与该驱动对应的唯一标记fd信息。其中param buffer对应的内容组装结构由drv_name对应驱动定义，实际与驱动open函数里[args.args_len]表示的buffer内容一致。</p>
+<p><b>参数：</b></p>
+<p>drv_name：入参，表示要访问的驱动名称；</p>
+<p>param：入参，表示给驱动传递的参数地址；</p>
+<p>param_len：入参，表示给驱动传递的参数长度，与param组成的buffer内容便是给驱动传递的参数信息。</p>
+<p><b>返回值：</b></p>
+<p>非正数：非法值，操作失败</p>
+<p>大于0：fd信息，对应驱动的唯一标识</p></td>
+</tr>
+<tr><td><p>int64_t tee_drv_ioctl(int64_t fd, uint32_t cmd_id, const void *param, uint32_t param_len)</p></td>
+<td><p>主要作用是驱动访问者通过调用该函数，访问fd对应的驱动模块，执行命令ID号为cmd_id对应的业务逻辑，传入参数为param与param_len对应buffer存储的内容，其中param与param_len对应buffer内容组装结构由fd对应的驱动定义，实际与驱动ioctl函数[args.args_len]组成的buffer内容一致。</p>
+<p><b>参数：</b></p>
+<p>fd：入参，表示open该驱动成功返回时的返回值；</p>
+<p>cmd_id：入参，表示ioctl该驱动时对应的命令id号；</p>
+<p>param：入参，表示ioctl该驱动cmd_id流程时传入的参数基地址；</p>
+<p>param_len：入参，表示ioctl该驱动cmd_id流程时传入的参数buffer长度。与param组成的buffer内容便是给驱动命令号cmd_id对应的参数信息。</p>
+<p><b>返回值：</b></p>
+<p>0：操作成功</p>
+<p>-1：框架层面访问失败</p>
+<p>其他值：各驱动自定义失败返回值</p></td>
+</tr>
+<tr><td><p>int64_t tee_drv_close(int64_t fd)</p></td>
+<td><p>主要作用是关闭fd对应驱动信息，一般常见操作是释放该fd维护的驱动资源。</p>
+<p><b>返回值：</b></p>
+<p>0：操作成功</p>
+<p>-1：操作失败</p></td>
+</tr>
+</tbody>
+</table>
+
+## 接口说明<a name="section1748173625619"></a>
+
+### 地址转换接口说明<a name="section101297155716"></a>
+
+驱动进行地址转换操作需要使用的接口列表。
+
+**表 14**  地址转换接口列表
+
+<a name="table13739184111427"></a>
+<table><thead align="left"><tr id="row2739154118421"><th class="cellrowborder" valign="top" width="54.31%" id="mcps1.2.3.1.1"><p id="p462103214410"><a name="p462103214410"></a><a name="p462103214410"></a>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="45.69%" id="mcps1.2.3.1.2"><p id="p1762163219448"><a name="p1762163219448"></a><a name="p1762163219448"></a>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row7739441104213"><td class="cellrowborder" valign="top" width="54.31%" headers="mcps1.2.3.1.1 "><p id="p137395418427"><a name="p137395418427"></a><a name="p137395418427"></a>uint64_t drv_virt_to_phys(uintptr_t addr);</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.69%" headers="mcps1.2.3.1.2 "><p id="p177391841124218"><a name="p177391841124218"></a><a name="p177391841124218"></a>虚拟地址转换为物理地址。</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+### map接口说明<a name="section1831091675716"></a>
+
+驱动进行内存映射操作所需要的接口列表。
+
+**表 15**  map接口列表
+
+<a name="table1690431511432"></a>
+<table><thead align="left"><tr id="row189041315194317"><th class="cellrowborder" valign="top" width="54.67999999999999%" id="mcps1.2.3.1.1"><p id="p34281633124413"><a name="p34281633124413"></a><a name="p34281633124413"></a>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="45.32%" id="mcps1.2.3.1.2"><p id="p4428133174412"><a name="p4428133174412"></a><a name="p4428133174412"></a>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row9904121594312"><td class="cellrowborder" valign="top" width="54.67999999999999%" headers="mcps1.2.3.1.1 "><p id="p1090471594316"><a name="p1090471594316"></a><a name="p1090471594316"></a>int32_t tee_map_secure(paddr_t paddr, uint64_t size, uintptr_t *vaddr, cache_mode_type cache_mode);</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.32%" headers="mcps1.2.3.1.2 "><p id="p583mcpsimp"><a name="p583mcpsimp"></a><a name="p583mcpsimp"></a>给驱动访问者映射一段安全属性的物理内存。</p>
+</td>
+</tr>
+<tr id="row190417158431"><td class="cellrowborder" valign="top" width="54.67999999999999%" headers="mcps1.2.3.1.1 "><p id="p4904715174317"><a name="p4904715174317"></a><a name="p4904715174317"></a>int32_t tee_map_nonsecure(paddr_t paddr, uint64_t size, uintptr_t *vaddr, cache_mode_type cache_mode);</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.32%" headers="mcps1.2.3.1.2 "><p id="p10904115204310"><a name="p10904115204310"></a><a name="p10904115204310"></a>给驱动访问者映射一段非安全属性的物理内存，其中映射属性是只读不能写。</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+### IO操作接口说明<a name="section6512133012574"></a>
+
+驱动进行IO操作所需要的接口列表。
+
+**表 16**  IO操作接口列表
+
+<a name="table6311346194315"></a>
+<table><thead align="left"><tr id="row831212462439"><th class="cellrowborder" valign="top" width="54.730000000000004%" id="mcps1.2.3.1.1"><p id="p7945143412442"><a name="p7945143412442"></a><a name="p7945143412442"></a>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="45.269999999999996%" id="mcps1.2.3.1.2"><p id="p7945183494416"><a name="p7945183494416"></a><a name="p7945183494416"></a>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row143121846164318"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p133121246194317"><a name="p133121246194317"></a><a name="p133121246194317"></a>void *ioremap(uintptr_t phys_addr, unsigned long size, int32_t prot);</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p133126466437"><a name="p133126466437"></a><a name="p133126466437"></a>将IO地址映射至虚拟地址。</p>
+</td>
+</tr>
+<tr id="row1431214468430"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p103122046114317"><a name="p103122046114317"></a><a name="p103122046114317"></a>int32_t iounmap(uintptr_t pddr, void *addr);</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p4312194674313"><a name="p4312194674313"></a><a name="p4312194674313"></a>解除物理地址映射。</p>
+</td>
+</tr>
+<tr id="row1131211467433"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p63121446154315"><a name="p63121446154315"></a><a name="p63121446154315"></a>void read_from_io (void *to, const volatile void *from, unsigned long count);</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p16312174619438"><a name="p16312174619438"></a><a name="p16312174619438"></a>将IO输入的值读取至驱动指定的地址，读取长度由count指定。</p>
+</td>
+</tr>
+<tr id="row1331219468434"><td class="cellrowborder" valign="top" width="54.730000000000004%" headers="mcps1.2.3.1.1 "><p id="p8312104614437"><a name="p8312104614437"></a><a name="p8312104614437"></a>void write_to_io(volatile void *to, const void *from, unsigned long count);</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.269999999999996%" headers="mcps1.2.3.1.2 "><p id="p193mcpsimp"><a name="p193mcpsimp"></a><a name="p193mcpsimp"></a>将驱动指定地址的值输出至IO，读取长度由count指定。</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+### 内存拷贝接口说明<a name="section75381736318"></a>
+
+驱动进行内存拷贝操作所需要的接口列表。
+
+**表 17**  内存拷贝接口列表
+
+<a name="table7469133214314"></a>
+<table><thead align="left"><tr id="row24693321135"><th class="cellrowborder" valign="top" width="55.35%" id="mcps1.2.3.1.1"><p id="p109015511039"><a name="p109015511039"></a><a name="p109015511039"></a>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="44.65%" id="mcps1.2.3.1.2"><p id="p2090117510315"><a name="p2090117510315"></a><a name="p2090117510315"></a>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row15469133212312"><td class="cellrowborder" valign="top" width="55.35%" headers="mcps1.2.3.1.1 "><p id="p04692032734"><a name="p04692032734"></a><a name="p04692032734"></a>int32_t copy_from_client(uint64_t src, uint32_t src_size, uintptr_t dst, uint32_t dst_size);</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.65%" headers="mcps1.2.3.1.2 "><p id="p184693323311"><a name="p184693323311"></a><a name="p184693323311"></a>将驱动内存拷入client端。</p>
+</td>
+</tr>
+<tr id="row246915325319"><td class="cellrowborder" valign="top" width="55.35%" headers="mcps1.2.3.1.1 "><p id="p94881980512"><a name="p94881980512"></a><a name="p94881980512"></a>int32_t copy_to_client(uintptr_t src, uint32_t src_size, uint64_t dst, uint32_t dst_size);</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.65%" headers="mcps1.2.3.1.2 "><p id="p647018327314"><a name="p647018327314"></a><a name="p647018327314"></a>将client端数据拷出至驱动。</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+### 共享内存接口说明<a name="section5891654459"></a>
+
+驱动进行共享内存操作所需要的接口列表。
+
+**表 18**  共享内存接口列表
+
+<a name="table186909151063"></a>
+<table><thead align="left"><tr id="row369016151263"><th class="cellrowborder" valign="top" width="55.620000000000005%" id="mcps1.2.3.1.1"><p id="p1033416207618"><a name="p1033416207618"></a><a name="p1033416207618"></a>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="44.379999999999995%" id="mcps1.2.3.1.2"><p id="p19334172010619"><a name="p19334172010619"></a><a name="p19334172010619"></a>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row1069019153610"><td class="cellrowborder" valign="top" width="55.620000000000005%" headers="mcps1.2.3.1.1 "><p id="p176901815266"><a name="p176901815266"></a><a name="p176901815266"></a>void *tee_alloc_sharemem_aux(const struct tee_uuid *uuid, uint32_t size);</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.379999999999995%" headers="mcps1.2.3.1.2 "><p id="p11690101520612"><a name="p11690101520612"></a><a name="p11690101520612"></a>申请进程间通信共享内存。</p>
+</td>
+</tr>
+<tr id="row19690615967"><td class="cellrowborder" valign="top" width="55.620000000000005%" headers="mcps1.2.3.1.1 "><p id="p166901915464"><a name="p166901915464"></a><a name="p166901915464"></a>uint32_t tee_free_sharemem(void *addr, uint32_t size);</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.379999999999995%" headers="mcps1.2.3.1.2 "><p id="p186901215366"><a name="p186901215366"></a><a name="p186901215366"></a>释放进程间通信共享内存。</p>
+</td>
+</tr>
+<tr id="row1469663510216"><td class="cellrowborder" valign="top" width="55.620000000000005%" headers="mcps1.2.3.1.1 "><p id="p06966351127"><a name="p06966351127"></a><a name="p06966351127"></a>int32_t get_tlv_sharedmem(const char *type, uint32_t type_size, void *buffer, uint32_t *size, bool clear_flag);</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.379999999999995%" headers="mcps1.2.3.1.2 "><p id="p1038093194520"><a name="p1038093194520"></a><a name="p1038093194520"></a>获取loader阶段写入到共享内存中的信息。</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 ## 开发示例<a name="section198361520981"></a>
 
@@ -1367,7 +1547,7 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 
 目前使用的musl-1.2.0/libc库。
 
-**表 17**  标准C支持列表
+**表 19**  标准C支持列表
 
 <a name="table7336617112614"></a>
 <table><thead align="left"><tr id="row1633681714266"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p1653154512717"><a name="p1653154512717"></a><a name="p1653154512717"></a>模块</p>
@@ -1382,399 +1562,398 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p553444592710"><a name="p553444592710"></a><a name="p553444592710"></a>aligned_alloc</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row10341181782614"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p753424552719"><a name="p753424552719"></a><a name="p753424552719"></a>calloc</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row534110172268"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1853444542719"><a name="p1853444542719"></a><a name="p1853444542719"></a>malloc</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row203411176269"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1553474572712"><a name="p1553474572712"></a><a name="p1553474572712"></a>realloc</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row5341131742616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p10534184519273"><a name="p10534184519273"></a><a name="p10534184519273"></a>free</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>posix_memalign</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row18341121732619"><td class="cellrowborder" rowspan="2" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p125341945182720"><a name="p125341945182720"></a><a name="p125341945182720"></a>mman</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p7534184532717"><a name="p7534184532717"></a><a name="p7534184532717"></a>mmap</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row534131772614"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12534184513273"><a name="p12534184513273"></a><a name="p12534184513273"></a>munmap</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row434101742618"><td class="cellrowborder" rowspan="3" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p253419457279"><a name="p253419457279"></a><a name="p253419457279"></a>time</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p16534124510274"><a name="p16534124510274"></a><a name="p16534124510274"></a>gettimeofday</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row53411917172619"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p11534124522712"><a name="p11534124522712"></a><a name="p11534124522712"></a>strftime</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row5341101712617"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p19535845152713"><a name="p19535845152713"></a><a name="p19535845152713"></a>time</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1334131792612"><td class="cellrowborder" rowspan="6" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p105357458277"><a name="p105357458277"></a><a name="p105357458277"></a>stdio</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p75354454278"><a name="p75354454278"></a><a name="p75354454278"></a>printf</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p45358458274"><a name="p45358458274"></a><a name="p45358458274"></a>说明：</p>
-<p id="p4535134517270"><a name="p4535134517270"></a><a name="p4535134517270"></a>1.目前不支持文件系统，文件操作只支持标准输入输出。</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p4535134517270"><a name="p4535134517270"></a><a name="p4535134517270"></a>目前不支持文件系统，文件操作只支持标准输入输出。</p>
 </td>
 </tr>
 <tr id="row63421517192616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p2535154592716"><a name="p2535154592716"></a><a name="p2535154592716"></a>scanf</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row83421817132613"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p105351045132712"><a name="p105351045132712"></a><a name="p105351045132712"></a>snprintf</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row434291782619"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12535545132715"><a name="p12535545132715"></a><a name="p12535545132715"></a>sprintf</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row19342517122616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p3535245132711"><a name="p3535245132711"></a><a name="p3535245132711"></a>vsnprintf</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1342161792613"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p353518454270"><a name="p353518454270"></a><a name="p353518454270"></a>vsprintf</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row734291715264"><td class="cellrowborder" rowspan="2" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p13535045172712"><a name="p13535045172712"></a><a name="p13535045172712"></a>errno</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p25351645132719"><a name="p25351645132719"></a><a name="p25351645132719"></a>errno</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row11342181711269"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p11535164515276"><a name="p11535164515276"></a><a name="p11535164515276"></a>strerror</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row5342151710264"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p10535945152714"><a name="p10535945152714"></a><a name="p10535945152714"></a>exit</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p8535124519274"><a name="p8535124519274"></a><a name="p8535124519274"></a>abort</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row11342117182611"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p85358458277"><a name="p85358458277"></a><a name="p85358458277"></a>unistd</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p1753517452273"><a name="p1753517452273"></a><a name="p1753517452273"></a>getpid</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row1034281772615"><td class="cellrowborder" rowspan="4" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p1553514592714"><a name="p1553514592714"></a><a name="p1553514592714"></a>locale</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p753574512278"><a name="p753574512278"></a><a name="p753574512278"></a>setlocale</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row334220171263"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p115353451276"><a name="p115353451276"></a><a name="p115353451276"></a>strcoll</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row13343151762618"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p95351145142716"><a name="p95351145142716"></a><a name="p95351145142716"></a>strxfrm</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row173433172262"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p0535104512273"><a name="p0535104512273"></a><a name="p0535104512273"></a>strtod</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row2343131732614"><td class="cellrowborder" rowspan="3" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p95351945132716"><a name="p95351945132716"></a><a name="p95351945132716"></a>multibyte</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p25351345122715"><a name="p25351345122715"></a><a name="p25351345122715"></a>mbrtowc</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row1234321772614"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p185354453273"><a name="p185354453273"></a><a name="p185354453273"></a>wcrtomb</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row7343151762613"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p115361445112716"><a name="p115361445112716"></a><a name="p115361445112716"></a>wctob</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1034351714262"><td class="cellrowborder" rowspan="4" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p135361645112710"><a name="p135361645112710"></a><a name="p135361645112710"></a>prng</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p19536134517272"><a name="p19536134517272"></a><a name="p19536134517272"></a>srandom</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row73431717102610"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p17536134518272"><a name="p17536134518272"></a><a name="p17536134518272"></a>initstate</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row17343181742615"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p2536144515271"><a name="p2536144515271"></a><a name="p2536144515271"></a>setstate</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row16343121711263"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p185362459278"><a name="p185362459278"></a><a name="p185362459278"></a>random</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row63431217102612"><td class="cellrowborder" rowspan="17" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p1153618451278"><a name="p1153618451278"></a><a name="p1153618451278"></a>string</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p1553620456277"><a name="p1553620456277"></a><a name="p1553620456277"></a>memchr</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row93431217112613"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p14536154510275"><a name="p14536154510275"></a><a name="p14536154510275"></a>memcmp</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row17344417112619"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p153684515275"><a name="p153684515275"></a><a name="p153684515275"></a>memcpy</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1934421712265"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1653694592712"><a name="p1653694592712"></a><a name="p1653694592712"></a>memmove</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row934411712267"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p2536114510274"><a name="p2536114510274"></a><a name="p2536114510274"></a>memset</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row163441117142619"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p105361345112715"><a name="p105361345112715"></a><a name="p105361345112715"></a>strchr</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1434451715262"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p175366451279"><a name="p175366451279"></a><a name="p175366451279"></a>strcmp</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row534471762616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p353694514273"><a name="p353694514273"></a><a name="p353694514273"></a>strcpy</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row334461752611"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1753694515274"><a name="p1753694515274"></a><a name="p1753694515274"></a>strlen</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row834419172265"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p0536745102720"><a name="p0536745102720"></a><a name="p0536745102720"></a>strncmp</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1734415175268"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p55361345192717"><a name="p55361345192717"></a><a name="p55361345192717"></a>strncpy</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row183445174264"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p115365457273"><a name="p115365457273"></a><a name="p115365457273"></a>strnlen</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1534401712611"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p19537245112712"><a name="p19537245112712"></a><a name="p19537245112712"></a>strrchr</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row13451617142620"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p125371456272"><a name="p125371456272"></a><a name="p125371456272"></a>strstr</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row15345181762614"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p95371845142718"><a name="p95371845142718"></a><a name="p95371845142718"></a>wcschr</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row10345151718267"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p0537124512279"><a name="p0537124512279"></a><a name="p0537124512279"></a>wcslen</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row2345111710263"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p145371645142718"><a name="p145371645142718"></a><a name="p145371645142718"></a>wmemchr</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row12345131715263"><td class="cellrowborder" rowspan="13" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p753714502717"><a name="p753714502717"></a><a name="p753714502717"></a>ctype</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p5537145142720"><a name="p5537145142720"></a><a name="p5537145142720"></a>isalpha</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row1434581792614"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p0537184511274"><a name="p0537184511274"></a><a name="p0537184511274"></a>isascii</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row5345417182620"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p8537114513278"><a name="p8537114513278"></a><a name="p8537114513278"></a>isdigit</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row8345117122618"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p8537204582712"><a name="p8537204582712"></a><a name="p8537204582712"></a>islower</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row034551782617"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p253716455273"><a name="p253716455273"></a><a name="p253716455273"></a>isprint</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row4345101713267"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1053713455279"><a name="p1053713455279"></a><a name="p1053713455279"></a>isspace</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row16345201752616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p853764562716"><a name="p853764562716"></a><a name="p853764562716"></a>iswctype</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row33455179264"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p18537114522715"><a name="p18537114522715"></a><a name="p18537114522715"></a>iswdigit</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row83461317192614"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p16537154512710"><a name="p16537154512710"></a><a name="p16537154512710"></a>iswlower</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row93461117152620"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p353713458276"><a name="p353713458276"></a><a name="p353713458276"></a>iswspace</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row19346161711268"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p75371145202717"><a name="p75371145202717"></a><a name="p75371145202717"></a>iswupper</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row123461517162613"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p3537245152710"><a name="p3537245152710"></a><a name="p3537245152710"></a>towupper</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1734671714268"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p175381245172715"><a name="p175381245172715"></a><a name="p175381245172715"></a>towlower</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row6346117112615"><td class="cellrowborder" rowspan="16" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p2538174512714"><a name="p2538174512714"></a><a name="p2538174512714"></a>math</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p19538184572712"><a name="p19538184572712"></a><a name="p19538184572712"></a>atan</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row8346131782613"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p15381945172717"><a name="p15381945172717"></a><a name="p15381945172717"></a>ceil</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row734617176261"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p953844582716"><a name="p953844582716"></a><a name="p953844582716"></a>ceilf</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row134610174264"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p053824511271"><a name="p053824511271"></a><a name="p053824511271"></a>copysignl</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row13346917152610"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p13538104522717"><a name="p13538104522717"></a><a name="p13538104522717"></a>exp</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row334661712269"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p5538154512710"><a name="p5538154512710"></a><a name="p5538154512710"></a>fabs</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row2347181722616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p2538184522716"><a name="p2538184522716"></a><a name="p2538184522716"></a>floor</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row123471517122616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1453874562717"><a name="p1453874562717"></a><a name="p1453874562717"></a>frexp</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row153471917112616"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p14538134512271"><a name="p14538134512271"></a><a name="p14538134512271"></a>frexpl</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row234771717261"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p10538245102714"><a name="p10538245102714"></a><a name="p10538245102714"></a>log</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1334711179265"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p185381245142719"><a name="p185381245142719"></a><a name="p185381245142719"></a>log2</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row103471317132612"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p20538144512275"><a name="p20538144512275"></a><a name="p20538144512275"></a>pow</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row133472178262"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p35389459277"><a name="p35389459277"></a><a name="p35389459277"></a>roundf</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row234731713261"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p4538154522715"><a name="p4538154522715"></a><a name="p4538154522715"></a>scalbn</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1347917182619"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p85381845192718"><a name="p85381845192718"></a><a name="p85381845192718"></a>scalbnl</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1134717178267"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p11538845102718"><a name="p11538845102718"></a><a name="p11538845102718"></a>sqrt</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row13348101715261"><td class="cellrowborder" rowspan="14" align="left" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p195391445102713"><a name="p195391445102713"></a><a name="p195391445102713"></a>stdlib</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p1153954552713"><a name="p1153954552713"></a><a name="p1153954552713"></a>abs</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 ">-</td>
 </tr>
 <tr id="row4348101732615"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1853910450272"><a name="p1853910450272"></a><a name="p1853910450272"></a>atof</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row12348111782617"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12539124562717"><a name="p12539124562717"></a><a name="p12539124562717"></a>atoi</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row123482178261"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p95391945102713"><a name="p95391945102713"></a><a name="p95391945102713"></a>atol</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row163481117142610"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p35391745172718"><a name="p35391745172718"></a><a name="p35391745172718"></a>atoll</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row6348217132613"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p4539164511276"><a name="p4539164511276"></a><a name="p4539164511276"></a>bsearch</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row12348191714269"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p195391245102717"><a name="p195391245102717"></a><a name="p195391245102717"></a>div</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1634810170260"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p10539124513274"><a name="p10539124513274"></a><a name="p10539124513274"></a>ecvt</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row103481517182617"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p75392457277"><a name="p75392457277"></a><a name="p75392457277"></a>imaxabs</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1834817175260"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p854014552719"><a name="p854014552719"></a><a name="p854014552719"></a>llabs</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row1349121792612"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1154054562718"><a name="p1154054562718"></a><a name="p1154054562718"></a>qsort</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row15349117192614"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p14540645172719"><a name="p14540645172719"></a><a name="p14540645172719"></a>strtoul</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row134910176267"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p135401445172712"><a name="p135401445172712"></a><a name="p135401445172712"></a>strtol</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 <tr id="row183494173268"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p3540114519272"><a name="p3540114519272"></a><a name="p3540114519272"></a>wcstod</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">&nbsp;&nbsp;</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 ">-</td>
 </tr>
 </tbody>
 </table>
@@ -1789,7 +1968,7 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 
 危险函数依赖于程序员对参数进行检查或保证空间能足够容纳所产生的结果，函数本身不对这些情况进行判断，即使有问题也不会给出错误的指示。C11标准中对于过时的不安全的危险函数定义了对应的安全函数（\_s版本的函数），相比危险函数，安全函数对照C11标准进行了相应的安全增强，会对入参以及不同的错误情况进行判断，降低操作不当所引入的安全风险。下表列举了危险函数以及对应的安全函数，TA代码中涉及到相关危险函数的必须使用安全函数。
 
-**表 18**  危险函数以及对应的安全函数
+**表 20**  危险函数以及对应的安全函数
 
 <a name="table18216829674"></a>
 <table><thead align="left"><tr id="row1221612296715"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p1280043317715"><a name="p1280043317715"></a><a name="p1280043317715"></a>危险函数</p>
@@ -1882,6 +2061,8 @@ errno_t memcpy_s(void* dest, size_t destMax, const void* src, size_t count);
 
 -   示例
 
+<figure>
+
 ```
  #include "securec.h" 
  #include <string.h> 
@@ -1918,6 +2099,8 @@ rc =  0, 0123456789
 rc =  182
 ```
 
+</figure>
+
 memmove\_s：
 
 ```
@@ -1934,6 +2117,8 @@ errno_t memmove_s(void* dest,size_t destMax, const void* src, size_t count);
 >-   某些出错情况下，会对目的缓冲区清0，具体参考如上**表2**。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -1969,6 +2154,8 @@ After: rc = 0,  123456789
 Later: rc =  162
 ```
 
+</figure>
+
 ### 内存初始化<a name="section9113185921817"></a>
 
 memset\_s：
@@ -1984,6 +2171,8 @@ errno_t memset_s(void* dest, size_t destMax, int c, size_t count);
 >-   调用函数时，注意判断返回值是否成功，否则有可能操作结果和预期不一致。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2014,6 +2203,8 @@ errno_t memset_s(void* dest, size_t destMax, int c, size_t count);
  Later: rc = 162,  ****************************************
 ```
 
+</figure>
+
 ### 字符串复制<a name="section320518115198"></a>
 
 strcpy\_s：
@@ -2031,6 +2222,8 @@ errno_t strcpy_s(char* strDest, size_t destMax, const char* strSrc);
 >源字符串必须含有结束符。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2067,6 +2260,8 @@ rc  = 162,
 rc  = 182,
 ```
 
+</figure>
+
 strncpy\_s：
 
 ```
@@ -2085,6 +2280,8 @@ errno_t strncpy_s(char* strDest, size_t destMax, const char* strSrc, size_t coun
 >-   当  count 大于 strlen\(strSrc\)  时，  strncpy函数会复制完字符串后在strDest中填充count-strlen\(strSrc\)个’\\0’字符，而strncpy\_s函数不做填充。
 
 -   示例
+
+<figure>
 
 ```
  #define SMALL_BUF_SIZE 10
@@ -2119,6 +2316,8 @@ rc =  162,
 rc =  182,
 ```
 
+</figure>
+
 ### 字符串连接<a name="section3307826101911"></a>
 
 strcat\_s：
@@ -2137,6 +2336,8 @@ errno_t strcat_s(char* strDest, size_t destMax, const char* strSrc);
 >-   某些出错情况下，会对目的缓冲区的首字符置0，具体参考如上**表1**。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2180,6 +2381,8 @@ rc = 162,
 rc = 182,
 ```
 
+</figure>
+
 strncat\_s：
 
 ```
@@ -2196,6 +2399,8 @@ errno_t strncat_s(char* strDest, size_t destMax, const char* strSrc, size_t coun
 >-   某些出错情况下，会对目的缓冲区的首字符置0，具体参考如上**表2**。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2238,6 +2443,8 @@ rc  = 162,
 rc  = 182,
 ```
 
+</figure>
+
 ### 字符串分割<a name="section85731515152610"></a>
 
 strtok\_s：
@@ -2253,7 +2460,7 @@ errno_t strtok_s(char* strToken, const char* strDelimit, char** context);
 >-   当在被分割字符串中没有找到分隔符时，如果被分割字符串长度大于0，会返回被分割字符串首地址，否则返回NULL。
 >-   以逗号分隔符为例，顺序调用strtok\_s\(str,&p\), strtok\_s\(NULL,&p\),  strtok\_s\(NULL,&p\)函数的返回值与不同分割字符串的关系如下：
 
-**表 19**  返回值与字符串关系
+**表 21**  返回值与字符串关系
 
 <a name="table18556455195912"></a>
 <table><tbody><tr id="row7556165595917"><td class="cellrowborder" rowspan="2" valign="top"><p id="p156641710803"><a name="p156641710803"></a><a name="p156641710803"></a><strong id="b86641109012"><a name="b86641109012"></a><a name="b86641109012"></a><span>被分割字符串</span></strong></p>
@@ -2381,6 +2588,8 @@ errno_t strtok_s(char* strToken, const char* strDelimit, char** context);
 
 -   示例
 
+<figure>
+
 ```
  #include "securec.h" 
  #include <stdio.h> 
@@ -2438,6 +2647,8 @@ time.
 tokens
 ```
 
+</figure>
+
 ### 格式化输出<a name="section1696173315284"></a>
 
 snprintf\_s：
@@ -2460,6 +2671,8 @@ int snprintf_s(char* strDest, size_t destMax, size_t count, const char* format, 
 >输入源数据的类型、个数必须与格式化控制字符串（format）中的类型、个数保持一致。
 
 -   示例
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2501,6 +2714,8 @@ iRet = -1, buffer  = .
 iRet = -1, buffer  = 12.
 ```
 
+</figure>
+
 vsnprintf\_s：
 
 ```
@@ -2521,6 +2736,8 @@ int vsnprintf_s(char* strDest, size_t destMax, size_t count, const char* format,
 >-   输入源数据的类型、个数必须与格式化控制字符串（format）中的类型、个数保持一致。
 
 -   示例1
+
+<figure>
 
 ```
  #include "securec.h" 
@@ -2549,7 +2766,11 @@ nSize: 8, buff: Hi there
 nSize: -1, buff: Hi there
 ```
 
+</figure>
+
 -   示例2
+
+<figure>
 
 ```
  void vsnprintf_base(char * format, ...)
@@ -2589,4 +2810,6 @@ nSize: -1, buff: Hi there
 iRet = 16, buffer = computer,Unicode.
 iRet = -1, buffer = 12345678901234567890.
 ```
+
+</figure>
 
