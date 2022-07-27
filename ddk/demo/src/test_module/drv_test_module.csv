@@ -1,9 +1,5 @@
 perm1,1
 perm2,2
-perm3,3
-perm4,4
-perm5,5
-perm10,10
 iomap_perm,11
 SHARE_BUFFER_TEST_ID,0x10
 ARGS_TEST_ID,0x11

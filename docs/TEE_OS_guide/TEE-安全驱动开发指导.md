@@ -37,6 +37,8 @@
     -   [IO操作接口说明](#section6512133012574)
     -   [内存拷贝接口说明](#section75381736318)
     -   [共享内存接口说明](#section5891654459)
+    -   [中断操作接口说明](#section6666666666)
+    -   [cache接口说明](#section7777777777)
 
 -   [开发示例](#section198361520981)
 -   [标准C库支持](#section14109139161012)
@@ -1017,7 +1019,7 @@ cp keytools/output/ta_cert.der pack-Config/ta_cert/.
 根据驱动实际情况修改build/pack-Config/input目录下的configs.xml，修改完成后在build/pack-Config目录下执行如下指令，密钥口令为123456：
 
 ```
-python3 signtool_config.py ./input ./ta_cert/ta_cert.der 2 ./output/perm_config
+python3 signtool_config.py ./input ./ta_cert/ta_cert.der ./output/perm_config
 ```
 
 在build/keytools/pack-Config/output目录下得到签名产物perm\_config。
@@ -1367,6 +1369,82 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 </tbody>
 </table>
 
+### 中断操作接口说明<a name="section6666666666"></a>
+
+驱动进行中断操作所需要的接口列表。
+
+**表 19**  中断操作接口列表
+
+<a></a>
+<table><thead><tr><th class="cellrowborder" valign="top" width="55.620000000000005%"><p>接口名</p>
+</th>
+<th class="cellrowborder" valign="top"><p>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td><p>uint32_t sys_hwi_create(uint32_t hwi_num, uint16_t hwi_prio, uint16_t mode, HWI_PROC_FUNC handler, uint32_t args)</p></td>
+<td><p>注册中断操作接口。</p>
+</td>
+</tr>
+<tr><td><p>uint32_t sys_hwi_resume(uint32_t hwi_num, uint16_t hwi_prio, uint16_t mode)</p></td>
+<td><p>中断配置。</p>
+</td>
+</tr>
+<tr><td><p>uint32_t sys_hwi_delete(uint32_t hwi_num)</p></td>
+<td><p>中断注销。</p>
+</td>
+</tr>
+<tr><td><p>uint32_t sys_hwi_disable(uint32_t hwi_num)</p></td>
+<td><p>中断禁用。</p>
+</td>
+</tr>
+<tr><td><p>uint32_t sys_hwi_enable(uint32_t hwi_num)</p></td>
+<td><p>中断使能。</p>
+</td>
+</tr>
+<tr><td><p>int32_t sys_hwi_notify(uint32_t hwi_num)</p></td>
+<td><p>中断触发。</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+### cache接口说明<a name="section7777777777"></a>
+
+驱动进行cache相关操作所需要的接口列表。
+
+**表 20**  cache接口列表
+
+<a></a>
+<table><thead><tr><th class="cellrowborder" valign="top" width="55.620000000000005%"><p>接口名</p>
+</th>
+<th class="cellrowborder" valign="top"><p>描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td><p>void dma_flash_range(uint64_t start, uint64_t end)</p></td>
+<td><p>将cache内容刷新至RAM。</p>
+</td>
+</tr>
+<tr><td><p>void dma_inv_range(uint64_t start, uint64_t end)</p></td>
+<td><p>使范围内cache中内容无校。</p>
+</td>
+</tr>
+<tr><td><p>void dma_clean_range(uint64_t start, uint64_t end)</p></td>
+<td><p>清除范围内cache中内容。</p>
+</td>
+</tr>
+<tr><td><p>void dma_map_area(uint64_t start, uint64_t size, uint32_t dir)</p></td>
+<td><p>DMA映射。</p>
+</td>
+</tr>
+<tr><td><p>void dma_unmap_area(uint64_t start, uint64_t size, int32_t dir)</p></td>
+<td><p>解除DMA映射。</p>
+</td>
+</tr>
+</tbody>
+</table>
+
 ## 开发示例<a name="section198361520981"></a>
 
 驱动框架注册实例如下：
@@ -1547,7 +1625,7 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 
 目前使用的musl-1.2.0/libc库。
 
-**表 19**  标准C支持列表
+**表 21**  标准C支持列表
 
 <a name="table7336617112614"></a>
 <table><thead align="left"><tr id="row1633681714266"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p1653154512717"><a name="p1653154512717"></a><a name="p1653154512717"></a>模块</p>
@@ -1968,7 +2046,7 @@ POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https:/
 
 危险函数依赖于程序员对参数进行检查或保证空间能足够容纳所产生的结果，函数本身不对这些情况进行判断，即使有问题也不会给出错误的指示。C11标准中对于过时的不安全的危险函数定义了对应的安全函数（\_s版本的函数），相比危险函数，安全函数对照C11标准进行了相应的安全增强，会对入参以及不同的错误情况进行判断，降低操作不当所引入的安全风险。下表列举了危险函数以及对应的安全函数，TA代码中涉及到相关危险函数的必须使用安全函数。
 
-**表 20**  危险函数以及对应的安全函数
+**表 22**  危险函数以及对应的安全函数
 
 <a name="table18216829674"></a>
 <table><thead align="left"><tr id="row1221612296715"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p1280043317715"><a name="p1280043317715"></a><a name="p1280043317715"></a>危险函数</p>
@@ -2460,7 +2538,7 @@ errno_t strtok_s(char* strToken, const char* strDelimit, char** context);
 >-   当在被分割字符串中没有找到分隔符时，如果被分割字符串长度大于0，会返回被分割字符串首地址，否则返回NULL。
 >-   以逗号分隔符为例，顺序调用strtok\_s\(str,&p\), strtok\_s\(NULL,&p\),  strtok\_s\(NULL,&p\)函数的返回值与不同分割字符串的关系如下：
 
-**表 21**  返回值与字符串关系
+**表 23**  返回值与字符串关系
 
 <a name="table18556455195912"></a>
 <table><tbody><tr id="row7556165595917"><td class="cellrowborder" rowspan="2" valign="top"><p id="p156641710803"><a name="p156641710803"></a><a name="p156641710803"></a><strong id="b86641109012"><a name="b86641109012"></a><a name="b86641109012"></a><span>被分割字符串</span></strong></p>

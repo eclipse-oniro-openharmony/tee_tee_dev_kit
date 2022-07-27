@@ -24,6 +24,12 @@ struct share_buffer_arg {
     uint32_t share_token;
 };
 
+struct param_type {
+    uint32_t value;
+    uint64_t share_buf;
+    uint32_t share_buf_size;
+};
+
 #define BUFFER_SIZE 0x1000U
 #define TOKEN_BUF_SIZE 0x1000
 #define BUFFER1_LEN 21
