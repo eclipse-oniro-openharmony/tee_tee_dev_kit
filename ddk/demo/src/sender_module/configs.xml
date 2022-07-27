@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (C) 2022 Huawei Technologies Co., Ltd.
+ 
+ Licensed under the Mulan PSL v2.
+ You can use this software according to the terms and conditions of the Mulan
+ PSL v2.
+ You may obtain a copy of Mulan PSL v2 at:
+     http://license.coscl.org.cn/MulanPSL2
+ THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+ NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ See the Mulan PSL v2 for more details.
+-->
+<ConfigInfo>
+  <TA_Basic_Info>
+      <service_name>drv_sender_module</service_name>
+    <uuid>00000000-0000-0000-0000-222222222222</uuid>
+  </TA_Basic_Info>
+  <TA_Manifest_Info>
+    <instance_keep_alive>false</instance_keep_alive>
+    <stack_size>8192</stack_size>
+    <heap_size>1048576</heap_size>
+    <target_type>1</target_type>
+    <multi_command>false</multi_command>
+    <multi_session>false</multi_session>
+    <single_instance>true</single_instance>
+  </TA_Manifest_Info>
+  <drv_perm>
+    <drv_basic_info thread_limit="3" upgrade="true" exception_mode="ddos" virt2phys="true" />
+    <drv_mac_info>
+      <item uuid="e3d37f4a-f24c-48d0-8884-3bdd6c44e988" permission="iomap_perm" />
+      <item uuid="00000000-0000-0000-0000-111111111111" permission="iomap_perm" />
+    </drv_mac_info>
+    <drvcall_perm_apply>
+        <item name="drv_reciver_module" permission="iomap_perm"/>
+    </drvcall_perm_apply>
+  </drv_perm>
+</ConfigInfo>

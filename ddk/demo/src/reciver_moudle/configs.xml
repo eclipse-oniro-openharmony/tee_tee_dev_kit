@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (C) 2022 Huawei Technologies Co., Ltd.
+ 
+ Licensed under the Mulan PSL v2.
+ You can use this software according to the terms and conditions of the Mulan
+ PSL v2.
+ You may obtain a copy of Mulan PSL v2 at:
+     http://license.coscl.org.cn/MulanPSL2
+ THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+ NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ See the Mulan PSL v2 for more details.
+-->
+<ConfigInfo>
+  <TA_Basic_Info>
+      <service_name>drv_reciver_module</service_name>
+    <uuid>00000000-0000-0000-0000-111111111111</uuid>
+  </TA_Basic_Info>
+  <TA_Manifest_Info>
+    <instance_keep_alive>false</instance_keep_alive>
+    <stack_size>8192</stack_size>
+    <heap_size>1048576</heap_size>
+    <target_type>1</target_type>
+    <multi_command>false</multi_command>
+    <multi_session>false</multi_session>
+    <single_instance>true</single_instance>
+  </TA_Manifest_Info>
+  <drv_perm>
+    <drv_basic_info thread_limit="3" upgrade="true" exception_mode="ddos" virt2phys="true" />
+    <drv_io_map>
+      <item chip_type="chip_type1, chip_type2" iomap="0x30000, 0x31000" />
+      <item iomap="0x90000, 0x91000; 0xa0000, 0xa1000" />
+    </drv_io_map>
+    <irq>
+      <item chip_type="chip_type1, chip_type2" irq="103" />
+      <item irq="32, 1000" />
+    </irq>
+    <map_secure>
+      <item chip_type="chip_type1, chip_type2" uuid="03030303-0303-0303-0303-030303030303" region="0x12340000, 0x12350000" />
+      <item uuid="00000000-0000-0000-0000-222222222222" region="0x45670000, 0x789a0000; 0x22330000, 0x44550000" />
+    </map_secure>
+    <map_nosecure>
+      <item chip_type="chip_type1, chip_type2" uuid="01010101-0101-0101-0101-010101010101" />
+      <item uuid="e3d37f4a-f24c-48d0-8884-3bdd6c44e988, 00000000-0000-0000-0000-222222222222" />
+    </map_nosecure>
+    <drv_cmd_perm_info>
+      <item cmd="IOMAP_TEST_ID" permission="iomap_perm" />
+    </drv_cmd_perm_info>
+    <drv_mac_info>
+      <item uuid="e3d37f4a-f24c-48d0-8884-3bdd6c44e988" permission="iomap_perm" />
+      <item uuid="00000000-0000-0000-0000-222222222222" permission="iomap_perm" />
+    </drv_mac_info>
+    <drvcall_perm_apply>
+        <item name="drv_sender_module" permission="iomap_perm"/>
+    </drvcall_perm_apply>
+  </drv_perm>
+</ConfigInfo>
