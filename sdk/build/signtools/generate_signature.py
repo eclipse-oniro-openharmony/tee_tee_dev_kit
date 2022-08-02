@@ -53,7 +53,7 @@ def gen_ta_signature(cfg, uuid_str, raw_data, raw_data_path, hash_file_path, \
     else: # rsa
         if cfg.padding_type == '0': # pkcsv1_5
             gen_hash(cfg.hash_type, raw_data, hash_file_path)
-            cmd = "openssl rsautl -sign -inkey {} -in {} -out {}".\
+            cmd = "openssl pkeyutl -sign -inkey {} -in {} -out {}".\
                 format(cfg.sign_key, hash_file_path, out_file_path)
             try:
                 subprocess.check_output(cmd.split(), shell=False)

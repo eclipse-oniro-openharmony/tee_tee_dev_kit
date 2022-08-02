@@ -152,7 +152,7 @@ def gen_rsa_signature(sign_conf_alg, config_buf, input_path_gen, output_file):
         hash_file_fp.close()
 
         pri_key = CONFIG_CERT_PATH + '/taconfig_key.pem'
-        cmd = ["openssl", "rsautl", "-sign", "-inkey", pri_key, \
+        cmd = ["openssl", "pkeyutl", "-sign", "-inkey", pri_key, \
                "-in", hash_file, "-out", output_file]
         run_cmd(cmd)
         print('Sign Config Success')
