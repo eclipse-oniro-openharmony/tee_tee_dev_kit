@@ -1,6 +1,6 @@
 perm1,1
 perm2,2
-iomap_perm,1
+iomap_perm,11
 TEST_PARAM_OPS,0x10
 TEST_IO_MAP,0x11
 TEST_ADDR_MAP,0X12

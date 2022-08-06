@@ -14,7 +14,7 @@
 -->
 <ConfigInfo>
   <TA_Basic_Info>
-      <service_name>drv_reciver_module</service_name>
+    <service_name>drv_receiver_module</service_name>
     <uuid>00000000-0000-0000-0000-111111111111</uuid>
   </TA_Basic_Info>
   <TA_Manifest_Info>
@@ -51,8 +51,5 @@
       <item uuid="e3d37f4a-f24c-48d0-8884-3bdd6c44e988" permission="iomap_perm" />
       <item uuid="00000000-0000-0000-0000-222222222222" permission="iomap_perm" />
     </drv_mac_info>
-    <drvcall_perm_apply>
-        <item name="drv_sender_module" permission="iomap_perm"/>
-    </drvcall_perm_apply>
   </drv_perm>
 </ConfigInfo>

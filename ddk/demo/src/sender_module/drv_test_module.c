@@ -34,7 +34,7 @@ static const TEE_UUID g_drv_uuid = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0
 int64_t test_send_param()
 {
     int64_t ret = 0;
-    const char *drv_name = "drv_reciver_module";
+    const char *drv_name = "drv_receiver_module";
     struct param_type param = { 0 };
     const char tmp[] = "openharmony";
 

@@ -371,5 +371,5 @@ int32_t resume_s4_test(void)
     return 0;
 }
 
-tee_driver_declare(drv_reciver_module, init_test, open_test, ioctl_test, close_test, \
+tee_driver_declare(drv_receiver_module, init_test, open_test, ioctl_test, close_test, \
     suspend_test, resume_test, suspend_s4_test, resume_s4_test);
