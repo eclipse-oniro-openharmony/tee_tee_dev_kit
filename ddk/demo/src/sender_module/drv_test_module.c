@@ -34,6 +34,7 @@ static const TEE_UUID g_drv_uuid = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0
 
 static void test_ioctl(int64_t fd)
 {
+    uint64_t ret;
     uint8_t buf[TEST_BUF_SIZE] = { 0 };
     uint32_t buf_size = TEST_BUF_SIZE;
     ret = get_tlv_sharedmem(TEST_TLV_TYPE, strlen(TEST_TLV_TYPE), buf, &buf_size, false);
