@@ -33,7 +33,7 @@
       <item uuid="00000000-0000-0000-0000-111111111111" permission="iomap_perm" />
     </drv_mac_info>
     <drvcall_perm_apply>
-        <item name="drv_reciver_module" permission="iomap_perm"/>
+        <item name="drv_receiver_module" permission="iomap_perm"/>
     </drvcall_perm_apply>
   </drv_perm>
 </ConfigInfo>
