@@ -31,19 +31,9 @@
 #define TEST_DRV_DMA 0x13
 #define TEST_DRV_IRQ 0x14
 static const TEE_UUID g_drv_uuid = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11 }};
-int64_t test_send_param()
+
+static void test_ioctl(int64_t fd)
 {
-    int64_t ret = 0;
-    const char *drv_name = "drv_receiver_module";
-    struct param_type param = { 0 };
-    const char tmp[] = "openharmony";
-
-    int64_t fd = tee_drv_open(drv_name, NULL, 0);
-    if (fd <= 0) {
-        tloge("open drv failed");
-	return -1;
-    }
-
     uint8_t buf[TEST_BUF_SIZE] = { 0 };
     uint32_t buf_size = TEST_BUF_SIZE;
     ret = get_tlv_sharedmem(TEST_TLV_TYPE, strlen(TEST_TLV_TYPE), buf, &buf_size, false);
@@ -66,23 +56,39 @@ int64_t test_send_param()
     if (ret != 0)
         tloge("drv ioctl TEST_IO_MAP failed\n");
     tlogi("drv ioctl TEST_IO_MAP success\n");
-   
+
     ret = tee_drv_ioctl(fd, TEST_ADDR_MAP, NULL, 0);
     if (ret != 0)
         tloge("drv ioctl TEST_ADDR_MAP failed\n");
-    tlogi("drv ioctl TEST_ADDR_MAP success\n");
+    tlogi("drv ioctl TEST_ADDR_MAP success\n");    
+}
+
+int64_t test_send_param()
+{
+    int64_t ret;
+    const char *drv_name = "drv_receiver_module";
+    struct param_type param = { 0 };
+    const char tmp[] = "openharmony";
+
+    int64_t fd = tee_drv_open(drv_name, NULL, 0);
+    if (fd <= 0) {
+        tloge("open drv failed");
+        return -1;
+    }
+
+    test_ioctl(fd);
 
     char *share_buf = tee_alloc_sharemem_aux(&g_drv_uuid, TEST_ALLOC_SIZE);
     if (share_buf == NULL) {
         tloge("tee alloc sharemem failed\n");
-	return -1;
+        return -1;
     }
     tlogi("tee alloc sharemem success\n");
 
     ret = memcpy_s(share_buf, TEST_ALLOC_SIZE, tmp, strlen(tmp));
     if (ret != 0) {
         tee_free_sharemem(share_buf, TEST_ALLOC_SIZE);
-	return -1;
+        return -1;
     }
     tlogi("memcpy success, check share_buf: %s\n", share_buf);
     
@@ -91,7 +97,7 @@ int64_t test_send_param()
     ret = tee_drv_ioctl(fd, TEST_PARAM_OPS, &param, sizeof(param));
     if (ret != 0) {
         tee_free_sharemem(share_buf, TEST_ALLOC_SIZE);
-	tloge("drv ioctl TEST_ADDR_MAP failed, fd: %d\n", (int32_t)fd);
+        tloge("drv ioctl TEST_ADDR_MAP failed, fd: %d\n", (int32_t)fd);
     }
     tlogi("drv ioctl TEST_ADDR_MAP success, share_buf: %s\n", share_buf);
     tee_free_sharemem(share_buf, TEST_ALLOC_SIZE);

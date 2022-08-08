@@ -58,65 +58,69 @@ int64_t test_drv_irq()
     uint32_t ret = sys_hwi_create(hwi_num, hwi_prio, hwi_mode, hwi_handler, hwi_args);
     if (ret != 0) {
         tloge("sys_hwi_create failed\n");
-	return -1;
+        return -1;
     }
     tlogi("sys_hwi_create success, trq_num is %u\n", hwi_num);
     if (sys_hwi_enable(hwi_num) != 0) {
         tloge("sys_hwi_enable failed\n");
-	return -1;
+        return -1;
     }
     tlogi("sys_hwi_enable success\n");
 
     if (sys_hwi_resume(hwi_num, hwi_prio, hwi_mode) != 0) {
         tloge("sys_hwi_resume failed\n");
-	return -1;
+        return -1;
     }
     tlogi("sys_hwi_resume success\n");
 
     if (sys_hwi_notify(hwi_num) != 0) {
         tloge("sys_hwi_resume failed\n");
-	return -1;
+        return -1;
     }
     tlogi("sys_hwi_resume success \n");
 
     if (sys_hwi_disable(hwi_num) != 0) {
         tloge("sys_hwi_disable failed\n");
-	return -1;
+        return -1;
     }
     tlogi("sys_hwi_disable success\n");
 
     if (sys_hwi_delete(hwi_num) != 0) {
         tloge("sys_hwi_delete failed\n");
-	return -1;
+        return -1;
     }
     tlogi("sys_hwi_delete success\n");
     return 0;
 }
 
+#define OFFSET_ONE 1
+#define OFFSET_TWO 2
+#define OFFSET_THREE 3
+#define OFFSET_FOUR 4
 int64_t test_drv_dma()
 {
     char *va;
-    va = (char *)mmap(NULL, TEECALL_PAGE_SIZE * 4, PROT_READ | PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+    va = (char *)mmap(NULL, TEECALL_PAGE_SIZE * OFFSET_FOUR, PROT_READ | PROT_WRITE, MAP_ANONYMOUS, -1, 0);
     if (va == MAP_FAILED) {
         tloge("mmap failed\n");
-	return -1;
+        return -1;
     }
 
-    memset_s((void *)va, TEECALL_PAGE_SIZE * 4, 1, TEECALL_PAGE_SIZE * 4);
+    memset_s((void *)va, TEECALL_PAGE_SIZE * OFFSET_FOUR, 1, TEECALL_PAGE_SIZE * OFFSET_FOUR);
 
     dma_flush_range((uint64_t)va, (uint64_t)va + TEECALL_PAGE_SIZE);
-    dma_inv_range((uint64_t)va + 1 * TEECALL_PAGE_SIZE, (uint64_t)va + 2 * TEECALL_PAGE_SIZE);
-    dma_clean_range((uint64_t)va + 2 * TEECALL_PAGE_SIZE, (uint64_t)va + 3 * TEECALL_PAGE_SIZE);
-    dma_map_area((uint64_t)va + 3 * TEECALL_PAGE_SIZE, TEECALL_PAGE_SIZE, 1);
-    dma_unmap_area((uint64_t)va + 3 * TEECALL_PAGE_SIZE, TEECALL_PAGE_SIZE, 1);
+    dma_inv_range((uint64_t)va + OFFSET_ONE * TEECALL_PAGE_SIZE, (uint64_t)va + OFFSET_TWO * TEECALL_PAGE_SIZE);
+    dma_clean_range((uint64_t)va + OFFSET_TWO * TEECALL_PAGE_SIZE, (uint64_t)va + OFFSET_THREE * TEECALL_PAGE_SIZE);
+    dma_map_area((uint64_t)va + OFFSET_THREE * TEECALL_PAGE_SIZE, TEECALL_PAGE_SIZE, 1);
+    dma_unmap_area((uint64_t)va + OFFSET_THREE * TEECALL_PAGE_SIZE, TEECALL_PAGE_SIZE, 1);
 
-    munmap((void *)va, TEECALL_PAGE_SIZE * 4);
+    munmap((void *)va, TEECALL_PAGE_SIZE * OFFSET_FOUR);
     return 0;
 }
 
 int64_t test_drv_map()
 {
-    int32_t ret = 0;
+    int32_t ret;
 
     uintptr_t *vaddr_addr_secure = malloc(SIZE_ADDR);
     ret = tee_map_secure(PTHYS_ADDR_SECURE, SIZE_ADDR, vaddr_addr_secure, CACHE_MODE);
@@ -124,7 +128,7 @@ int64_t test_drv_map()
         tlogi("tee_map_secure success\n");
     } else {
         tloge("tee_map_secure failed\n");
-	if (vaddr_addr_secure != NULL)
+        if (vaddr_addr_secure != NULL)
             free(vaddr_addr_secure);
     }
 
@@ -146,6 +150,7 @@ int64_t test_drv_map()
     return 0;
 }
 
+#define CAP_LOWER_NUM 32
 int64_t test_drv_io_map()
 {
     int64_t ret = 0;
@@ -153,14 +158,14 @@ int64_t test_drv_io_map()
     void *ptr = ioremap(TEST_PADDR_IO, 0x100, PROT_READ | PROT_WRITE);
     if (ptr == (void *)-1) {
         tloge("ioremap failed\n");
-	return -1;
+        return -1;
     }
     tlogi("ioremap success addr is: 0x%llx\n", (unsigned long long)TEST_PADDR_IO);
     
     uint64_t phy_addr = drv_virt_to_phys((uintptr_t) ptr);
     if (phy_addr == 0) {
         tloge("drv_virt_to_phys failed\n");
-	return -1;
+        return -1;
     }
     tlogi("drv_virt_to_phys success, addr is: 0x%llx\n", (unsigned long long)phy_addr);
 
@@ -169,31 +174,31 @@ int64_t test_drv_io_map()
     char *buf = (char *)malloc(sizeof(char) * IO_SIZE);
     if (input == NULL || output == NULL || buf == NULL) {
         tloge("malloc failed]n");
-	return -1;
+        return -1;
     }
     input = "ABC\0";
 
     read_from_io(buf, input, sizeof(char) * IO_SIZE);
     if (buf == NULL) {
         tloge("read from io failed\n");
-	return -1;
+        return -1;
     }
     tlogi("read from io success, buf is: %s\n", buf);
 
     for (int i = 0; i < IO_SIZE - 1; i++)
-        buf[i] += 32;
+        buf[i] += CAP_LOWER_NUM;
 
     write_to_io(output, buf, sizeof(char) * IO_SIZE);
     if (output == NULL) {
         tloge("write to io failed\n");
-	ret = -1;
-	goto io_clean;
+        ret = -1;
+        goto io_clean;
     }
     tlogi("write to io success, output is: %s\n", output);
 
     if (iounmap(TEST_PADDR_IO, (void *)ptr) != 0) {
         tloge("iounmap failed\n");
-	return -1;
+        return -1;
     }
     tlogi("iounmap success addr is: 0x%llx\n", (unsigned long long)TEST_PADDR_IO);
 
@@ -211,7 +216,7 @@ io_clean:
 
 int64_t test_drv_param_ops(unsigned long args)
 {
-    int64_t ret = 0;
+    int64_t ret;
     struct param_type *param = (struct param_type *)(uintptr_t)args;
     char data[] = "ABCD";
     uint32_t share_buf_size = param->share_buf_size;
@@ -222,8 +227,8 @@ int64_t test_drv_param_ops(unsigned long args)
     ret = copy_from_client(param->share_buf, share_buf_size, (uintptr_t)buf, share_buf_size);
     if (ret != 0) {
         free(buf);
-	tloge("copy from client failed\n");
-	return -1;
+        tloge("copy from client failed\n");
+        return -1;
     }
     tlogi("copy from client success, buf is: %s\n", buf);
     free(buf);
@@ -231,7 +236,7 @@ int64_t test_drv_param_ops(unsigned long args)
     ret = copy_to_client((uintptr_t)data, share_buf_size, param->share_buf, share_buf_size);
     if (ret != 0) {
         tloge("copy to client failed\n");
-	return -1;
+        return -1;
     }
     tlogi("copy to client success, data is: %s\n", data);
 
@@ -259,19 +264,19 @@ int64_t ioctl_test(struct drv_data *drv, uint32_t cmd, unsigned long args, uint3
     switch (cmd) {
         case TEST_PARAM_OPS:
             test_drv_param_ops(args);
-	    break;
+            break;
 	case TEST_IO_MAP:
 	    test_drv_io_map();
-	    break;
+            break;
 	case TEST_ADDR_MAP:
 	    test_drv_map();
-	    break;
+            break;
 	case TEST_DRV_DMA:
             test_drv_dma();
-	    break;
+            break;
 	case TEST_DRV_IRQ:
             test_drv_irq();
-	    break;
+            break;
         default:
             tloge("wrong cmd\n");
     }
