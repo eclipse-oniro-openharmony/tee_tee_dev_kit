@@ -61,7 +61,7 @@ static void test_ioctl(int64_t fd)
     ret = tee_drv_ioctl(fd, TEST_ADDR_MAP, NULL, 0);
     if (ret != 0)
         tloge("drv ioctl TEST_ADDR_MAP failed\n");
-    tlogi("drv ioctl TEST_ADDR_MAP success\n");    
+    tlogi("drv ioctl TEST_ADDR_MAP success\n");
 }
 
 int64_t test_send_param()
