@@ -265,16 +265,16 @@ int64_t ioctl_test(struct drv_data *drv, uint32_t cmd, unsigned long args, uint3
         case TEST_PARAM_OPS:
             test_drv_param_ops(args);
             break;
-	case TEST_IO_MAP:
-	    test_drv_io_map();
+        case TEST_IO_MAP:
+            test_drv_io_map();
             break;
-	case TEST_ADDR_MAP:
-	    test_drv_map();
+        case TEST_ADDR_MAP:
+            test_drv_map();
             break;
-	case TEST_DRV_DMA:
+        case TEST_DRV_DMA:
             test_drv_dma();
             break;
-	case TEST_DRV_IRQ:
+        case TEST_DRV_IRQ:
             test_drv_irq();
             break;
         default:
