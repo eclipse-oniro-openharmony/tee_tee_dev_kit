@@ -258,27 +258,34 @@ CONFIG_GCC=n
 TARGET_IS_ARM64=y
 ```
 
-## Manifest文件<a name="section1893131414916"></a>
+## configs.xml文件<a name="section1893131414916"></a>
 
-TA开发时需提供manifest文本文件，命名为manifest.txt。
+TA开发时需提供configs.xml文本文件。
 
-请参照示例的manifest文件格式要求进行manifest文本文件的编写。可信应用镜像生成时，如果不存在manifest文件，或manifest文件格式错误，可信应用镜像的生成将会终止。64位TA的Manifest文件格式与32位TA相同。
+请参照示例的configs.xml文件格式要求进行的编写。可信应用镜像生成时，如果不存在configs.xml文件，或文件格式错误，可信应用镜像的生成将会终止。64位TA的configs.xml文件格式与32位TA相同。
 
-manifest镜像示例：
+configs.xml示例：
 
 ```
-gpd.ta.appID:                   e3d37f4a-f24c-48d0-8884-3bdd6c44e988 
-gpd.ta.service_name:            demo-ta 
-gpd.ta.singleInstance:          true 
-gpd.ta.multiSession:            false 
-gpd.ta.instanceKeepAlive:       false 
-gpd.ta.dataSize:                81920 
-gpd.ta.stackSize:               8192
+<ConfigInfo>
+  <TA_Basic_Info>
+    <service_name>demo-ta</service_name>
+    <uuid>e3d37f4a-f24c-48d0-8884-3bdd6c44e988</uuid>
+  </TA_Basic_Info>
+  <TA_Manifest_Info>
+    <instance_keep_alive>false</instance_keep_alive>
+    <stack_size>8192</stack_size>
+    <heap_size>81920</heap_size>
+    <multi_command>false</multi_command>
+    <multi_session>false</multi_session>
+    <single_instance>true</single_instance>
+  </TA_Manifest_Info>
+</ConfigInfo>
 ```
 
-当前支持的manifest特性信息如下：
+当前支持的特性信息如下：
 
-**表 1**  manifest特性信息
+**表 1**  特性信息
 
 <a name="table17621044151218"></a>
 <table><thead align="left"><tr id="row16762144410122"><th class="cellrowborder" valign="top" width="25%" id="mcps1.2.5.1.1"><p id="p127627443121"><a name="p127627443121"></a><a name="p127627443121"></a>特性名</p>
@@ -291,7 +298,7 @@ gpd.ta.stackSize:               8192
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1476234471211"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p18762344111213"><a name="p18762344111213"></a><a name="p18762344111213"></a>gpd.ta.appID</p>
+<tbody><tr id="row1476234471211"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p18762344111213"><a name="p18762344111213"></a><a name="p18762344111213"></a>uuid</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p499191714143"><a name="p499191714143"></a><a name="p499191714143"></a>UUID</p>
 </td>
@@ -300,7 +307,7 @@ gpd.ta.stackSize:               8192
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p69971716141"><a name="p69971716141"></a><a name="p69971716141"></a>必填信息，无默认值</p>
 </td>
 </tr>
-<tr id="row1076214441214"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p20762174491211"><a name="p20762174491211"></a><a name="p20762174491211"></a>gpd.ta.singleInstance</p>
+<tr id="row1076214441214"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p20762174491211"><a name="p20762174491211"></a><a name="p20762174491211"></a>single_instance</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p399717171417"><a name="p399717171417"></a><a name="p399717171417"></a>Boolean</p>
 </td>
@@ -309,7 +316,7 @@ gpd.ta.stackSize:               8192
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p69971731418"><a name="p69971731418"></a><a name="p69971731418"></a>TRUE</p>
 </td>
 </tr>
-<tr id="row27632447128"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p1763194410120"><a name="p1763194410120"></a><a name="p1763194410120"></a>gpd.ta.multiSession</p>
+<tr id="row27632447128"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p1763194410120"><a name="p1763194410120"></a><a name="p1763194410120"></a>multi_session</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p1599111761413"><a name="p1599111761413"></a><a name="p1599111761413"></a>Boolean</p>
 </td>
@@ -318,7 +325,7 @@ gpd.ta.stackSize:               8192
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p1099131791411"><a name="p1099131791411"></a><a name="p1099131791411"></a>FALSE</p>
 </td>
 </tr>
-<tr id="row147639447121"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p7763194410123"><a name="p7763194410123"></a><a name="p7763194410123"></a>gpd.ta.instanceKeepAlive</p>
+<tr id="row147639447121"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p7763194410123"><a name="p7763194410123"></a><a name="p7763194410123"></a>instance_keep_alive</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p1399121714149"><a name="p1399121714149"></a><a name="p1399121714149"></a>Boolean</p>
 </td>
@@ -327,7 +334,7 @@ gpd.ta.stackSize:               8192
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p29917174143"><a name="p29917174143"></a><a name="p29917174143"></a>FALSE</p>
 </td>
 </tr>
-<tr id="row1976384419123"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p127631144171218"><a name="p127631144171218"></a><a name="p127631144171218"></a>gpd.ta.dataSize</p>
+<tr id="row1976384419123"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p127631144171218"><a name="p127631144171218"></a><a name="p127631144171218"></a>heap_size</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p2991417111415"><a name="p2991417111415"></a><a name="p2991417111415"></a>Integer</p>
 </td>
@@ -336,7 +343,7 @@ gpd.ta.stackSize:               8192
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p129941731416"><a name="p129941731416"></a><a name="p129941731416"></a>16384(16KB)</p>
 </td>
 </tr>
-<tr id="row376344431217"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p1576318445126"><a name="p1576318445126"></a><a name="p1576318445126"></a>gpd.ta.stackSize</p>
+<tr id="row376344431217"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p1576318445126"><a name="p1576318445126"></a><a name="p1576318445126"></a>stack_size</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p1998173149"><a name="p1998173149"></a><a name="p1998173149"></a>Integer</p>
 </td>
@@ -345,7 +352,7 @@ gpd.ta.stackSize:               8192
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p20991917151414"><a name="p20991917151414"></a><a name="p20991917151414"></a>2048（2KB）</p>
 </td>
 </tr>
-<tr id="row3763114418127"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p376314416122"><a name="p376314416122"></a><a name="p376314416122"></a>gpd.ta.service_name</p>
+<tr id="row3763114418127"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p376314416122"><a name="p376314416122"></a><a name="p376314416122"></a>service_name</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p99916175146"><a name="p99916175146"></a><a name="p99916175146"></a>String</p>
 </td>
@@ -354,31 +361,13 @@ gpd.ta.stackSize:               8192
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p16992173146"><a name="p16992173146"></a><a name="p16992173146"></a>必填信息，无默认值</p>
 </td>
 </tr>
-<tr id="row1476364411123"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p9763844151217"><a name="p9763844151217"></a><a name="p9763844151217"></a>gpd.ta.distribution</p>
+<tr id="row1476364411123"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p9763844151217"><a name="p9763844151217"></a><a name="p9763844151217"></a>multi_command</p>
 </td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p999111710143"><a name="p999111710143"></a><a name="p999111710143"></a>Integer</p>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p999111710143"><a name="p999111710143"></a><a name="p999111710143"></a>Boolean</p>
 </td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.3 "><p id="p59919177149"><a name="p59919177149"></a><a name="p59919177149"></a>TA的发布号。该发布号主要用于TA的管控，建议TA开发者发布新版本的TA时，更新该信息</p>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.3 "><p id="p59919177149"><a name="p59919177149"></a><a name="p59919177149"></a>预留字段，当前不支持，只能填flase</p>
 </td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p599121701413"><a name="p599121701413"></a><a name="p599121701413"></a>0</p>
-</td>
-</tr>
-<tr id="row17631944191219"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p20763244121216"><a name="p20763244121216"></a><a name="p20763244121216"></a>gpd.sdk.version</p>
-</td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p15100817181413"><a name="p15100817181413"></a><a name="p15100817181413"></a>Integer</p>
-</td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.3 "><p id="p7100161761410"><a name="p7100161761410"></a><a name="p7100161761410"></a>TA的SDK版本信息，主要用于保持TA和版本之间的兼容性</p>
-</td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p410021720143"><a name="p410021720143"></a><a name="p410021720143"></a>0</p>
-</td>
-</tr>
-<tr id="row1976314420123"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p11763544131218"><a name="p11763544131218"></a><a name="p11763544131218"></a>gpd.elf.target_version</p>
-</td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p1610041717140"><a name="p1610041717140"></a><a name="p1610041717140"></a>Integer</p>
-</td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.3 "><p id="p71001817151416"><a name="p71001817151416"></a><a name="p71001817151416"></a>目标文件版本，用于新的防回滚检查，如果加载了高版本的TA/驱动，再加载低版本TA/驱动，会被阻止加载。这个检查不由TA发起，而是由TEE加载目标文件时发起检查。</p>
-</td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p5100111721412"><a name="p5100111721412"></a><a name="p5100111721412"></a>0（0是默认值，也是非法值，故如果要设置版本号，则不能设置为0。）</p>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p599121701413"><a name="p599121701413"></a><a name="p599121701413"></a>false</p>
 </td>
 </tr>
 </tbody>
@@ -416,7 +405,7 @@ Makefile文件参考SDK 中test/TA/helloworld目录下示例内容，上述confi
 
 **注意事项：**
 
-1.  TEE上加载的SEC文件需要携带perm\_config签名，需要先按照[zh-cn\_topic\_0000001204664500.md](zh-cn_topic_0000001204664500.md)的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[zh-cn\_topic\_0000001204664500.md](zh-cn_topic_0000001204664500.md)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
+1.  TEE上加载的SEC文件需要携带perm\_config签名，需要先按照[SEC文件签名步骤](#sec文件签名步骤)的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[SEC文件签名步骤](#sec文件签名步骤)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
 2.  样例中Makefile文件里会编译出二进制libcombine.so后并调用signtool\_sec.py脚本签出sec文件。signtool\_sec.py脚本约束TA二进制编译产物名称需要是libcombione.so，否则签名会异常。
 
 假设可信应用程序包含源文件ta-demo.c，编写Makefile文件编译生成目标文件libcombine.so，如下所示：
@@ -492,7 +481,7 @@ CMakeLists.txt文件参考SDK 中test/TA/helloworld目录下示例内容，上�
 
 **注意事项：**
 
-1.  OHTEE上加载的SEC文件需要携带perm\_config签名，需要先按照[zh-cn\_topic\_0000001204664500.md](zh-cn_topic_0000001204664500.md)章节的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[zh-cn\_topic\_0000001204664500.md](zh-cn_topic_0000001204664500.md)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
+1.  OHTEE上加载的SEC文件需要携带perm\_config签名，需要先按照[SEC文件签名步骤](#sec文件签名步骤)章节的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[SEC文件签名步骤](#sec文件签名步骤)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
 2.  样例中CMakeList.txt文件里会编译出二进制libcombine.so后并调用signtool\_sec.py脚本签出sec文件。signtool\_sec.py脚本约束TA二进制编译产物名称需要是libcombione.so，否则签名会异常。
 
 假设可信应用程序包含源文件ta-demo.c，编写CMakeLists.txt文件编译生成目标文件libcombine.so，如下所示：
