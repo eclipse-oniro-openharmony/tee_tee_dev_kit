@@ -18,7 +18,135 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row6340121710262"><td class="cellrowborder" rowspan="6" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p18534845102711"><a name="p18534845102711"></a><a name="p18534845102711"></a>malloc</p>
+<tbody><tr id="row6340121710262"><td class="cellrowborder" rowspan="42" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p18534845102711"><a name="p18534845102711"></a><a name="p18534845102711"></a>pthread</p>
+</td>
+<td class="cellrowborder" valign="top" width="52.12%" headers="mcps1.2.3.1.2 "><p id="p553444592710"><a name="p553444592710"></a><a name="p553444592710"></a>sem_getvalue</p>
+</td>
+</tr>
+<tr id="row10341181782614"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p753424552719"><a name="p753424552719"></a><a name="p753424552719"></a>sem_init</p>
+</td>
+</tr>
+<tr id="row534110172268"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p1853444542719"><a name="p1853444542719"></a><a name="p1853444542719"></a>sem_post</p>
+</td>
+</tr>
+<tr id="row203411176269"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p1553474572712"><a name="p1553474572712"></a><a name="p1553474572712"></a>sem_wait</p>
+</td>
+</tr>
+<tr id="row5341131742616"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p10534184519273"><a name="p10534184519273"></a><a name="p10534184519273"></a>pthread_mutex_destroy</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutex_init</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutex_lock</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutex_trylock</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutex_unlock</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_destroy</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_init</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_setprotocol</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_setpshared</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_settype</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_setrobust</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_spin_destroy</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_spin_init</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_spin_lock</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_spin_trylock</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_spin_unlock</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_cond_broadcast</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_cond_destroy</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_cond_init</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_cond_signal</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_cond_wait</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_attr_destroy</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_attr_getstack</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_attr_getstacksize</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_attr_init</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_attr_setstack</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_attr_setstacksize</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_create</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_equal</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_exit</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_getspecific</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_join</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_key_create</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_key_delete</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_once</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_self</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_setschedprio</p>
+</td>
+</tr>
+<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_setspecific</p>
+</td>
+</tr>
+<tr id="row6340121710262"><td class="cellrowborder" rowspan="6" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p18534845102711"><a name="p18534845102711"></a><a name="p18534845102711"></a>malloc</p>
 </td>
 <td class="cellrowborder" valign="top" width="52.12%" headers="mcps1.2.3.1.2 "><p id="p553444592710"><a name="p553444592710"></a><a name="p553444592710"></a>aligned_alloc</p>
 </td>
