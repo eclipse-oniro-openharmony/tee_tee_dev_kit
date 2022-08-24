@@ -446,7 +446,7 @@ clean:
 
 ## Make编译方法<a name="section197921537291"></a>
 
-修改config文件里的CONFIG\_BUILD\_TOOL为make，执行test/TA/helloworld/目录的build.sh脚本即可。默认进行可信应用编译以及镜像签名，生成以Manifest文件中UUID命名的可信应用镜像文件。
+修改config文件里的CONFIG\_BUILD\_TOOL为make，执行test/TA/helloworld/目录的build.sh脚本即可。默认进行可信应用编译以及镜像签名，生成以configs.xml文件中UUID命名的可信应用镜像文件。
 
 ## 2.1.2.3 cmake编译配置示例<a name="section111111007337"></a>
 
@@ -522,7 +522,7 @@ add_custom_command(
 
 ## CMake编译方法<a name="section99081322133314"></a>
 
-修改config文件里的CONFIG\_BUILD\_TOOL为cmake，执行test/TA/helloworld/目录的build.sh脚本即可。默认进行可信应用编译以及镜像签名，生成以Manifest文件中UUID命名的可信应用镜像文件。
+修改config文件里的CONFIG\_BUILD\_TOOL为cmake，执行test/TA/helloworld/目录的build.sh脚本即可。默认进行可信应用编译以及镜像签名，生成以configs.xml文件中UUID命名的可信应用镜像文件。
 
 ## 2.2 SEC文件签名<a name="section175621346143317"></a>
 
@@ -581,7 +581,7 @@ SDK中提供了生成密钥及证书的工具，位于build/keytools路径下。
 <td class="cellrowborder" valign="top" width="42.19%" headers="mcps1.2.4.1.2 "><p id="p152401219267"><a name="p152401219267"></a><a name="p152401219267"></a>uuid_service name：</p>
 <p id="p25981217133214"><a name="p25981217133214"></a><a name="p25981217133214"></a>ta_cert.der证书subject CN</p>
 </td>
-<td class="cellrowborder" valign="top" width="39.67%" headers="mcps1.2.4.1.3 "><p id="p4524212102615"><a name="p4524212102615"></a><a name="p4524212102615"></a>TA的uuid与service name，中间使用“_”连接，与TA的manifest.txt、configs.xml保持一致。</p>
+<td class="cellrowborder" valign="top" width="39.67%" headers="mcps1.2.4.1.3 "><p id="p4524212102615"><a name="p4524212102615"></a><a name="p4524212102615"></a>TA的uuid与service name，中间使用“_”连接，与TA的configs.xml保持一致。</p>
 </td>
 </tr>
 <tr id="row142059182515"><td class="cellrowborder" valign="top" width="18.14%" headers="mcps1.2.4.1.1 "><p id="p16524512152611"><a name="p16524512152611"></a><a name="p16524512152611"></a>OU</p>

@@ -129,7 +129,7 @@ TA的API接口在SDK中include/TA目录下。TA头文件在TEE支持情况如下
 
 1.  文件名objectID长度限制为：128 Byte，路径名需要以“sec\_storage\_data/”开头，否则文件会被存储到非预期的位置。
 2.  文件路径中可以存在相对路径“./” 但不能存在“../”，否则文件会创建失败。
-3.  enumerator功能默认不打开。若要打开，则需要在manifest文件中增加字段gpd.ta.objectEnumEnable: true，重新签名TA，然后调用enumerator相关接口即可实现该功能。调用方式见[使用enumerator实例](#3323-使用enumerator)。
+3.  enumerator功能默认不打开。若要打开，则需要在configs.xml文件中增加字段objectEnumEnable值为true，重新签名TA，然后调用enumerator相关接口即可实现该功能。调用方式见[使用enumerator实例](#3323-使用enumerator)。
 4.  TA存储的单个文件单次读写不能大于4M。
 5.  安全存储使用写共享权限覆盖创建一个已经存在的文件时，更新文件之后，需要关闭文件再进行读取，否则可能出现读取的内容不是最新写入的内容。
 
