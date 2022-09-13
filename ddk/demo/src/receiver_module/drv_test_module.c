@@ -28,7 +28,6 @@
 
 #define TEST_PARAM_OPS 0x10
 #define TEST_IO_MAP 0x11
-#define TEST_ADDR_MAP 0x12
 #define TEST_DRV_DMA 0x13
 #define TEST_DRV_IRQ 0x14
 #define IO_SIZE 4
@@ -115,38 +114,6 @@ int64_t test_drv_dma()
     dma_unmap_area((uint64_t)va + OFFSET_THREE * TEECALL_PAGE_SIZE, TEECALL_PAGE_SIZE, 1);
 
     munmap((void *)va, TEECALL_PAGE_SIZE * OFFSET_FOUR);
-    return 0;
-}
-
-int64_t test_drv_map()
-{
-    int32_t ret;
-
-    uintptr_t *vaddr_addr_secure = malloc(SIZE_ADDR);
-    ret = tee_map_secure(PTHYS_ADDR_SECURE, SIZE_ADDR, vaddr_addr_secure, CACHE_MODE);
-    if (ret == 0) {
-        tlogi("tee_map_secure success\n");
-    } else {
-        tloge("tee_map_secure failed\n");
-        if (vaddr_addr_secure != NULL)
-            free(vaddr_addr_secure);
-    }
-
-    uintptr_t *vaddr_addr_nonsecure = malloc(SIZE_ADDR);
-    ret = tee_map_nonsecure(PTHYS_ADDR_NONSECURE, SIZE_ADDR, vaddr_addr_nonsecure, CACHE_MODE);
-    if (ret == 0) {
-        tlogi("tee_map_nonsecure success\n");
-    } else {
-        tloge("tee_map_nonsecure failed\n");
-        if (vaddr_addr_nonsecure != NULL)
-            free(vaddr_addr_nonsecure);
-    }
-
-    if (vaddr_addr_secure != NULL)
-        free(vaddr_addr_secure);
-    if (vaddr_addr_nonsecure != NULL)
-        free(vaddr_addr_nonsecure);
-
     return 0;
 }
 
@@ -267,9 +234,6 @@ int64_t ioctl_test(struct drv_data *drv, uint32_t cmd, unsigned long args, uint3
             break;
         case TEST_IO_MAP:
             test_drv_io_map();
-            break;
-        case TEST_ADDR_MAP:
-            test_drv_map();
             break;
         case TEST_DRV_DMA:
             test_drv_dma();
