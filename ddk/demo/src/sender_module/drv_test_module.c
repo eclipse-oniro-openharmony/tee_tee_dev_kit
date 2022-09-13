@@ -27,7 +27,6 @@
 #define TEST_BUF_SIZE 8
 #define TEST_PARAM_OPS 0x10
 #define TEST_IO_MAP 0x11
-#define TEST_ADDR_MAP 0x12
 #define TEST_DRV_DMA 0x13
 #define TEST_DRV_IRQ 0x14
 static const TEE_UUID g_drv_uuid = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11 }};
@@ -57,11 +56,6 @@ static void test_ioctl(int64_t fd)
     if (ret != 0)
         tloge("drv ioctl TEST_IO_MAP failed\n");
     tlogi("drv ioctl TEST_IO_MAP success\n");
-
-    ret = tee_drv_ioctl(fd, TEST_ADDR_MAP, NULL, 0);
-    if (ret != 0)
-        tloge("drv ioctl TEST_ADDR_MAP failed\n");
-    tlogi("drv ioctl TEST_ADDR_MAP success\n");
 }
 
 int64_t test_send_param()
@@ -98,9 +92,9 @@ int64_t test_send_param()
     ret = tee_drv_ioctl(fd, TEST_PARAM_OPS, &param, sizeof(param));
     if (ret != 0) {
         tee_free_sharemem(share_buf, TEST_ALLOC_SIZE);
-        tloge("drv ioctl TEST_ADDR_MAP failed, fd: %d\n", (int32_t)fd);
+        tloge("drv ioctl TEST_PARAM_OPS failed, fd: %d\n", (int32_t)fd);
     }
-    tlogi("drv ioctl TEST_ADDR_MAP success, share_buf: %s\n", share_buf);
+    tlogi("drv ioctl TEST_PARAM_OPS success, share_buf: %s\n", share_buf);
     tee_free_sharemem(share_buf, TEST_ALLOC_SIZE);
 
     ret = tee_drv_close(fd);

@@ -1250,32 +1250,6 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 </tbody>
 </table>
 
-### map接口说明<a name="section1831091675716"></a>
-
-驱动进行内存映射操作所需要的接口列表。
-
-**表 15**  map接口列表
-
-<a name="table1690431511432"></a>
-<table><thead align="left"><tr id="row189041315194317"><th class="cellrowborder" valign="top" width="54.67999999999999%" id="mcps1.2.3.1.1"><p id="p34281633124413"><a name="p34281633124413"></a><a name="p34281633124413"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="45.32%" id="mcps1.2.3.1.2"><p id="p4428133174412"><a name="p4428133174412"></a><a name="p4428133174412"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row9904121594312"><td class="cellrowborder" valign="top" width="54.67999999999999%" headers="mcps1.2.3.1.1 "><p id="p1090471594316"><a name="p1090471594316"></a><a name="p1090471594316"></a>int32_t tee_map_secure(paddr_t paddr, uint64_t size, uintptr_t *vaddr, cache_mode_type cache_mode);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.32%" headers="mcps1.2.3.1.2 "><p id="p583mcpsimp"><a name="p583mcpsimp"></a><a name="p583mcpsimp"></a>给驱动访问者映射一段安全属性的物理内存。</p>
-</td>
-</tr>
-<tr id="row190417158431"><td class="cellrowborder" valign="top" width="54.67999999999999%" headers="mcps1.2.3.1.1 "><p id="p4904715174317"><a name="p4904715174317"></a><a name="p4904715174317"></a>int32_t tee_map_nonsecure(paddr_t paddr, uint64_t size, uintptr_t *vaddr, cache_mode_type cache_mode);</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.32%" headers="mcps1.2.3.1.2 "><p id="p10904115204310"><a name="p10904115204310"></a><a name="p10904115204310"></a>给驱动访问者映射一段非安全属性的物理内存，其中映射属性是只读不能写。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
 ### IO操作接口说明<a name="section6512133012574"></a>
 
 驱动进行IO操作所需要的接口列表。
