@@ -6,6 +6,9 @@
     -   [场景介绍](#section148731215195617)
 
 -   [开发环境准备](#section20994326588)
+    - [编译开发环境准备<a name="section196631553554"></a>](#编译开发环境准备)
+     - [签名开发环境准备<a name="section7597183533818"></a>](#签名开发环境准备)
+     - [编译依赖的bounds\_checking\_function和musl头文件准备<a name="section1182315617500"></a>](#编译依赖的bounds_checking_function和musl头文件准备)
 -   [开发步骤](#section943512417516)
     -   [添加编译配置文件至build目录](#section449714160615)
     -   [添加头文件至include目录](#section179732211510)
@@ -67,10 +70,10 @@
 本节用来指导驱动开发者开发可以被TEE子系统动态加载的安全驱动。
 
 ## 开发环境准备<a name="section20994326588"></a>
-
+### 编译开发环境准备<a name="section196631553554"></a>
 目前支持的编译框架、编译工具链等见下表，括号内为建议版本：
 
-**表 1**  开发环境准备
+**表 1**  编译开发环境准备
 
 <a name="table412352084019"></a>
 <table><thead align="left"><tr id="row151231920154014"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p7533141614371"><a name="p7533141614371"></a><a name="p7533141614371"></a>编译框架</p>
@@ -142,9 +145,54 @@
 </tbody>
 </table>
 
+
+### 签名开发环境准备<a name="section7597183533818"></a>
+
+>![](public_sys-resources/icon-note.gif) **说明：** 
+>可信驱动签名不支持Windows环境使用，只支持在Linux服务器侧使用。
+
+可信驱动签名依赖的软件列表及下载来源如下：
+
+<a name="table1710232244715"></a>
+<table><thead align="left"><tr id="row191029223476"><th class="cellrowborder" valign="top" width="25.419999999999998%" id="mcps1.1.4.1.1"><p id="p12103102210474"><a name="p12103102210474"></a><a name="p12103102210474"></a>工具名称</p>
+</th>
+<th class="cellrowborder" valign="top" width="29.020000000000003%" id="mcps1.1.4.1.2"><p id="p7103152219475"><a name="p7103152219475"></a><a name="p7103152219475"></a>建议版本</p>
+</th>
+<th class="cellrowborder" valign="top" width="45.56%" id="mcps1.1.4.1.3"><p id="p0103122104711"><a name="p0103122104711"></a><a name="p0103122104711"></a>下载说明</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row1310372264718"><td class="cellrowborder" valign="top" width="25.419999999999998%" headers="mcps1.1.4.1.1 "><p id="p121031322124713"><a name="p121031322124713"></a><a name="p121031322124713"></a>python</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.020000000000003%" headers="mcps1.1.4.1.2 "><p id="p7103522144717"><a name="p7103522144717"></a><a name="p7103522144717"></a>3</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.56%" headers="mcps1.1.4.1.3 "><p id="p8103122220478"><a name="p8103122220478"></a><a name="p8103122220478"></a>可从官网下载：https://www.python.org/</p>
+</td>
+</tr>
+<tr id="row14103162220476"><td class="cellrowborder" valign="top" width="25.419999999999998%" headers="mcps1.1.4.1.1 "><p id="p1710310221472"><a name="p1710310221472"></a><a name="p1710310221472"></a>pycryptodomex</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.020000000000003%" headers="mcps1.1.4.1.2 "><p id="p174362313596"><a name="p174362313596"></a><a name="p174362313596"></a>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.56%" headers="mcps1.1.4.1.3 "><p id="p1310317225472"><a name="p1310317225472"></a><a name="p1310317225472"></a>可从官网下载：https://pypi.org/project/pycryptodomex/</p>
+</td>
+</tr>
+<tr id="row12103182220470"><td class="cellrowborder" valign="top" width="25.419999999999998%" headers="mcps1.1.4.1.1 "><p id="p010372234713"><a name="p010372234713"></a><a name="p010372234713"></a>openssl</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.020000000000003%" headers="mcps1.1.4.1.2 "><p id="p1103322124719"><a name="p1103322124719"></a><a name="p1103322124719"></a>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="45.56%" headers="mcps1.1.4.1.3 "><p id="p1110372234718"><a name="p1110372234718"></a><a name="p1110372234718"></a>可从官网下载：https://wiki.openssl.org/index.php/Binaries</p>
+</td>
+</tr>
+</tbody>
+</table>
+
 >![](public_sys-resources/icon-caution.gif) **注意：** 
 >-   对于32位或者64位可信驱动程序的支持，不同平台存在差异，请与对应产品或TEE负责人确认。
 >-   驱动签名工具依赖python的defusedxml-0.7.1工具，需要使用pip install defusedxml==0.7.1进行下载。
+
+### 编译依赖的bounds\_checking\_function和musl头文件准备<a name="section1182315617500"></a>
+
+分别按照thirdparty/open\_source/bounds\_checking\_function和thirdparty/open\_source/musl下的README指导文档来操作即可。
 
 ## 开发步骤<a name="section943512417516"></a>
 
@@ -1016,7 +1064,7 @@ cp keytools/output/taconfig_key.pem pack-Config/config_cert/.
 cp keytools/output/ta_cert.der pack-Config/ta_cert/.
 ```
 
-根据驱动实际情况修改build/pack-Config/input目录下的configs.xml，修改完成后在build/pack-Config目录下执行如下指令，密钥口令为123456：
+根据驱动实际情况，参考demo/src目录下的drv\_test\_module.csv，在build/pack-Config/input目录下新增宏定义表格，并修改该目录下的configs.xml，修改完成后在build/pack-Config目录下执行如下指令，密钥口令为123456：
 
 ```
 python3 signtool_config.py ./input ./ta_cert/ta_cert.der ./output/perm_config
