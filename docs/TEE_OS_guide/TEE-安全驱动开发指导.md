@@ -22,7 +22,6 @@
     -   [CMakeLists.txt文件介绍](#section31566231037)
 
 -   [驱动信息与权限配置](#section1630913525319)
-    -   [manifest.txt文件介绍](#section10259663411)
     -   [宏定义表文件介绍](#section449462816414)
     -   [configs.xml文件介绍](#section9908114312413)
 
@@ -214,7 +213,7 @@ include文件夹中包含驱动动态库接口头文件，编译第三方驱动�
 
 src目录中包含驱动源代码与权限配置文件。
 
-在驱动开发时，开发者可以参考demo/src目录中举例文件编写自己的驱动文件，参考该目录中[manifest.txt](#section10259663411)文件填写驱动配置信息，参考该目录中[drv\_test\_module.csv](#section449462816414)文件与build/pack-Config/input目录下的[configs.xml](#section9908114312413)文件，添加新增驱动的权限配置信息。
+在驱动开发时，开发者可以参考demo/src目录中举例文件编写自己的驱动文件，参考该目录中[drv\_test\_module.csv](#section449462816414)文件与build/pack-Config/input目录下的[configs.xml](#section9908114312413)文件，配置驱动基本属性和权限信息。
 
 [签名文件生成](#section793382693010)后，将SEC签名密钥[sign\_sec\_priv.pem](#table11862185716131)从build/keytools/output目录拷贝至demo/src目录，将签名文件[perm\_config](#section11327454193517)从build/pack-Config/output目录拷贝至demo/src目录。
 
@@ -424,83 +423,6 @@ compile_drv("${SOURCE_FILE}" "${FLAGS}" "${INC_DIR}" "${LD_FLAGS}")
 
 ## 驱动信息与权限配置<a name="section1630913525319"></a>
 
-### manifest.txt文件介绍<a name="section10259663411"></a>
-
-可信驱动程序开发时需提供manifest.txt文本文件，该文件的主要作用是设置驱动属性，主要内容见下表：
-
-**表 4**  manifest.txt内容
-
-<a name="table14537182315286"></a>
-<table><thead align="left"><tr id="row4538112318286"><th class="cellrowborder" valign="top" width="22.932293229322934%" id="mcps1.2.4.1.1"><p id="p4803260443"><a name="p4803260443"></a><a name="p4803260443"></a>属性</p>
-</th>
-<th class="cellrowborder" valign="top" width="11.37113711371137%" id="mcps1.2.4.1.2"><p id="p1480312615444"><a name="p1480312615444"></a><a name="p1480312615444"></a>类型</p>
-</th>
-<th class="cellrowborder" valign="top" width="65.69656965696569%" id="mcps1.2.4.1.3"><p id="p188035612448"><a name="p188035612448"></a><a name="p188035612448"></a>说明</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row1653815239283"><td class="cellrowborder" valign="top" width="22.932293229322934%" headers="mcps1.2.4.1.1 "><p id="p78031620448"><a name="p78031620448"></a><a name="p78031620448"></a>gpd.ta.appID</p>
-</td>
-<td class="cellrowborder" valign="top" width="11.37113711371137%" headers="mcps1.2.4.1.2 "><p id="p10803156114416"><a name="p10803156114416"></a><a name="p10803156114416"></a>uuid</p>
-</td>
-<td class="cellrowborder" valign="top" width="65.69656965696569%" headers="mcps1.2.4.1.3 "><p id="p10803126204419"><a name="p10803126204419"></a><a name="p10803126204419"></a>可信驱动程序UUID信息，必须唯一。</p>
-</td>
-</tr>
-<tr id="row953822314281"><td class="cellrowborder" valign="top" width="22.932293229322934%" headers="mcps1.2.4.1.1 "><p id="p380412611444"><a name="p380412611444"></a><a name="p380412611444"></a>gpd.ta.service_name</p>
-</td>
-<td class="cellrowborder" valign="top" width="11.37113711371137%" headers="mcps1.2.4.1.2 "><p id="p28041664410"><a name="p28041664410"></a><a name="p28041664410"></a>字符串</p>
-</td>
-<td class="cellrowborder" valign="top" width="65.69656965696569%" headers="mcps1.2.4.1.3 "><p id="p178041561442"><a name="p178041561442"></a><a name="p178041561442"></a>可信驱动程序名字，与驱动文件名保持一致，有效长度小于32字节，仅支持数字、字母和'_'。</p>
-</td>
-</tr>
-<tr id="row6538623122810"><td class="cellrowborder" valign="top" width="22.932293229322934%" headers="mcps1.2.4.1.1 "><p id="p20804136204411"><a name="p20804136204411"></a><a name="p20804136204411"></a>gpd.ta.instanceKeepAlive（暂未实现卸载功能，默认为true，可信驱动程序加载之后常驻）</p>
-</td>
-<td class="cellrowborder" valign="top" width="11.37113711371137%" headers="mcps1.2.4.1.2 "><p id="p118042634414"><a name="p118042634414"></a><a name="p118042634414"></a>bool</p>
-</td>
-<td class="cellrowborder" valign="top" width="65.69656965696569%" headers="mcps1.2.4.1.3 "><p id="p380413684416"><a name="p380413684416"></a><a name="p380413684416"></a>可信驱动程序是否常驻：</p>
-<p id="p19804465445"><a name="p19804465445"></a><a name="p19804465445"></a>true：常驻，加载之后不会再卸载；</p>
-<p id="p68041764448"><a name="p68041764448"></a><a name="p68041764448"></a>false：非常驻，加载之后当没有被访问时会被卸载，下次再访问时会重新加载。</p>
-</td>
-</tr>
-<tr id="row18538823172814"><td class="cellrowborder" valign="top" width="22.932293229322934%" headers="mcps1.2.4.1.1 "><p id="p10804186204419"><a name="p10804186204419"></a><a name="p10804186204419"></a>gpd.ta.dataSize</p>
-</td>
-<td class="cellrowborder" valign="top" width="11.37113711371137%" headers="mcps1.2.4.1.2 "><p id="p88041462447"><a name="p88041462447"></a><a name="p88041462447"></a>uint32_t</p>
-</td>
-<td class="cellrowborder" valign="top" width="65.69656965696569%" headers="mcps1.2.4.1.3 "><p id="p88049664413"><a name="p88049664413"></a><a name="p88049664413"></a>可信驱动程序可申请最大堆空间。</p>
-</td>
-</tr>
-<tr id="row12538162392819"><td class="cellrowborder" valign="top" width="22.932293229322934%" headers="mcps1.2.4.1.1 "><p id="p1180419612441"><a name="p1180419612441"></a><a name="p1180419612441"></a>gpd.ta.stackSize</p>
-</td>
-<td class="cellrowborder" valign="top" width="11.37113711371137%" headers="mcps1.2.4.1.2 "><p id="p380418674410"><a name="p380418674410"></a><a name="p380418674410"></a>uint32_t</p>
-</td>
-<td class="cellrowborder" valign="top" width="65.69656965696569%" headers="mcps1.2.4.1.3 "><p id="p1880418694415"><a name="p1880418694415"></a><a name="p1880418694415"></a>可信驱动程序线程栈大小。</p>
-</td>
-</tr>
-<tr id="row18538162362815"><td class="cellrowborder" valign="top" width="22.932293229322934%" headers="mcps1.2.4.1.1 "><p id="p14804362445"><a name="p14804362445"></a><a name="p14804362445"></a>gpd.ta.target_type</p>
-</td>
-<td class="cellrowborder" valign="top" width="11.37113711371137%" headers="mcps1.2.4.1.2 "><p id="p580416615448"><a name="p580416615448"></a><a name="p580416615448"></a>uint64_t</p>
-</td>
-<td class="cellrowborder" valign="top" width="65.69656965696569%" headers="mcps1.2.4.1.3 "><p id="p1980436144414"><a name="p1980436144414"></a><a name="p1980436144414"></a>构建目标类型，可信驱动程序此值设置为1。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-可行配置如下所示：
-
-```
-gpd.ta.appID: 00000000-0000-0000-0000-333333333333
-gpd.ta.service_name: drv_test_module
-gpd.ta.instanceKeepAlive: false
-gpd.ta.dataSize: 1048576
-gpd.ta.stackSize: 8192
-gpd.ta.target_type: 1
-```
-
->![](public_sys-resources/icon-caution.gif) **注意：** 
->-   必须保证每个可信驱动程序的service\_name和appID是唯一的，其中service\_name只能由字母、数字和'\_'组成，其他无法识别。
->-   可信驱动程序生成时，如果不存在manifest.txt文件，或manifest.txt文件格式错误，生成将会终止。
-
 ### 宏定义表文件介绍<a name="section449462816414"></a>
 
 可信驱动程序宏定义表应命名为“service\_name.csv”，例如“drv\_test\_module.csv”，放在驱动开发根目录下。
@@ -587,9 +509,9 @@ gpd.ta.target_type: 1
 
 ### configs.xml文件介绍<a name="section9908114312413"></a>
 
-驱动开发者如果要给驱动配置IO操作、中断操作、地址转换、内存拷贝等权限，需要配置configs.xml文件。
+驱动开发者需要配置configs.xml文件，添加驱动的基本属性，并根据需要添加IO操作、中断操作、地址转换、内存拷贝等权限。
 
-configs.xml文件前半部分包含manifest.txt文件中驱动属性数据，用户需要在configs.xml根字段下新增dyn\_perm字段，并将驱动权限配置部分写在该字段下。
+configs.xml文件前半部分包含TA\_Basic\_Info字段和TA\_Manifest\_Info字段用于配置中驱动的基本属性，后半部分可根据需要在configs.xml根字段下新增dyn\_perm字段，用于配置驱动的权限信息。
 
 **表 7**  configs.xml文件字段说明
 
@@ -606,9 +528,92 @@ configs.xml文件前半部分包含manifest.txt文件中驱动属性数据，用
 </th>
 </tr>
 </thead>
-<tbody><tr id="row343153113312"><td class="cellrowborder" rowspan="17" valign="top" width="7.95%" headers="mcps1.2.6.1.1 "><p id="p62445517610"><a name="p62445517610"></a><a name="p62445517610"></a>驱动开发者</p>
+<tbody><tr id="row343153113312"><td class="cellrowborder" rowspan="25" valign="top" width="7.95%" headers="mcps1.2.6.1.1 "><p id="p62445517610"><a name="p62445517610"></a><a name="p62445517610"></a>驱动开发者</p>
 </td>
-<td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>drv_perm.drv_io_map.item.iomap</p>
+<td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Basic_Info.uuid</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>uuid</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>可信驱动程序标识，必需特性，特性值为用户自己生成的UUID。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>必填信息，无默认值。</p>
+</td>
+</tr>
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Basic_Info.service_name</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>string</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>可信驱动程序名字，与驱动文件名保持一致，有效长度小于32字节，仅支持数字、字母和'_'。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>必填信息，无默认值。</p>
+</td>
+</tr>
+
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Manifest_Info.instance_keep_alive（暂未实现卸载功能，默认为true，可信驱动程序加载之后常驻）</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>bool</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>可信驱动程序是否常驻：</p>
+<p id="p13424521131011"><a name="p13424521131011"></a><a name="p13424521131011"></a>true：常驻，加载之后不会再卸载；</p>
+<p id="p13424521131011"><a name="p13424521131011"></a><a name="p13424521131011"></a>false：非常驻，加载之后当没有被访问时会被卸载，下次再访问时会重新加载。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>根据实际情况选择填写true或false。（当前OHTEE可信执行驱动只支持instance_keep_alive为true的场景）</p>
+</td>
+</tr>
+
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Manifest_Info.stack_size</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>uint32_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>可信驱动程序线程栈大小。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>根据实际情况填写。</p>
+</td>
+</tr>
+
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Manifest_Info.heap_size</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>uint32_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>可信驱动程序可申请最大堆空间。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>根据实际情况填写。</p>
+</td>
+</tr>
+
+
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Manifest_Info.multi_command（预留字段，当前不支持，只能填flase）</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>bool</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>预留字段，当前不支持，只能填flase。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>预留字段，当前不支持，只能填flase。</p>
+</td>
+</tr>
+
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Manifest_Info.multi_session</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>bool</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>可信驱动程序是否支持多个会话。</p>
+<p id="p13424521131011"><a name="p13424521131011"></a><a name="p13424521131011"></a>true：支持多会话；</p>
+<p id="p13424521131011"><a name="p13424521131011"></a><a name="p13424521131011"></a>false：仅支持单会话。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>根据实际情况选择填写true或false。</p>
+</td>
+
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>TA_Manifest_Info.single_instance（当前OHTEE只支持singleInstance为true的场景）</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>bool</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.23%" headers="mcps1.2.6.1.4 "><p id="p825333031112"><a name="p825333031112"></a><a name="p825333031112"></a>系统是否给每一个客户端会话创建一个实例。</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.549999999999997%" headers="mcps1.2.6.1.5 "><p id="p742472181013"><a name="p742472181013"></a><a name="p742472181013"></a>根据实际情况选择填写true或false（当前OHTEE只支持singleInstance为true的场景）。</p>
+</td>
+</tr>
+
+<tr id="row12435311036"><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.2.6.1.2 "><p id="p2042482191012"><a name="p2042482191012"></a><a name="p2042482191012"></a>drv_perm.drv_io_map.item.iomap</p>
 </td>
 <td class="cellrowborder" valign="top" width="16.38%" headers="mcps1.2.6.1.3 "><p id="p3424321201019"><a name="p3424321201019"></a><a name="p3424321201019"></a>由地址构成的list</p>
 </td>
@@ -982,7 +987,7 @@ configs.xml文件举例如下：
 </td>
 <td class="cellrowborder" valign="top" width="25.490000000000002%" headers="mcps1.2.5.1.3 "><p id="p2300012333"><a name="p2300012333"></a><a name="p2300012333"></a>ta_cert.der证书subject CN</p>
 </td>
-<td class="cellrowborder" valign="top" width="42.25%" headers="mcps1.2.5.1.4 "><p id="p153001712335"><a name="p153001712335"></a><a name="p153001712335"></a>驱动的uuid与service name，中间使用'_'连接，与驱动的manifest.txt、configs.xml保持一致。</p>
+<td class="cellrowborder" valign="top" width="42.25%" headers="mcps1.2.5.1.4 "><p id="p153001712335"><a name="p153001712335"></a><a name="p153001712335"></a>驱动的uuid与service name，中间使用'_'连接，与驱动的configs.xml保持一致。</p>
 </td>
 </tr>
 <tr id="row83069238212"><td class="cellrowborder" valign="top" width="14.87%" headers="mcps1.2.5.1.1 "><p id="p16300101216312"><a name="p16300101216312"></a><a name="p16300101216312"></a>OU</p>
@@ -1054,7 +1059,7 @@ keytools工具输出产物将放于build/keytools/output目录下，输出及用
 >![](public_sys-resources/icon-notice.gif) **须知：** 
 >keytools工具颁发的证书及生成的密钥均只能用于开发调试，不可商用。
 
-### perm\_config文件生产<a name="section11327454193517"></a>
+### perm\_config文件生成<a name="section11327454193517"></a>
 
 将keytools工具生成的密钥、证书拷贝到相应的目录下：
 
