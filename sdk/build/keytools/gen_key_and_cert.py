@@ -25,6 +25,9 @@ import subprocess
 import re
 
 
+UUID_LEN = 36
+
+
 def whitelist_check(intput_str):
     if not re.match(r"^[A-Za-z0-9\/\-_.]+$", intput_str):
         return 1
@@ -62,6 +65,15 @@ def check_cfg(cfg):
     return 0
 
 
+def change_to_lowercase(src):
+    ''' change uuid in cn to lowercase '''
+    uuid = src[:UUID_LEN]
+    uuid_new = uuid.lower()
+    service_name = src[UUID_LEN:]
+    dest = uuid_new + service_name
+    return dest
+
+
 class Configuration:
     ca_type = 0
     ca_alg = 0
@@ -79,7 +91,8 @@ class Configuration:
         self.ca_alg = parser.get("config", "CAAlg")
         self.cert_type = parser.get("config", "certType")
         self.sec_sign_key_len = parser.get("config", "secSignKeyLen")
-        self.cn = parser.get("config", "CN")
+        temp_cn = parser.get("config", "CN")
+        self.cn = change_to_lowercase(temp_cn)
         self.ou = parser.get("config", "OU")
         self.password = parser.get("config", "pass")
 
