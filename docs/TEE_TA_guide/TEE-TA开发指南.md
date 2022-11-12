@@ -124,9 +124,6 @@
 分别按照thirdparty/open\_source/bounds\_checking\_function和thirdparty/open\_source/musl下的README指导文档来操作即可。
 
 ## 2.1.2 TA编译及开发示例<a name="section87251833133019"></a>
-
-## 2.1.2.1 编译入口示例<a name="section53541258123016"></a>
-
 ## 简介<a name="section24399485559"></a>
 
 32位TA是可信应用程序的32位版本，64位TA是可信应用程序的64位版本。
@@ -135,8 +132,58 @@
 
 目前支持Make和Cmake两种编译框架。
 
-本小节将通过示例程序，介绍用户开发可信应用程序的过程，包括开发环境准备，SDK示例helloworld TA的编译配置和编译方法等。
+本小节将通过示例程序，介绍用户开发可信应用程序的过程，包括开发环境准备，SDK示例helloworld TA的编译配置和编译方法等，TA编译涉及的文件如下表所示。
+<a name="table17621044151218"></a>
+<table><thead align="left"><tr id="row16762144410122"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.5.1.1"><p id="p127627443121"><a name="p127627443121"></a><a name="p127627443121"></a>文件名</p>
+</th>
+<th class="cellrowborder" valign="top" width="50%" id="mcps1.2.5.1.2"><p id="p6762124420127"><a name="p6762124420127"></a><a name="p6762124420127"></a>说明</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row1476234471211"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p18762344111213"><a name="p18762344111213"></a><a name="p18762344111213"></a>build.sh</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p499191714143"><a name="p499191714143"></a><a name="p499191714143"></a>build.sh是TA样例编译的入口脚本</p>
+</td>
+</tr>
+<tr id="row1076214441214"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p20762174491211"><a name="p20762174491211"></a><a name="p20762174491211"></a>defconfig</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p399717171417"><a name="p399717171417"></a><a name="p399717171417"></a>编译方式和工具链配置</p>
+</td>
+</tr>
+<tr id="row27632447128"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p1763194410120"><a name="p1763194410120"></a><a name="p1763194410120"></a>configs.xml</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p1599111761413"><a name="p1599111761413"></a><a name="p1599111761413"></a>TA信息，具体内容需要根据TA实际情况配置</p>
+</td>
+</tr>
+<tr id="row147639447121"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p7763194410123"><a name="p7763194410123"></a><a name="p7763194410123"></a>config.mk</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p1399121714149"><a name="p1399121714149"></a><a name="p1399121714149"></a>TA Make编译的配置文件</p>
+</td>
+</tr>
+<tr id="row1976384419123"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p127631144171218"><a name="p127631144171218"></a><a name="p127631144171218"></a>Makefile</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p2991417111415"><a name="p2991417111415"></a><a name="p2991417111415"></a>TA Makefile文件</p>
+</td>
+</tr>
+<tr id="row376344431217"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p1576318445126"><a name="p1576318445126"></a><a name="p1576318445126"></a>config.cmake</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p1998173149"><a name="p1998173149"></a><a name="p1998173149"></a>TA Cmake编译的配置文件</p>
+</td>
+</tr>
+<tr id="row3763114418127"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p376314416122"><a name="p376314416122"></a><a name="p376314416122"></a>CMakeLists.txt</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p99916175146"><a name="p99916175146"></a><a name="p99916175146"></a>TA CMakeLists.txt文件</p>
+</td>
+</tr>
+<tr id="row1476364411123"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.1 "><p id="p9763844151217"><a name="p9763844151217"></a><a name="p9763844151217"></a>config_ta_public.ini</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p999111710143"><a name="p999111710143"></a><a name="p999111710143"></a>perm_config文件的路径和对应TA证书私钥配置文件，具体内容需要根据TA实际情况配置</p>
+</td>
+</tr>
+</tbody>
+</table>
 
+## 2.1.2.1 编译入口示例<a name="section53541258123016"></a>
 ## build.sh文件<a name="section18297126898"></a>
 
 build.sh是TA样例编译的入口脚本，此脚本会解析同目录下的defconfig配置文件，可以支撑不同场景的编译功能，包含：不同编译方式（make/cmake）、工具链\(gcc/lvm\)、TA二进制\(32/64位\)的编译场景。
