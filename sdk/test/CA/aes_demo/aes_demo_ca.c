@@ -53,7 +53,7 @@ int main(void)
         printf("AES demo teec open session failed.\n");
         goto cleanup_1;
     } else {
-        printf("AES demo teec open session successed.\n");
+        printf("AES demo teec open session succeed.\n");
     }
 
     operation.started = 1;
@@ -64,14 +64,14 @@ int main(void)
         printf("AES CBC encrypt and decrypt test failed, result=0x%x, origin=0x%x.\n", result, origin);
         goto cleanup_2;
     } else {
-        printf("AES CBC encrypt and decrypt test successed.\n");
+        printf("AES CBC encrypt and decrypt test succeed.\n");
     }
     result = TEEC_InvokeCommand(&session, CMD_AES_CCM_ENCRYPT_DECRYPT, &operation, &origin);
     if (result != TEEC_SUCCESS) {
         printf("AES CCM encrypt and decrypt test failed, result=0x%x, origin=0x%x.\n", result, origin);
         goto cleanup_2;
     } else {
-        printf("AES CCM encrypt and decrypt test successed.\n");
+        printf("AES CCM encrypt and decrypt test succeed.\n");
     }
 
 cleanup_2:

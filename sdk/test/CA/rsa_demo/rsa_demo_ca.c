@@ -53,7 +53,7 @@ int main(void)
         printf("RSA demo teec open session failed.\n");
         goto cleanup_1;
     } else {
-        printf("RSA demo teec open session successed.\n");
+        printf("RSA demo teec open session succeed.\n");
     }
 
     operation.started = 1;
@@ -64,7 +64,7 @@ int main(void)
         printf("RSA encrypt and decrypt test failed, result=0x%x, origin=0x%x.\n", result, origin);
         goto cleanup_2;
     } else {
-        printf("RSA encrypt and decrypt test successed.\n");
+        printf("RSA encrypt and decrypt test succeed.\n");
     }
 
     result = TEEC_InvokeCommand(&session, CMD_RSA_SIGN_VERIFY, &operation, &origin);
@@ -72,7 +72,7 @@ int main(void)
         printf("RSA sign and verify test failed, result=0x%x, origin=0x%x.\n", result, origin);
         goto cleanup_2;
     } else {
-        printf("RSA signature and verify test successed.\n");
+        printf("RSA signature and verify test succeed.\n");
     }
 
 cleanup_2:

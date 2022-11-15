@@ -54,7 +54,7 @@ static TEEC_Result teec_init(void)
     ret = TEEC_OpenSession(&g_context, &g_session, &g_macDemoUuid,
         TEEC_LOGIN_IDENTIFY, NULL, &operation, &origin);
     if (ret != TEEC_SUCCESS) {
-        printf("open session failed: result:%d, orgin: %d\n", (int)ret, origin);
+        printf("open session failed: result:%d, origin: %d\n", (int)ret, origin);
         TEEC_FinalizeContext(&g_context);
         return ret;
     }

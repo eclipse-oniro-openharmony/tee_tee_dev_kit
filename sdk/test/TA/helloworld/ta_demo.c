@@ -147,5 +147,5 @@ void TA_CloseSessionEntryPoint(void* session_context)
  */
 void TA_DestroyEntryPoint(void)
 {
-    tlogd("---- destory TA ---- ");
+    tlogd("---- destroy TA ---- ");
 }
