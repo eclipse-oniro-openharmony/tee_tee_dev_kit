@@ -285,7 +285,7 @@ int64_t open_test(struct drv_data *drv, unsigned long args, uint32_t args_len)
 
     uint32_t *input = (uint32_t *)(uintptr_t)args;
     if (*input == UINT32_MAX) {
-        tloge("open test input args is UINT32_MAX, just retrun -1\n");
+        tloge("open test input args is UINT32_MAX, just return -1\n");
         return -1;
     }
 

@@ -23,7 +23,7 @@ enum DEMO_AES_CRYPTO_CMD {
 TEE_Result TA_CreateEntryPoint(void)
 {
     TEE_Result ret;
-    tlogd("----- AES TA creat entry point -----\n");
+    tlogd("----- AES TA create entry point -----\n");
 
     /* When you develop your own CA, you need to change the name to your own path and CA name. */
     ret = AddCaller_CA_exec("/vendor/bin/aes_demo_ca", 0);
