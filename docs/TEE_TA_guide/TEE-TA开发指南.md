@@ -449,14 +449,14 @@ endif
 
 ## Makefile文件<a name="section973417201288"></a>
 
-Makefile文件参考SDK 中test/TA/helloworld目录下示例内容，上述config.mk中配置可直接在Makefile里指定。在编译TA 二进制libcombione.so时，需在target里调用ta\_entry\_check.sh \(build/tools目录下\) 检查so合法性。详细编写参考makefile文件。
+Makefile文件参考SDK 中test/TA/helloworld目录下示例内容，上述config.mk中配置可直接在Makefile里指定。在编译TA 二进制libcombine.so时，需在target里调用ta\_entry\_check.sh \(build/tools目录下\) 检查so合法性。详细编写参考makefile文件。
 
 **注意事项：**
 
 1.  TEE上加载的SEC文件需要携带perm\_config签名，需要先按照[SEC文件签名步骤](#sec文件签名步骤)的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[SEC文件签名步骤](#sec文件签名步骤)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
-2.  样例中Makefile文件里会编译出二进制libcombine.so后并调用signtool\_sec.py脚本签出sec文件。signtool\_sec.py脚本约束TA二进制编译产物名称需要是libcombione.so，否则签名会异常。
+2.  样例中Makefile文件里会编译出二进制libcombine.so后并调用signtool\_sec.py脚本签出sec文件。signtool\_sec.py脚本约束TA二进制编译产物名称需要是libcombine.so，否则签名会异常。
 
-假设可信应用程序包含源文件ta-demo.c，编写Makefile文件编译生成目标文件libcombine.so，如下所示：
+假设可信应用程序包含源文件ta_demo.c，编写Makefile文件编译生成目标文件libcombine.so，如下所示：
 
 ```
 include ./config.mk
@@ -530,9 +530,9 @@ CMakeLists.txt文件参考SDK 中test/TA/helloworld目录下示例内容，上�
 **注意事项：**
 
 1.  OHTEE上加载的SEC文件需要携带perm\_config签名，需要先按照[SEC文件签名步骤](#sec文件签名步骤)章节的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[SEC文件签名步骤](#sec文件签名步骤)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
-2.  样例中CMakeList.txt文件里会编译出二进制libcombine.so后并调用signtool\_sec.py脚本签出sec文件。signtool\_sec.py脚本约束TA二进制编译产物名称需要是libcombione.so，否则签名会异常。
+2.  样例中CMakeList.txt文件里会编译出二进制libcombine.so后并调用signtool\_sec.py脚本签出sec文件。signtool\_sec.py脚本约束TA二进制编译产物名称需要是libcombine.so，否则签名会异常。
 
-假设可信应用程序包含源文件ta-demo.c，编写CMakeLists.txt文件编译生成目标文件libcombine.so，如下所示：
+假设可信应用程序包含源文件ta_demo.c，编写CMakeLists.txt文件编译生成目标文件libcombine.so，如下所示：
 
 ```
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
@@ -812,7 +812,7 @@ keytools工具输出产物将放于output路径下，输出及用途如下表所
 
 tee\_log.h中默认使用的日志级别为INFO，即默认打印使用tloge、tlogw、tlogi接口的信息。如调试过程中希望打印其他级别，可选择下面方式中的一种进行修改，建议使用方式1：
 
-1.  在Makefile或CMakelist.txt文件中动态修改日志级别TA\_LOG\_LEVEL，如c-flags += -DTA\_LOG\_LEVEL=4 ，具体值和对应的显示级别为：
+1.  在Makefile或CMakelist.txt文件中动态修改日志级别TA\_LOG\_LEVEL，具体值和对应的显示级别为：
 
     <a name="table1136311211099"></a>
     <table><thead align="left"><tr id="row936414211913"><th class="cellrowborder" valign="top" width="50%" id="mcps1.1.3.1.1"><p id="p10364172119913"><a name="p10364172119913"></a><a name="p10364172119913"></a>TA_LOG_LEVEL值</p>
