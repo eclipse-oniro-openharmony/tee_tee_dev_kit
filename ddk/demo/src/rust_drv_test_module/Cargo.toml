@@ -1,0 +1,23 @@
+[workspace]
+
+[package]
+name = "rust_drv_test_module"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rust_drv_apis = { path = "../../../rust_drv_apis", features = ["no_std"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+opt-level = "z"
+lto = "fat"
+debug = false
+strip = "symbols"
+codegen-units = 1
