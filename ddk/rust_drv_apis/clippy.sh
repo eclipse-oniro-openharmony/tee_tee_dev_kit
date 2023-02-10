@@ -1,0 +1,15 @@
+#/usr/bin/env bash
+
+export CARGO_NET_GIT_FETCH_WITH_CLI=true 
+
+set -e
+
+deny_list=(warnings unsafe_op_in_unsafe_fn unused_must_use)
+allow_list=(clippy::result_unit_err)
+
+pushd "$SCRIPT_DIR"
+echo "Running cargo clippy for rust_drv_apis..."
+RUSTC_BOOTSTRAP=1 cargo clippy -p rust_drv_apis -- ${deny_lints[@]/#/--deny=}  ${allow_list[@]/#/--allow=}
+rm -rf ./target
+popd
+
