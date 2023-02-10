@@ -11,9 +11,26 @@
 use core::ffi::CStr;
 
 use crate::{
+    arith_api::TeeUuid,
     error::FfiResult,
     ext_api::{AddCaller_CA_apk, AddCaller_CA_exec, AddCaller_TA_all, TEE_EXT_GetCallerInfo},
 };
+
+pub const RESERVED_BUF_SIZE: usize = 32;
+
+#[repr(C)]
+pub union CallerIdentity {
+    pub caller_uuid: TeeUuid,
+    pub ca_info: [u8; RESERVED_BUF_SIZE],
+}
+
+#[repr(C)]
+pub struct TaCallerInfo {
+    pub session_type: u32,
+    pub caller_identity: CallerIdentity,
+    pub smc_from_kernel_mode: u8,
+    pub reserved: [u8; RESERVED_BUF_SIZE - 1],
+}
 
 /// Allow a binary-executable CA to call this TA.
 ///
@@ -56,12 +73,6 @@ pub fn add_caller_ta_all() -> FfiResult {
     unsafe { AddCaller_TA_all() }.into()
 }
 
-pub fn tee_ext_get_caller_info(caller_info_data: &mut [u8]) -> FfiResult {
-    unsafe {
-        TEE_EXT_GetCallerInfo(
-            caller_info_data.as_ptr() as _,
-            caller_info_data.len() as u32,
-        )
-    }
-    .into()
+pub fn tee_ext_get_caller_info(caller_info_data: &mut TaCallerInfo, length: u32) -> FfiResult {
+    unsafe { TEE_EXT_GetCallerInfo(caller_info_data, length) }.into()
 }

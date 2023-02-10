@@ -8,9 +8,9 @@
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
+use crate::security::TaCallerInfo;
 pub use crate::tee_defines::{TeeParam, TeeResult};
-
-use core::ffi::{c_char, c_void};
+use core::ffi::c_char;
 
 /*
  * below definitions are defined by Platform SDK released previously
@@ -36,7 +36,7 @@ extern "C" {
     #[doc = ""]
     #[doc = " return TEE_SUCCESS operation success"]
     #[doc = " return others failed to get caller info"]
-    pub fn TEE_EXT_GetCallerInfo(caller_info_data: *mut c_void, length: u32) -> TeeResult;
+    pub fn TEE_EXT_GetCallerInfo(caller_info_data: *mut TaCallerInfo, length: u32) -> TeeResult;
 }
 
 extern "C" {
