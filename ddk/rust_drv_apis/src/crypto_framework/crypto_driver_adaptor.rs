@@ -82,7 +82,6 @@ impl CryptoAlgType {
     pub const CRYPTO_TYPE_AES_XTS: Self = Self(0x10000410);
     pub const CRYPTO_TYPE_AES_OFB: Self = Self(0x10000510);
     pub const CRYPTO_TYPE_SM4_ECB: Self = Self(0x10000014);
-    #[cfg(feature = "support_kms")]
     pub const CRYPTO_TYPE_SM4_ECB_PKCS7: Self = Self(0x10000024);
     pub const CRYPTO_TYPE_SM4_CBC: Self = Self(0x10000114);
     pub const CRYPTO_TYPE_SM4_CBC_PKCS7: Self = Self(0xF0000003);
@@ -149,7 +148,6 @@ impl CryptoAlgType {
     pub const CRYPTO_TYPE_X25519: Self = Self(0x80000044);
     pub const CRYPTO_TYPE_SM2_PKE: Self = Self(0x80000045);
     pub const CRYPTO_TYPE_GENERATE_RANDOM: Self = Self(0xf0000001);
-    #[cfg(feature = "mbedtls_enable")]
     pub const CRYPTO_TYPE_SIP_HASH: Self = Self(0xF0000002);
 }
 
