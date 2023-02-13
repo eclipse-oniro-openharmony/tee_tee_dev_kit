@@ -15,7 +15,7 @@ use core::{
     ptr::null,
 };
 
-mod drv_api_ffi;
+mod drv_client_api_ffi;
 
 #[repr(transparent)]
 pub struct Driver {
@@ -28,7 +28,7 @@ impl Driver {
             Some(p) => (p.as_ptr() as *const c_void, p.len() as u32),
             None => (null(), 0u32),
         };
-        let rfd = unsafe { drv_api_ffi::tee_drv_open(drv_name.as_ptr() as _, addr, len) };
+        let rfd = unsafe { drv_client_api_ffi::tee_drv_open(drv_name.as_ptr() as _, addr, len) };
         if rfd <= 0 {
             Err(rfd)
         } else {
@@ -41,14 +41,14 @@ impl Driver {
             Some(p) => (p.as_ptr() as *const c_void, p.len() as u32),
             None => (null(), 0u32),
         };
-        unsafe { drv_api_ffi::tee_drv_ioctl(self.fd, cmd_id, addr, len) }
+        unsafe { drv_client_api_ffi::tee_drv_ioctl(self.fd, cmd_id, addr, len) }
     }
 }
 
 impl Drop for Driver {
     fn drop(&mut self) {
         if self.fd > 0 {
-            let ret = unsafe { drv_api_ffi::tee_drv_close(self.fd) };
+            let ret = unsafe { drv_client_api_ffi::tee_drv_close(self.fd) };
             if ret != 0 {
                 unsafe {
                     tee_print(

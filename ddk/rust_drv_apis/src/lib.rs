@@ -13,7 +13,7 @@
 pub mod addr_api;
 pub mod crypto_framework;
 pub mod dma_api;
-pub mod drv_api;
+pub mod drv_client_api;
 pub mod framework;
 pub mod hwi_api;
 pub mod io_api;
