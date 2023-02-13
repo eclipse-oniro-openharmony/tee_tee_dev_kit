@@ -8,15 +8,15 @@
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
-mod addr_api_ffi;
+mod addr_trans_api_ffi;
 use crate::framework::defines::VsrootInfoT;
 
 #[repr(C)]
-pub struct AddrApi {}
+pub struct AddrTransApi {}
 
-impl AddrApi {
+impl AddrTransApi {
     pub fn virt_to_phys(addr: usize) -> u64 {
-        unsafe { addr_api_ffi::drv_virt_to_phys(addr) }
+        unsafe { addr_trans_api_ffi::drv_virt_to_phys(addr) }
     }
 
     pub fn get_vsrootinfo() -> Result<VsrootInfoT, i32> {
@@ -25,7 +25,7 @@ impl AddrApi {
             pud: 0,
             asid: 0,
         };
-        let ret = unsafe { addr_api_ffi::drv_get_vsrootinfo(&mut info) };
+        let ret = unsafe { addr_trans_api_ffi::drv_get_vsrootinfo(&mut info) };
         if ret == 0 {
             return Ok(info);
         }

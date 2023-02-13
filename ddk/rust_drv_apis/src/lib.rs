@@ -10,7 +10,7 @@
 // See the Mulan PSL v2 for more details.
 #![cfg_attr(feature = "no_std", no_std)]
 
-pub mod addr_api;
+pub mod addr_trans_api;
 pub mod crypto_framework;
 pub mod dma_api;
 pub mod drv_client_api;
