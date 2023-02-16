@@ -11,6 +11,7 @@
 use core::fmt::{self, Write};
 
 #[repr(transparent)]
+#[derive(PartialEq, Eq)]
 pub struct LogLevel(u32);
 
 impl LogLevel {
@@ -34,11 +35,21 @@ struct BufferedPrinter {
 }
 
 impl BufferedPrinter {
-    fn print_str(&self, level: LogLevel) {
+    fn print_str(&self, line: u32, level: LogLevel) {
+        let tag = match level {
+            LogLevel::INFO => b"[info]\0".as_ptr(),
+            LogLevel::ERROR => b"[error]\0".as_ptr(),
+            LogLevel::VERBO => b"[verb]\0".as_ptr(),
+            LogLevel::WARN => b"[warn]\0".as_ptr(),
+            LogLevel::DEBUG => b"[debug]\0".as_ptr(),
+            _ => b"[on]\0".as_ptr(),
+        };
         unsafe {
             tee_print(
                 level,
-                "%.*s\0".as_ptr() as _,
+                "%s %u:%.*s\0".as_ptr() as _,
+                tag as u64,
+                line,
                 self.len,
                 self.buf.as_ptr() as u64,
             );
@@ -61,16 +72,16 @@ impl fmt::Write for BufferedPrinter {
 }
 
 #[doc(hidden)]
-pub fn _print(level: LogLevel, args: fmt::Arguments) {
-    let log_level = if cfg!(log_level_verbo) {
+pub fn _print(line: u32, level: LogLevel, args: fmt::Arguments) {
+    let log_level = if cfg!(feature = "log_level_verbo") {
         LogLevel::VERBO
-    } else if cfg!(log_level_debug) {
+    } else if cfg!(feature = "log_level_debug") {
         LogLevel::DEBUG
-    } else if cfg!(log_level_info) {
+    } else if cfg!(feature = "log_level_info") {
         LogLevel::INFO
-    } else if cfg!(log_level_warn) {
+    } else if cfg!(feature = "log_level_warn") {
         LogLevel::WARN
-    } else if cfg!(log_level_error) {
+    } else if cfg!(feature = "log_level_error") {
         LogLevel::ERROR
     } else {
         LogLevel::INFO
@@ -83,7 +94,7 @@ pub fn _print(level: LogLevel, args: fmt::Arguments) {
         buf: [0u8; MAX_PRINT_LEN],
     };
     printer.write_fmt(args).unwrap();
-    printer.print_str(level);
+    printer.print_str(line, level);
 }
 
 // Rust style print
@@ -96,25 +107,25 @@ pub fn _print(level: LogLevel, args: fmt::Arguments) {
 // example: tlogi!("xyz is {}", xyz);
 #[macro_export]
 macro_rules! tlogi {
-    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(rust_drv_apis::framework::print::LogLevel::INFO, format_args!($($arg)*)));
+    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(line!(), rust_drv_apis::framework::print::LogLevel::INFO, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tloge {
-    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(rust_drv_apis::framework::print::LogLevel::ERROR, format_args!($($arg)*)));
+    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(line!(), rust_drv_apis::framework::print::LogLevel::ERROR, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tlogw {
-    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(rust_drv_apis::framework::print::LogLevel::WARN, format_args!($($arg)*)));
+    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(line!(), rust_drv_apis::framework::print::LogLevel::WARN, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tlogv {
-    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(rust_drv_apis::framework::print::LogLevel::VERBO, format_args!($($arg)*)));
+    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(line!(), rust_drv_apis::framework::print::LogLevel::VERBO, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tlogd {
-    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(rust_drv_apis::framework::print::LogLevel::DEBUG, format_args!($($arg)*)));
+    ($($arg:tt)*) => (rust_drv_apis::framework::print::_print(line!(), rust_drv_apis::framework::print::LogLevel::DEBUG, format_args!($($arg)*)));
 }

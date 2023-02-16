@@ -67,7 +67,7 @@ pub struct CryptoDrvOpsT {
     pub rsa_decrypt: Option<RsaDecryptFunc>,
     pub rsa_sign_digest: Option<RsaSignDigestFunc>,
     pub rsa_verify_digest: Option<RsaVerifyDigestFunc>,
-    pub ecc_generate_keypair: Option<EccGeneteKeypairFunc>,
+    pub ecc_generate_keypair: Option<EccGenerateKeypairFunc>,
     pub ecc_encrypt: Option<EccEncryptFunc>,
     pub ecc_decrypt: Option<EccDecryptFunc>,
     pub ecc_sign_digest: Option<EccSignDigestFunc>,

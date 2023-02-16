@@ -17,6 +17,18 @@ use crate::framework::defines::MAP_FAILED;
 
 mod io_api_ffi;
 
+pub const PROT_NONE: u32 = 0;
+
+pub const PROT_READ: u32 = 1;
+
+pub const PROT_WRITE: u32 = 2;
+
+pub const PROT_EXEC: u32 = 4;
+
+pub const PROT_GROWSDOWN: u32 = 0x01000000;
+
+pub const PROT_GROWSUP: u32 = 0x02000000;
+
 #[repr(C)]
 pub struct IoApi {}
 
@@ -39,7 +51,7 @@ impl IoApi {
             return None;
         }
         // safety: if ioremap success, tee promise the res is valid
-        unsafe { Some(core::slice::from_raw_parts_mut(res, size as usize)) }
+        unsafe { Some(core::slice::from_raw_parts_mut(res, size)) }
     }
 
     pub fn iounmap(paddr: usize, addr: usize) -> i32 {

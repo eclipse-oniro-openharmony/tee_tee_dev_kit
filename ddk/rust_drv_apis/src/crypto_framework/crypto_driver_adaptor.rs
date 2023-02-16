@@ -712,10 +712,10 @@ pub type RsaVerifyDigestFunc = extern "C" fn(
 ///                   private_key：   private key pointer
 /// Return:           CRYPTO_SUCCESS if success, othres means fail
 ///
-pub type EccGeneteKeypairFunc = extern "C" fn(
+pub type EccGenerateKeypairFunc = extern "C" fn(
     keysize: u32,
     curve: u32,
-    public_key: *mut EccPrivKeyT,
+    public_key: *mut EccPubKeyT,
     private_key: *mut EccPrivKeyT,
 ) -> i32;
 
@@ -899,7 +899,7 @@ pub struct CryptoOpsT {
     pub rsa_decrypt: Option<RsaDecryptFunc>,
     pub rsa_sign_digest: Option<RsaSignDigestFunc>,
     pub rsa_verify_digest: Option<RsaVerifyDigestFunc>,
-    pub ecc_generate_keypair: Option<EccGeneteKeypairFunc>,
+    pub ecc_generate_keypair: Option<EccGenerateKeypairFunc>,
     pub ecc_encrypt: Option<EccEncryptFunc>,
     pub ecc_decrypt: Option<EccDecryptFunc>,
     pub ecc_sign_digest: Option<EccSignDigestFunc>,
