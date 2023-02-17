@@ -241,5 +241,5 @@ extern "C" {
     /// TEE_SUCCESS  Indicates that the function was executed successfully
     /// TEE_ERROR_BAD_PARAMETERS  Incorrect input parameters
     /// TEE_ERROR_GENERIC  Processing failed
-    pub fn TEE_RPMB_TAVERSION_Process(ta_version: u32) -> TeeResult;
+    pub fn tee_ext_ta_version_check(ta_version: u32) -> TeeResult;
 }

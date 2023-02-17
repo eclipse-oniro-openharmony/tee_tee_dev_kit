@@ -229,6 +229,6 @@ impl RpmbFs {
     }
 
     pub fn set_ta_version(ta_version: u32) -> crate::error::FfiResult {
-        unsafe { rpmb_fcntl_ffi::TEE_RPMB_TAVERSION_Process(ta_version) }.into()
+        unsafe { rpmb_fcntl_ffi::tee_ext_ta_version_check(ta_version) }.into()
     }
 }
