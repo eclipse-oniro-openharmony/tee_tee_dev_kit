@@ -11,6 +11,7 @@
 use core::fmt::{self, Write};
 
 #[repr(transparent)]
+#[derive(PartialEq, Eq)]
 pub struct LogLevel(u32);
 
 impl LogLevel {
@@ -35,10 +36,19 @@ struct BufferedPrinter {
 
 impl BufferedPrinter {
     fn print_str(&self, level: LogLevel) {
+        let tag = match level {
+            LogLevel::INFO => b"[info]\0".as_ptr(),
+            LogLevel::ERROR => b"[error]\0".as_ptr(),
+            LogLevel::VERBO => b"[verb]\0".as_ptr(),
+            LogLevel::WARN => b"[warn]\0".as_ptr(),
+            LogLevel::DEBUG => b"[debug]\0".as_ptr(),
+            _ => b"[on]\0".as_ptr(),
+        };
         unsafe {
             tee_print(
                 level,
-                "%.*s\0".as_ptr() as _,
+                "%s %.*s\0".as_ptr() as _,
+                tag as u64,
                 self.len,
                 self.buf.as_ptr() as u64,
             );
@@ -62,6 +72,22 @@ impl fmt::Write for BufferedPrinter {
 
 #[doc(hidden)]
 pub fn _print(level: LogLevel, args: fmt::Arguments) {
+    let log_level = if cfg!(feature = "log_level_verbo") {
+        LogLevel::VERBO
+    } else if cfg!(feature = "log_level_debug") {
+        LogLevel::DEBUG
+    } else if cfg!(feature = "log_level_info") {
+        LogLevel::INFO
+    } else if cfg!(feature = "log_level_warn") {
+        LogLevel::WARN
+    } else if cfg!(feature = "log_level_error") {
+        LogLevel::ERROR
+    } else {
+        LogLevel::INFO
+    };
+    if level.0 > log_level.0 {
+        return;
+    }
     let mut printer: BufferedPrinter = BufferedPrinter {
         len: 0,
         buf: [0u8; MAX_PRINT_LEN],
