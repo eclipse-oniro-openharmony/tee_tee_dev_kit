@@ -8,9 +8,6 @@
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
-#![allow(non_camel_case_types)]
-#![allow(non_snake_case)]
-
 use crate::tee_defines::TeeUuid;
 
 pub struct TeeMutexHandle {
@@ -25,19 +22,21 @@ pub struct SpawnUuid {
     pub uuid: TeeUuid,
 }
 
-#[repr(u32)]
+#[repr(transparent)]
 #[non_exhaustive]
 #[doc = " Login type definitions"]
 #[derive(Copy, Clone, PartialEq, Eq)]
-pub enum TeeLoginMethod {
-    TEE_LOGIN_PUBLIC = 0,
-    TEE_LOGIN_USER = 1,
-    TEE_LOGIN_GROUP = 2,
-    TEE_LOGIN_APPLICATION = 4,
-    TEE_LOGIN_USER_APPLICATION = 5,
-    TEE_LOGIN_GROUP_APPLICATION = 6,
+pub struct TeeLoginMethod(u32);
+
+impl TeeLoginMethod {
+    pub const TEE_LOGIN_PUBLIC: Self = Self(0);
+    pub const TEE_LOGIN_USER: Self = Self(1);
+    pub const TEE_LOGIN_GROUP: Self = Self(2);
+    pub const TEE_LOGIN_APPLICATION: Self = Self(4);
+    pub const TEE_LOGIN_USER_APPLICATION: Self = Self(5);
+    pub const TEE_LOGIN_GROUP_APPLICATION: Self = Self(6);
     #[doc = " iTrustee defined Login type"]
-    TEE_LOGIN_IDENTIFY = 7,
+    pub const TEE_LOGIN_IDENTIFY: Self = Self(7);
 }
 
 #[repr(C)]

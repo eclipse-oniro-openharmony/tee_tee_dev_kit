@@ -8,29 +8,12 @@
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
-#![cfg_attr(feature = "no_std", no_std)]
+pub use crate::tee_defines::*;
+use core::ffi::{c_char, c_void};
 
-#[cfg(feature = "no_std")]
-mod alloc;
-pub mod arith_api;
-pub mod core;
-pub mod crypto_api;
-pub mod defines;
-pub mod drv_client_api;
-pub mod error;
-pub mod ext_api;
-pub mod msp;
-#[cfg(feature = "no_std")]
-mod panic;
-pub mod parameters;
-pub mod print;
-pub mod property;
-pub mod rpmb_fcntl;
-pub mod sec_flash;
-pub mod security;
-pub mod tee_defines;
-pub mod time;
-pub mod trusted_storage_api;
-pub mod uuid;
-
-pub use tee_defines::TeeResult;
+#[allow(dead_code)]
+extern "C" {
+    pub fn tee_drv_open(drv_name: *const c_char, param: *const c_void, param_len: u32) -> i64;
+    pub fn tee_drv_ioctl(fd: i64, cmd_id: u32, param: *const c_void, param_len: u32) -> i64;
+    pub fn tee_drv_close(fd: i64) -> i64;
+}
