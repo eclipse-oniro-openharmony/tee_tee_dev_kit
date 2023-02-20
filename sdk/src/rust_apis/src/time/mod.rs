@@ -9,7 +9,6 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 mod time_ffi;
-use crate::defines::TeeDateTime;
 use crate::tee_defines::TeeResult;
 
 pub use time_ffi::*;
@@ -65,41 +64,10 @@ impl TeeTime {
     pub fn set_ta_persistent_time(&mut self) -> crate::error::FfiResult {
         unsafe { TEE_SetTAPersistentTime(self as *mut _ as _) }.into()
     }
-
-    pub fn get_rtc_time() -> TeeTime {
-        let mut tee_time: TeeTime = TeeTime {
-            seconds: 0,
-            millis: 0,
-        };
-        unsafe {
-            get_sys_rtc_time((&mut tee_time) as *mut _);
-        }
-        tee_time
-    }
 }
 
 impl Default for TeeTime {
     fn default() -> Self {
         TeeTime::new()
-    }
-}
-
-impl TeeDateTime {
-    /// get time for DateTime datastructure
-    pub fn get_sys_date_time() -> TeeDateTime {
-        let mut date_time: TeeDateTime = TeeDateTime {
-            seconds: 0,
-            millis: 0,
-            min: 0,
-            hour: 0,
-            day: 0,
-            month: 0,
-            year: 0,
-        };
-
-        unsafe {
-            __get_sys_date_time((&mut date_time) as *mut _);
-        }
-        date_time
     }
 }
