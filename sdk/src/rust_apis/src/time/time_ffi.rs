@@ -9,7 +9,7 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 use crate::tee_defines::TeeResult;
-use crate::time::{TeeDateTime, TeeTime};
+use crate::time::TeeTime;
 
 extern "C" {
     #[doc = " Get current TEE system time"]
@@ -61,16 +61,4 @@ extern "C" {
     #[doc = " @param time OUT current REE system time"]
     #[doc = " @return void"]
     pub fn TEE_GetREETime(time: *mut TeeTime);
-}
-
-extern "C" {
-    #[doc = " Get current TEE system rtc time"]
-    #[doc = ""]
-    #[doc = " @param time OUT current system rtc time"]
-    #[doc = " @return void"]
-    pub fn get_sys_rtc_time(time: *mut TeeTime);
-}
-
-extern "C" {
-    pub fn __get_sys_date_time(time_date: *mut TeeDateTime);
 }
