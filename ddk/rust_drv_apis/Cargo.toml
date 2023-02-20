@@ -1,0 +1,16 @@
+[package]
+name = "rust_drv_apis"
+version = "0.1.0"
+edition = "2021"
+description = "teeos rust ddk"
+
+[dependencies]
+
+[features]
+default = []
+no_std = []
+log_level_error = []
+log_level_warn = []
+log_level_info = []
+log_level_debug = []
+log_level_verbo = []
