@@ -100,7 +100,7 @@ def handle_trans(value, path):
                 find_out = 1 # means we find sym in dict
 
         if find_out == 0:
-            raise RuntimeError("cannot find " + datas[i] + " in " + path)
+            raise RuntimeError("cannot find {} in {}".format(datas[i], path))
 
     ans = datas[0]
     for i in range(1, len(datas)):
@@ -159,7 +159,7 @@ def get_value_trans(old_item, value, attrib, key, in_path):
                 raise RuntimeError("you should set drv name while \
                                     you set drv permission")
             trans_file_path = os.path.join(in_path,
-                                           attrib[attri] + ".csv")
+                                           "{}.csv".format(attrib[attri]))
             return handle_trans(value, trans_file_path)
 
     raise RuntimeError("cannot find second trans file",\
