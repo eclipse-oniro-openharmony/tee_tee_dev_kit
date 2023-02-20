@@ -123,8 +123,8 @@ def generate_sha256_hash(in_buf):
 
 def gen_rsa_signature(sign_conf_alg, config_buf, input_path_gen, output_file):
     if sign_conf_alg == "RSA_PSS":
-        pri_key = CONFIG_CERT_PATH + '/taconfig_key.pem'
-        msg_file = input_path_gen + '/temp/config_msg'
+        pri_key = os.path.join(CONFIG_CERT_PATH, "taconfig_key.pem")
+        msg_file = os.path.join(input_path_gen, "temp/config_msg")
         fd_msg_file = os.open(msg_file, os.O_WRONLY | os.O_CREAT, \
             stat.S_IWUSR | stat.S_IRUSR)
         msg_file_fp = os.fdopen(fd_msg_file, "wb")
@@ -141,7 +141,7 @@ def gen_rsa_signature(sign_conf_alg, config_buf, input_path_gen, output_file):
             raise RuntimeError
     else: # pkcsv1_5
         config_hash = generate_sha256_hash(config_buf)
-        hash_file = input_path_gen + '/temp/config_hash'
+        hash_file = os.path.join(input_path_gen, "temp/config_hash")
         fd_hash = os.open(hash_file, os.O_WRONLY | os.O_CREAT, \
             stat.S_IWUSR | stat.S_IRUSR)
         hash_file_fp = os.fdopen(fd_hash, "wb")
@@ -160,14 +160,14 @@ def gen_rsa_signature(sign_conf_alg, config_buf, input_path_gen, output_file):
 
 
 def gen_ecdsa_signature(config_buf, input_path_gen, output_file):
-    msg_file = input_path_gen + '/temp/config_msg'
+    msg_file = os.path.join(input_path_gen, "temp/config_msg")
     fd_msg_file = os.open(msg_file, os.O_WRONLY | os.O_CREAT, \
         stat.S_IWUSR | stat.S_IRUSR)
     msg_file_fp = os.fdopen(fd_msg_file, "wb")
     msg_file_fp.write(config_buf)
     msg_file_fp.close()
 
-    pri_key = CONFIG_CERT_PATH + '/taconfig_key.pem'
+    pri_key = os.path.join(CONFIG_CERT_PATH, "taconfig_key.pem")
     cmd = ["openssl", "dgst", "-sha256", "-sign", pri_key, \
            "-out", output_file, msg_file]
     run_cmd(cmd)
@@ -177,7 +177,7 @@ def gen_ecdsa_signature(config_buf, input_path_gen, output_file):
 
 def gen_config_sign(sign_conf_alg, input_path_gen, header,
                     config, ta_cert, output_file):
-    temp_file = input_path_gen + '/temp/file_to_sign'
+    temp_file = os.path.join(input_path_gen, "temp/file_to_sign")
     fd_temp = os.open(temp_file, os.O_WRONLY | os.O_CREAT, \
         stat.S_IWUSR | stat.S_IRUSR)
     temp_file_fp = os.fdopen(fd_temp, "wb")
@@ -219,10 +219,10 @@ def convert_xml2tlv(xml_file, tlv_file, input_path, config_file):
 
 
 def creat_temp_folder(input_path_creat):
-    if os.path.exists(input_path_creat + '/temp'):
-        shutil.rmtree(input_path_creat + '/temp')
-
     temp_path = os.path.join(input_path_creat, 'temp')
+    if os.path.exists(temp_path):
+        shutil.rmtree(temp_path)
+
     cmd = ["mkdir", temp_path]
     run_cmd(cmd)
     return
@@ -230,9 +230,9 @@ def creat_temp_folder(input_path_creat):
 
 def delete_temp_folder(input_path_delete):
     if os.path.exists(input_path_delete + '/temp'):
-        shutil.rmtree(input_path_delete + '/temp')
+        shutil.rmtree(os.path.join(input_path_delete, "temp"))
     if os.path.exists(input_path_delete + '/config_tlv'):
-        os.remove(input_path_delete + '/config_tlv')
+        os.remove(os.path.join(input_path_delete, "config_tlv"))
     return
 
 
@@ -303,9 +303,9 @@ def gen_config_section(input_path, cert_path, config_section):
         cfg = Configuration(config_file)
         sign_conf_alg = cfg.sign_alg
     #convert xml to tlv
-    tlv_dynconf_data = input_path + '/config_tlv'
-    xml_config_file = input_path + '/configs.xml'
-    tlv_config_file = input_path + '/temp/configs_tlv'
+    tlv_dynconf_data = os.path.join(input_path, "config_tlv")
+    xml_config_file = os.path.join(input_path, "configs.xml")
+    tlv_config_file = os.path.join(input_path, "temp/configs_tlv")
     if check_dyn_perm(xml_config_file, input_path) != 0:
         sys.path.append('../signtools')
         from dyn_conf_parser import parser_dyn_conf
@@ -343,7 +343,7 @@ def gen_config_section(input_path, cert_path, config_section):
     with open(cert_path, 'rb') as ta_cert_fp:
         ta_cert_buf = ta_cert_fp.read(ta_cert_size)
 
-    config_cert_path = CONFIG_CERT_PATH + '/taconfig.der'
+    config_cert_path = os.path.join(CONFIG_CERT_PATH, "taconfig.der")
     config_cert_size = os.path.getsize(config_cert_path)
     with open(config_cert_path, 'rb') as config_cert_fp:
         config_cert_buf = config_cert_fp.read(config_cert_size)
@@ -365,7 +365,7 @@ def gen_config_section(input_path, cert_path, config_section):
             CONFIG_VERSION, get_policy_version(), config_context_size, \
             ta_cert_size, config_content_size, config_sign_size, \
             config_cert_size)
-    output_file = input_path + '/temp/config_sign'
+    output_file = os.path.join(input_path, "temp/config_sign")
     gen_config_sign(sign_conf_alg, input_path, \
             config_header.get_packed_data(), \
             tlv_config_buf, ta_cert_buf, output_file)

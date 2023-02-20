@@ -78,14 +78,14 @@ def process_xml_to_manifest(config_xml_file_path, manifest_path):
 
     #Traversing the second layer of the xml file
     for child in root:
-        child_item = old_item + "/" + child.tag
+        child_item = "{}/{}".format(old_item, child.tag)
         #Traversing the third layer of the xml file
         for children in child:
-            children_item = child_item + "/" + children.tag
+            children_item = "{}/{}".format(child_item, children.tag)
             dyn_type = type_dict.get(children_item + attrs)
             manifest_item_name = manifest_dict.get(children_item + attrs)
             if dyn_type == type_trans.get("TYPE_CHAR"):
-                value = manifest_item_name + ": " + children.text + "\n"
+                value = "{}: {}\n".format(manifest_item_name, children.text)
                 manifest_fp.write(value.encode())
                 write_data = True
 
