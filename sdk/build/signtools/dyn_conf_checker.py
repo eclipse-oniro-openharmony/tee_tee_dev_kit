@@ -183,8 +183,7 @@ def check_chip_type(attrib, value):
     for chip in chips:
         chip_item = chip.lower().strip()
         if len(chip_item) > 31:
-            raise RuntimeError(chip_item + " length is \
-larger than 31", chip_item)
+            raise RuntimeError("{} length is larger than 31".format(chip_item), chip_item)
 
     flag = 0
     for attr in attrib:
