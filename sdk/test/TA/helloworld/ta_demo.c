@@ -85,7 +85,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t parm_type,
 }
 
 /**
- * Function TA_InvokeCommandEntryPoint:
+ * Function TA_InvokeCommandEntryPoint
  * Description:
  *   The Framework calls this function when the client invokes a command
  *   within the given session.
@@ -127,7 +127,7 @@ TEE_Result TA_InvokeCommandEntryPoint(void* session_context, uint32_t cmd,
 }
 
 /**
- * Function TA_CloseSessionEntryPoint:
+ * Function TA_CloseSessionEntryPoint
  * Description:
  *   The Framework calls this function to close a client session.
  *   During the call to this function the implementation can use
@@ -147,5 +147,5 @@ void TA_CloseSessionEntryPoint(void* session_context)
  */
 void TA_DestroyEntryPoint(void)
 {
-    tlogd("---- destory TA ---- ");
+    tlogd("---- destroy TA ---- ");
 }
