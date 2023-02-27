@@ -320,7 +320,7 @@ impl EnumrablePropertySet {
         unsafe { property_ffi::TEE_ResetPropertyEnumerator(self.0) }
     }
 
-    pub fn get_property_name(&self, name: &mut [u8]) -> Result<(), FfiTeeError> {
+    pub fn get_property_name(&self, name: &mut [u8]) -> Result<usize, FfiTeeError> {
         let mut name_buffer_len: usize = name.len();
         let res: Result<(), FfiTeeError> = unsafe {
             property_ffi::TEE_GetPropertyName(
@@ -331,16 +331,13 @@ impl EnumrablePropertySet {
         }
         .into();
         res?;
-        Ok(())
+        Ok(name_buffer_len)
     }
-}
 
-impl Iterator for EnumrablePropertySet {
-    type Item = EnumrablePropertySet;
-    fn next(&mut self) -> Option<Self::Item> {
+    pub fn next(&self) -> Option<&EnumrablePropertySet> {
         let ret: FfiResult = unsafe { property_ffi::TEE_GetNextProperty(self.0) }.into();
         match ret {
-            Ok(()) => Some(EnumrablePropertySet(self.0)),
+            Ok(()) => Some(self),
             _ => None,
         }
     }

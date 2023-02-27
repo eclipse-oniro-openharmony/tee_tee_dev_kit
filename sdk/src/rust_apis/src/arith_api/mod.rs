@@ -829,13 +829,6 @@ impl TeeBigIntFMM {
 }
 
 impl TeeBigIntFMMContext {
-    pub fn default() -> Self {
-        TeeBigIntFMMContext {
-            handle: core::ptr::null_mut(),
-            _p: core::marker::PhantomData,
-        }
-    }
-
     ///
     /// calculates the necessary prerequisites for the fast modular multiplication and stores them in a context.
     ///
@@ -909,6 +902,15 @@ impl TeeBigIntFMMContext {
                 Err(ec)
             }
             Ok(_) => Ok(context),
+        }
+    }
+}
+
+impl Default for TeeBigIntFMMContext {
+    fn default() -> Self {
+        TeeBigIntFMMContext {
+            handle: core::ptr::null_mut(),
+            _p: core::marker::PhantomData,
         }
     }
 }

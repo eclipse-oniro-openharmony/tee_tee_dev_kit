@@ -35,7 +35,7 @@ struct BufferedPrinter {
 }
 
 impl BufferedPrinter {
-    fn print_str(&self, level: LogLevel) {
+    fn print_str(&self, line: u32, level: LogLevel) {
         let tag = match level {
             LogLevel::INFO => b"[info]\0".as_ptr(),
             LogLevel::ERROR => b"[error]\0".as_ptr(),
@@ -47,8 +47,9 @@ impl BufferedPrinter {
         unsafe {
             tee_print(
                 level,
-                "%s %.*s\0".as_ptr() as _,
+                "%s %u:%.*s\0".as_ptr() as _,
                 tag as u64,
+                line,
                 self.len,
                 self.buf.as_ptr() as u64,
             );
@@ -71,7 +72,7 @@ impl fmt::Write for BufferedPrinter {
 }
 
 #[doc(hidden)]
-pub fn _print(level: LogLevel, args: fmt::Arguments) {
+pub fn _print(line: u32, level: LogLevel, args: fmt::Arguments) {
     let log_level = if cfg!(feature = "log_level_verbo") {
         LogLevel::VERBO
     } else if cfg!(feature = "log_level_debug") {
@@ -93,7 +94,7 @@ pub fn _print(level: LogLevel, args: fmt::Arguments) {
         buf: [0u8; MAX_PRINT_LEN],
     };
     printer.write_fmt(args).unwrap();
-    printer.print_str(level);
+    printer.print_str(line, level);
 }
 
 // Rust style print
@@ -106,25 +107,25 @@ pub fn _print(level: LogLevel, args: fmt::Arguments) {
 // example: tlogi!("xyz is {}", xyz);
 #[macro_export]
 macro_rules! tlogi {
-    ($($arg:tt)*) => ($crate::print::_print(rust_apis::print::LogLevel::INFO, format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::print::_print(line!(), rust_apis::print::LogLevel::INFO, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tloge {
-    ($($arg:tt)*) => ($crate::print::_print(rust_apis::print::LogLevel::ERROR, format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::print::_print(line!(), rust_apis::print::LogLevel::ERROR, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tlogw {
-    ($($arg:tt)*) => ($crate::print::_print(rust_apis::print::LogLevel::WARN, format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::print::_print(line!(), rust_apis::print::LogLevel::WARN, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tlogv {
-    ($($arg:tt)*) => ($crate::print::_print(rust_apis::print::LogLevel::VERBO, format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::print::_print(line!(), rust_apis::print::LogLevel::VERBO, format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! tlogd {
-    ($($arg:tt)*) => ($crate::print::_print(rust_apis::print::LogLevel::DEBUG, format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::print::_print(line!(), rust_apis::print::LogLevel::DEBUG, format_args!($($arg)*)));
 }
