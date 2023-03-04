@@ -8,18 +8,15 @@
 // KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
-#![cfg_attr(feature = "no_std", no_std)]
 
-pub mod addr_trans_api;
-pub mod crypto_framework;
-pub mod dma_api;
-pub mod drv_client_api;
-pub mod framework;
-pub mod hwi_api;
-pub mod io_api;
-pub mod map_api;
-pub mod mem_copy_api;
-pub mod reg_api;
-pub mod share_mem_api;
-
-pub use framework::tee_defines::TeeResult;
+extern "C" {
+    ///
+    /// read mpidr el1 for cpu
+    ///
+    /// # Parameters
+    /// None
+    ///
+    /// # Return
+    /// mpidr el1
+    pub fn drv_read_mpidr_el1() -> i64;
+}
