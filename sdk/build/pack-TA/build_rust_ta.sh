@@ -46,7 +46,7 @@ function build_rust_ta() {
     rust_so="$release_path/lib$name.so"
     combile_so="$release_path/libcombine.so"
     case "$std" in
-    "core") cargo +$os build $features -Z build-std=core --target=$target --release
+    "core") cargo +$os build $features --target=$target --release
         ;;
     "std") cargo +$os build $features --target=$target --release
         ;;
