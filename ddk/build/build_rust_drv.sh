@@ -17,7 +17,6 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true
 set -o pipefail
 target="aarch64-unknown-teeos"
 os="teeos"
-dyn_perm_file="dyn_perm.xml"
 auth_config_file="auth_config.xml"
 
 cur_dir=$(cd "$(dirname "$0")"; pwd)
@@ -57,15 +56,11 @@ function build_rust_drv() {
     echo "start sign"
     echo "release path : $release_path/"
     cp "${rust_so}" "${combile_so}"
-    if [ -f "$dyn_perm_file" ]; then
-        cp $dyn_perm_file $release_path/
-    fi
     cp *.csv $release_path/ || true
-    cp defconfig $release_path/ || true
+    cp configs.xml $release_path/ || true
     if [ -f "$auth_config_file" ]; then
         cp $auth_config_file $release_path/
     fi
-    cp manifest.txt "${release_path}"
 }
 
 build_rust_drv
