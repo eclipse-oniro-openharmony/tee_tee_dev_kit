@@ -177,7 +177,7 @@ impl<'a, T: 'a> RustParameter<'a, T> {
         buffer: *const core::ffi::c_void,
         size: usize,
     ) -> Result<&'a [T], ParamError> {
-        if size % core::mem::size_of::<T>() != 0 {
+        if core::mem::size_of::<T>() == 0 || size % core::mem::size_of::<T>() != 0 {
             Err(ParamError::MemrefSizeMismatch)
         } else {
             Ok(unsafe {
@@ -195,7 +195,7 @@ impl<'a, T: 'a> RustParameter<'a, T> {
         buffer: *mut core::ffi::c_void,
         size: usize,
     ) -> Result<&'a mut [T], ParamError> {
-        if size % core::mem::size_of::<T>() != 0 {
+        if core::mem::size_of::<T>() == 0 || size % core::mem::size_of::<T>() != 0 {
             Err(ParamError::MemrefSizeMismatch)
         } else {
             Ok(unsafe {
