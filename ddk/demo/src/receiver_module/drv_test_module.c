@@ -22,7 +22,6 @@
 #include "drv_io_share.h"
 #include "drv_addr_share.h"
 #include "io_operations.h"
-#include "drv_map_share.h"
 #include "drv_hwi_share.h"
 #include "hm_cache_flush.h"
 
