@@ -34,5 +34,6 @@ target_link_options(${CURRENT_TARGET_SO} PRIVATE ${COMMON_LDFLAGS})
 add_custom_command(
     TARGET ${CURRENT_TARGET_SO} POST_BUILD
     COMMAND sh $ENV{TEE_BUILD_PATH}/build/tools/ta_entry_check.sh ${CMAKE_READELF} ${CMAKE_CURRENT_SOURCE_DIR}/libcombine.so n y ${TARGET_IS_ARM64}
+    COMMAND python3 $ENV{TEE_BUILD_PATH}/build/signtools/ta_check_undefined_symbol.py ${CMAKE_CURRENT_SOURCE_DIR}/libcombine.so
     COMMAND python3 -B $ENV{TEE_BUILD_PATH}/build/signtools/signtool_sec.py ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} --privateCfg $ENV{TEE_BUILD_PATH}/build/config_tee_private_sample.ini --publicCfg ${CMAKE_CURRENT_SOURCE_DIR}/config_ta_public.ini
 )

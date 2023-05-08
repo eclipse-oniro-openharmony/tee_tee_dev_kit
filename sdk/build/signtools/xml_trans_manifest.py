@@ -16,6 +16,7 @@
 
 import string
 import os
+import logging
 from defusedxml import ElementTree as ET
 
 
@@ -97,10 +98,10 @@ def process_xml_to_manifest(config_xml_file_path, manifest_path):
 
 def trans_xml_to_manifest(config_xml_file_path, manifest_path):
     if not os.path.exists(config_xml_file_path):
-        print("config xml file doesn't exist")
+        logging.error("config xml file doesn't exist")
         return
     if not os.path.exists("./manifest_tag_parse_dict.csv"):
-        print("config manifest_tag_parse_dict.csv file doesn't exist")
+        logging.error("config manifest_tag_parse_dict.csv file doesn't exist")
         return
     if os.path.exists(manifest_path):
         return

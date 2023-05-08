@@ -16,6 +16,8 @@
 
 
 import re
+import os
+import sys
 import uuid
 
 uuid_split_sym_list = ['-']
@@ -24,6 +26,11 @@ unused_sym_list = ['_']
 unique_list = []
 permission_unique_dict = {}
 cmd_unique_dict = {}
+
+
+def dyn_conf_clean():
+
+    unique_list.clear()
 
 
 def check_csv_sym(value):
@@ -340,8 +347,8 @@ def check_permssion_unique(value, origin_value):
     if len(value) == 0 or len(value_list) != len(origin_value_list):
         RuntimeError("permssion trans by csv failed", value, origin_value)
 
-    for (i, value_sym) in enumerate(value_list):
-        if value_list[i] in permission_unique_dict.keys() and \
+    for (i, _) in enumerate(value_list):
+        if value_list[i] in iter(permission_unique_dict) and \
            permission_unique_dict.get(value_list[i]) != origin_value_list[i]:
             raise RuntimeError("different permission set same num in csv",\
                 value, origin_value)
@@ -355,8 +362,8 @@ def check_cmd_unique(value, origin_value):
     if len(value) == 0 or len(value_list) != len(origin_value_list):
         RuntimeError("cmd trans by csv failed", value, origin_value)
 
-    for (i, value_sym) in enumerate(value_list):
-        if value_list[i] in cmd_unique_dict.keys() and \
+    for (i, _) in enumerate(value_list):
+        if value_list[i] in iter(cmd_unique_dict) and \
            cmd_unique_dict.get(value_list[i]) != origin_value_list[i]:
             raise RuntimeError("different cmd set same num in csv", \
                                value, origin_value)
@@ -470,7 +477,12 @@ def dyn_perm_check(dyn_key, attrib, value, origin_value):
         'ConfigInfo/TA_Control_Info/DEBUG_Info/DEBUG_device_id/DEBUG_device_id':
         check_ta_config_device_id(value)
     else:
-        return
+        if os.path.exists("../../../internal/signtools/sign_internal.py"):
+            sys.path.append("../../../internal/signtools")
+            from config_checker import dyn_perm_check_internal
+            dyn_perm_check_internal(dyn_key, value)
+    
+    return
 
 
 def check_text_ava(old_item, text):

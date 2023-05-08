@@ -10,11 +10,17 @@
 # See the Mulan PSL v2 for more details.
 
 CUR_DIR=$(shell pwd)
+INTERNAL_DIR=$(CUR_DIR)/../../../../internal/
+IS_INTERNAL_TA=$(shell if [ -d $(INTERNAL_DIR) ]; then echo "y"; else echo "n"; fi)
+
 ifeq ($(TEE_BUILD_PATH), )
     TEE_BUILD_PATH=${CUR_DIR}/../../..
 endif
 
 include $(TEE_BUILD_PATH)/build/mk/common_flags.mk
+ifeq ($(IS_INTERNAL_TA), y)
+    include $(INTERNAL_DIR)/mk/internal_common.mk
+endif
 
 # set header directory
 INCLUDEDIR += -I$(TEE_BUILD_PATH)/include/TA \
@@ -41,7 +47,11 @@ else
 endif
 
 ifneq ($(TARGET_IS_ARM64),y)
-    LDFLAGS += -T$(TEE_BUILD_PATH)/build/tools/ta_link.ld
+    ifeq ($(IS_INTERNAL_TA), y)
+	LDFLAGS += -T$(INTERNAL_DIR)/tools/ta_link.ld
+    else
+        LDFLAGS += -T$(TEE_BUILD_PATH)/build/tools/ta_link.ld
+    endif
 else
     LDFLAGS += -T$(TEE_BUILD_PATH)/build/tools/ta_link_64.ld
 endif

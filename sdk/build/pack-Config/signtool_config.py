@@ -24,6 +24,7 @@ import re
 import xml.etree.ElementTree as ET
 import subprocess
 import configparser
+import logging
 
 CONFIG_VERSION = 1
 CONFIG_CERT_PATH = './config_cert'
@@ -55,8 +56,8 @@ def whitelist_check(intput_str):
 def run_cmd(command):
     ret = subprocess.run(command, shell=False, check=True)
     if ret.returncode != 0:
-        print("run command failed.")
-        exit()
+        logging.error("run command failed.")
+        sys.exit(1)
 
 
 class LoadConfigHeader:
@@ -137,25 +138,12 @@ def gen_rsa_signature(sign_conf_alg, config_buf, input_path_gen, output_file):
         try:
             subprocess.check_output(cmd.split(), shell=False)
         except Exception:
-            print("sign operation failed")
+            logging.error("sign operation failed")
             raise RuntimeError
-    else: # pkcsv1_5
-        config_hash = generate_sha256_hash(config_buf)
-        hash_file = os.path.join(input_path_gen, "temp/config_hash")
-        fd_hash = os.open(hash_file, os.O_WRONLY | os.O_CREAT, \
-            stat.S_IWUSR | stat.S_IRUSR)
-        hash_file_fp = os.fdopen(fd_hash, "wb")
-        hash_file_fp.write(struct.pack('B'*19, 0x30, 0x31, 0x30, 0x0d, 0x06, \
-                0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, \
-                0x05, 0x00, 0x04, 0x20))
-        hash_file_fp.write(config_hash)
-        hash_file_fp.close()
-
-        pri_key = CONFIG_CERT_PATH + '/taconfig_key.pem'
-        cmd = ["openssl", "rsautl", "-sign", "-inkey", pri_key, \
-               "-in", hash_file, "-out", output_file]
-        run_cmd(cmd)
-        print('Sign Config Success')
+        logging.critical("Sign Config with PSS Success")
+    else:
+        logging.error("Sign Config alg is not support!")
+        exit(0)
     return
 
 
@@ -171,7 +159,7 @@ def gen_ecdsa_signature(config_buf, input_path_gen, output_file):
     cmd = ["openssl", "dgst", "-sha256", "-sign", pri_key, \
            "-out", output_file, msg_file]
     run_cmd(cmd)
-    print('Sign Config Success')
+    logging.critical('Sign Config Success')
     return
 
 
@@ -200,21 +188,25 @@ def gen_config_sign(sign_conf_alg, input_path_gen, header,
 
 def convert_xml2tlv(xml_file, tlv_file, input_path, config_file):
     policy_ver = get_policy_version()
+    sys.path.append("../signtools")
     if (policy_ver & (1 << XML2TLV_PARSE_TOOL_INDEX)) == XML2TLV_PY_VALUE:
-        sys.path.append('../signtools')
+        if os.path.exists("../../../internalsigntools/tag_parse_dict.csv"):
+            sys.path.append("../../../internal/signtools")
+            tag_parse_dict_file_path = os.path.realpath("../../../internalsigntools/tag_parse_dict.csv")
+        else:
+            csv_dir = os.path.realpath(os.path.join(os.getcwd(), '../signtools'))
+            tag_parse_dict_file_path = os.path.join(csv_dir, '../signtools/tag_parse_dict.csv')
+
         from dyn_conf_parser import parser_config_xml
-        csv_dir = os.path.abspath(os.path.join(os.getcwd(), '../signtools'))
-        tag_parse_dict_file_path = \
-            os.path.join(csv_dir, '../signtools/tag_parse_dict.csv')
         parser_config_xml(xml_file, tag_parse_dict_file_path, \
             tlv_file, input_path)
         if os.path.isfile(tlv_file):
-            print('convert xml to tlv success')
+            logging.critical('convert xml to tlv success')
         else:
-            print('convert xml to tlv failed')
+            logging.error('convert xml to tlv failed')
             raise RuntimeError
     else:
-        print('invlid policy version')
+        logging.error('invlid policy version')
         raise RuntimeError
 
 
@@ -261,24 +253,26 @@ def check_dyn_perm(xml_config_file, input_path):
 def get_target_type_in_config(config_path, in_path):
     tree = ET.parse(config_path)
     drv_target_type = tree.find('./TA_Manifest_Info/target_type')
+    flag = os.O_RDWR | os.O_TRUNC | os.O_CREAT
+    mode = stat.S_IWUSR | stat.S_IRUSR
     if drv_target_type is not None:
         if drv_target_type.text == "1":
             ans = "gpd.ta.dynConf:00000\n"
             out_tlv = os.path.join(in_path, 'config_tlv')
-            with open(out_tlv, 'w+') as conf:
+            with os.fdopen(os.open(out_tlv, flag, mode), 'w+') as conf:
                 conf.write(ans)
 
 
 class Configuration:
-    sign_alg = "RSA_PKCS1"
+    sign_alg = "RSA_PSS"
 
     def __init__(self, file_name):
         parser = configparser.ConfigParser()
         parser.read(file_name)
         self.sign_alg = parser.get("signConfigPrivateCfg", "configSignAlg")
         if whitelist_check(self.sign_alg):
-            print("configSignAlg is invalid.")
-            exit()
+            logging.error("configSignAlg is invalid.")
+            sys.exit(1)
 
 
 def pack_signature(signature_path, signature_size):
@@ -286,7 +280,7 @@ def pack_signature(signature_path, signature_size):
     with open(signature_path, 'rb+') as signature_file:
         signature_buf = signature_file.read(signature_size)
         signature_file.seek(0)
-        for index in range(0, add_size):
+        for _ in range(0, add_size):
             signature_file.write(b'\x00')
         signature_file.write(signature_buf)
 
@@ -297,8 +291,8 @@ def gen_config_section(input_path, cert_path, config_section):
     config_path = input_path + '/../..'
     config_file = os.path.join(config_path, "config_tee_private_sample.ini")
     if not os.path.exists(config_file):
-        print("config_tee_private_sample.ini is not exist.")
-        sign_conf_alg = "RSA_PKCS1"
+        logging.critical("config_tee_private_sample.ini is not exist.")
+        sign_conf_alg = "RSA_PSS"
     else:
         cfg = Configuration(config_file)
         sign_conf_alg = cfg.sign_alg
@@ -310,7 +304,7 @@ def gen_config_section(input_path, cert_path, config_section):
         sys.path.append('../signtools')
         from dyn_conf_parser import parser_dyn_conf
         dyn_conf_xml_file_path = os.path.join(input_path, 'temp/dyn_perm.xml')
-        csv_dir = os.path.abspath(os.path.join(os.getcwd(), '../signtools'))
+        csv_dir = os.path.realpath(os.path.join(os.getcwd(), '../signtools'))
         tag_parse_dict_file_path = \
             os.path.join(csv_dir, '../signtools/tag_parse_dict.csv')
         parser_dyn_conf(dyn_conf_xml_file_path, "", \
@@ -357,8 +351,6 @@ def gen_config_section(input_path, cert_path, config_section):
         final_sign_size = 512
         if sign_conf_alg == "RSA_PSS":
             config_sign_size = config_sign_size | 0x80000000
-        elif sign_conf_alg == "RSA_PKCS1":
-            config_sign_size = config_sign_size | 0x40000000
     config_context_size = config_content_size + ta_cert_size \
             + config_sign_size + config_cert_size
     config_header = pkg_config_header(config_hd_len, 0xABCDABCD, \
@@ -403,20 +395,20 @@ if __name__ == '__main__':
     ta_config_section = argv_data[3]
 
     if not os.path.exists(ta_input_path):
-        print("ta_input_path does not exist.")
+        logging.error("ta_input_path does not exist.")
         exit()
     if not os.path.exists(ta_cert_path):
-        print("ta_cert_path does not exist.")
+        logging.error("ta_cert_path does not exist.")
         exit()
 
     if whitelist_check(ta_input_path):
-        print("ta_input_path is incorrect.")
+        logging.error("ta_input_path is incorrect.")
         exit()
     if whitelist_check(ta_cert_path):
-        print("ta_cert_path is incorrect.")
+        logging.error("ta_cert_path is incorrect.")
         exit()
     if whitelist_check(ta_config_section):
-        print("ta_config_section is incorrect.")
+        logging.error("ta_config_section is incorrect.")
         exit()
     gen_config_section(ta_input_path, ta_cert_path, \
             ta_config_section)
