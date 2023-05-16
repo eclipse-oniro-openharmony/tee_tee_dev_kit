@@ -13,7 +13,7 @@
 /**
  * @file tee_hw_ext_api.h
  *
- * @brief 扩展接口
+ * @brief Provides extended interfaces.
  *
  * @since 1
  */
@@ -23,13 +23,13 @@
 #include "tee_defines.h"
 
 /**
- * @brief 在TEE中获取设备唯一ID
+ * @brief Obtains the unique device ID from the TEE.
  *
- * @param device_unique_id [IN]用于存储结果的缓冲区
- * @param length [IN/OUT]设备ID缓冲区长度
+ * @param device_unique_id Indicates the pointer to the buffer for storing the device ID.
+ * @param length Indicates the pointer to the buffer length.
  *
- * @return TEE_SUCCESS 操作成功
- * @return others 操作失败
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns other information otherwise.
  *
  */
 TEE_Result TEE_EXT_GetDeviceUniqueId(uint8_t *device_unique_id, uint32_t *length);

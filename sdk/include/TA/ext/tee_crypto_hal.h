@@ -13,9 +13,9 @@
 /**
  * @file tee_crypto_hal.h
  *
- * @brief 加解密接口
+ * @brief Provides APIs for cryptographic operations.
  *
- * 开发者可以使用这些接口实现加解密的相关功能。
+ * You can use these APIs to implement encryption and decryption.
  *
  * @since 1
  */
@@ -28,25 +28,25 @@ enum CRYPTO_ENGINE {
 };
 
 /**
- * @brief 将加密和解密引擎设置为运行
+ * @brief Sets the encryption and decryption engines to an operation.
  *
- * @param operation [IN/OUT]操作的句柄
- * @param crypto [IN]要设置的engine
+ * @param operation Indicates the handle of the operation to set.
+ * @param crypto Indicates the engines to set.
  *
- * @return TEE_SUCCESS 设置加密引擎成功
- * @return TEE_ERROR_BAD_PARAMETERS 操作为NULLi或加密无效
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if <b>operation</b> is null or <b>crypto</b> is invalid.
  *
  */
 TEE_Result TEE_SetCryptoFlag(TEE_OperationHandle operation, uint32_t crypto);
 
 /**
- * @brief 设置加解密引擎为object
+ * @brief Sets the encryption and decryption engines to an object.
  *
- * @param operation [IN/OUT]对象的句柄
- * @param crypto [IN]要设置的engine
+ * @param object Indicates the handle of the object to set.
+ * @param crypto Indicates the engines to set.
  *
- * @return TEE_SUCCESS 设置加密引擎成功
- * @return TEE_ERROR_BAD_PARAMETERS 操作为NULLi或加密无效
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if <b>object</b> is null or <b>crypto</b> is invalid.
  *
  */
 TEE_Result TEE_SetObjectFlag(TEE_ObjectHandle object, uint32_t crypto);

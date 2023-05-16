@@ -13,9 +13,9 @@
 /**
  * @file tee_trusted_storage_api.h
  *
- * @brief 安全存储接口
+ * @brief Provides trusted storage APIs.
  *
- * 开发者可以调用这些接口实现安全存储相关的功能
+ * You can use these APIs to implement trusted storage features.
  *
  * @since 1
  */
@@ -27,15 +27,14 @@
 #include "tee_object_api.h"
 
 /**
- * @brief 数据流定位起始位置选项，用于TEE_SeekObjectData函数
+ * @brief Defines the start position in the data stream associated with an object.
+ * It is used in the <b>TEE_SeekObjectData</b> function.
  */
 enum __TEE_Whence {
-    /** 将起始位置定位为数据流的起始位置 */
-    TEE_DATA_SEEK_SET = 0, /* Position the starting position as the beginning of the data stream */
-    /** 将起始位置定位为当前数据流位置 */
-    TEE_DATA_SEEK_CUR,     /* Position the starting position as the current data stream position */
-    /** 将起始位置定位在数据流的末尾 */
-    TEE_DATA_SEEK_END      /* Position the starting position at the end of the data stream */
+
+    TEE_DATA_SEEK_SET = 0, /* Set the start position to the beginning of the data stream. */
+    TEE_DATA_SEEK_CUR,     /* Set the start position to the current data stream position. */
+    TEE_DATA_SEEK_END      /* Set the start position to the end of the data stream. */
 };
 
 struct __TEE_ObjectEnumHandle;
@@ -44,82 +43,89 @@ typedef struct __TEE_ObjectEnumHandle *TEE_ObjectEnumHandle;
 typedef uint32_t TEE_Whence;
 
 /**
- * @brief 存储ID，定义对应应用的存储空间
+ * @brief Defines the storage ID, which identifies the storage space of the application.
  */
 enum Object_Storage_Constants {
-    /** 为每个应用程序单独使用私有存储空间 */
-    TEE_OBJECT_STORAGE_PRIVATE = 0x00000001, /* Separate private storage space for each application */
-    /** 用于应用程序的单独个人存储空间 */
-    TEE_OBJECT_STORAGE_PERSO   = 0x00000002, /* Separate perso storage space for application */
-    /** 添加以实现安全闪存存储 */
-    TEE_OBJECT_SEC_FLASH       = 0x80000000, /* Add for secure flash storage */
-    /** 添加用于存储ce */
-    TEE_OBJECT_STORAGE_CE      = 0x80000002, /* Add for storage ce */
+
+    TEE_OBJECT_STORAGE_PRIVATE = 0x00000001, /* Separate private storage space for each application. */
+    TEE_OBJECT_STORAGE_PERSO   = 0x00000002, /* Separate personal storage space for application. */
+    TEE_OBJECT_SEC_FLASH       = 0x80000000, /* Space for secure flash storage. */
+    TEE_OBJECT_STORAGE_CE      = 0x80000002, /* Credential encrypted storage space. */
 };
 
 /**
- * @brief 系统资源约束，如数据流位置指示可以采取的最大值
+ * @brief Defines the system resource constraints, such as the maximum value for the data stream position indicator.
  */
 enum Miscellaneous_Constants {
-    /** 数据流的位置指示符可以占用的最大长度 */
-    TEE_DATA_MAX_POSITION = 0xFFFFFFFF, /* The maximum length that the position indicator of the data stream can take */
-    /** objectID的最大长度，实际扩展到128字节 */
-    TEE_OBJECT_ID_MAX_LEN = 64,         /* The maximum length of objectID, which actually extends to 128 bytes */
+
+    TEE_DATA_MAX_POSITION = 0xFFFFFFFF, /* Maximum length that the position indicator of the data stream can take. */
+    TEE_OBJECT_ID_MAX_LEN = 64,         /* Maximum length of the object ID, which can extend to 128 bytes. */
 };
 
 /**
- * @brief 数据流可存储的最大数据字节数
+ * @brief Defines the maximum number of bytes that can be held in a data stream.
  */
 enum TEE_DATA_Size {
-    /** 对象数据流可存储的最大数据字节数 */
-    TEE_DATA_OBJECT_MAX_SIZE = 0xFFFFFFFF /* The maximum bytes of data that the object data stream can store */
+
+    TEE_DATA_OBJECT_MAX_SIZE = 0xFFFFFFFF
 };
 
 /**
- * @brief TEE_ObjectHandle的handleFlags决定了TEE_ObjectHandle对对象数据流的访问权限
+ * @brief Defines the <b>handleFlags</b> of a <b>TEE_ObjectHandle</b>.
+ * The <b>handleFlags</b> determines the access permissions to the data stream associated with the object.
  */
 enum Data_Flag_Constants {
-    /** 对数据流具有读权限，可以读 */
+    /** The data stream can be read. */
     TEE_DATA_FLAG_ACCESS_READ = 0x00000001,
-    /** 对数据流具有写权限，可以写和截断 */
+    /** The data stream can be written or truncated. */
     TEE_DATA_FLAG_ACCESS_WRITE = 0x00000002,
-    /** 对数据流具有写入_META权限，可以删除和重命名操作 */
+    /** The data stream can be deleted or renamed. */
     TEE_DATA_FLAG_ACCESS_WRITE_META = 0x00000004,
-    /** 对数据流具有共享读权限，您可以打开多个TEE_ObjectHandles进行并发读 */
+    /** Multiple TEE_ObjectHandles can be opened for concurrent read. */
     TEE_DATA_FLAG_SHARE_READ = 0x00000010,
-    /** 对数据流具有共享写入权限，可以打开多个TEE_ObjectHandles并发写入 */
+    /** Multiple TEE_ObjectHandles can be opened for concurrent write. */
     TEE_DATA_FLAG_SHARE_WRITE = 0x00000020,
-    /** 未使用 */
+    /** Reserved. */
     TEE_DATA_FLAG_CREATE = 0x00000200,
-    /** 保护同名的现有文件。如果同名文件不存在，则创建新的数据文件；如果同名文件存在，则报错 */
+    /**
+     * Protect the existing file with the same name. Throw an error if the file with the same name exists;
+     * create a data file otherwise.
+     */
     TEE_DATA_FLAG_EXCLUSIVE = 0x00000400,
-    /** 保护同名的现有文件。如果同名文件不存在，则创建新的数据文件；如果同名文件存在，则报错 */
+    /**
+     * Protect the existing file with the same name. Throw an error if the file with the same name exists;
+     * create a data file otherwise. 
+     */
     TEE_DATA_FLAG_OVERWRITE = 0x00000400,
-    /** 如果bit28设置为1，表示AES256，如果为0，表示AES128 */
+    /** Use AES256 if bit 28 is 1; use AES128 if bit 28 is 0. */
     TEE_DATA_FLAG_AES256 =  0x10000000,
-    /** 如果bit29设置为1，则表示先打开低版本 */
+    /** If bit 29 is set to 1, open the earlier version preferentially. */
     TEE_DATA_FLAG_OPEN_AESC = 0x20000000,
 };
 
 /**
- * @brief 创建一个新的持久化对象
+ * @brief Creates a persistent object.
  *
- * 创建一个新的持久化对象，可以直接初始化数据流和TEE_Attribute，用户可以使用返回的句柄访问对象的TEE_Attribute和数据流
+ * This function creates a persistent object with initialized <b>TEE_Attribute</b> and data stream.
+ * You can use the returned handle to access the <b>TEE_Attribute</b> and data stream of the object.
  *
- * @param storageID [IN]对应于每个应用程序的单独存储空间，值为Object_Storage_Constants
- * @param ojbectID [IN]对象标识符，要创建的对象的名称
- * @param objectIDLen [IN]对象标识符的长度（按字节），不超过128字节
- * @param flags [IN]对象创建后的标志，值可以是Data_Flag_Constant或Handle_Flag_Constant中的一个或多个
- * @param attributes [IN]临时对象的TEE_ObjectHandle用于初始化对象的TEE_Attribute，可以是TEE_HANDLE_NULL
- * @param initialData [IN]初始化数据，用于初始化数据流数据
- * @param initialDataLen [IN]初始数据长度（以字节为单位）
- * @param object [OUT]函数执行成功后返回的TEE_ObjectHandle
+ * @param storageID Indicates the storage to use. The value is specified by <b>Object_Storage_Constants</b>.
+ * @param ojbectID Indicates the pointer to the object identifier, that is, the name of the object to create.
+ * @param objectIDLen Indicates the length of the object identifier, in bytes. It cannot exceed 128 bytes.
+ * @param flags Indicates the flags of the object created. The value can be
+ * one or more of <b>Data_Flag_Constants</b> or <b>Handle_Flag_Constants</b>.
+ * @param attributes Indicates the <b>TEE_ObjectHandle</b> of a transient object from which to take
+ * <b>TEE_Attribute</b>. It can be <b>TEE_HANDLE_NULL</b> if the persistent object contains no attribute.
+ * @param initialData Indicates the pointer to the initial data used to initialize the data stream data.
+ * @param initialDataLen Indicates the length of the initial data, in bytes.
+ * @param object Indicates the pointer to the <b>TEE_ObjectHandle</b> returned
+ * after the function is successfully executed.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_ITEM_NOT_FOUND storageID不存在
- * @return TEE_ERROR_ACCESS_CONFLICT 访问冲突
- * @return TEE_ERROR_OUT_OF_MEMORY 内存不足，无法完成操作
- * @return TEE_ERROR_STORAGE_NO_SPACE 没有足够的空间来创建对象
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the storage specified by <b>storageID</b> does not exist.
+ * @return Returns <b>TEE_ERROR_ACCESS_CONFLICT</b> if an access conflict occurs.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
+ * @return Returns <b>TEE_ERROR_STORAGE_NO_SPACE</b> if there is no enough space to create the object.
  *
  */
 TEE_Result TEE_CreatePersistentObject(uint32_t storageID, const void *ojbectID, size_t objectIDLen, uint32_t flags,
@@ -127,186 +133,199 @@ TEE_Result TEE_CreatePersistentObject(uint32_t storageID, const void *ojbectID, 
                                       TEE_ObjectHandle *object);
 
 /**
- * @brief 打开现有的永久对象
+ * @brief Opens an existing persistent object.
  *
- * 打开现有的永久对象，用户可以使用返回的句柄访问对象的TEE_Attribute和数据流
+ * The handle returned can be used to access the <b>TEE_Attribute</b> and data stream of the object.
  *
- * @param storageID [IN]对应于每个应用程序的单独存储空间，值为Object_Storage_Constants
- * @param ojbectID [IN]对象标识符，要打开的对象的名称
- * @param objectIDLen [IN]对象标识符的长度（按字节），不超过128字节
- * @param flags [IN]对象打开后的标志，值可以是Data_Flag_Constants或Handle_Flag_Constants中的一个或多个
- * @param object[OUT]函数执行成功后返回的TEE_ObjectHandle
+ * @param storageID Indicates the storage to use. The value is specified by <b>Object_Storage_Constants</b>.
+ * @param ojbectID Indicates the pointer to the object identifier, that is, the name of the object to open.
+ * @param objectIDLen Indicates the length of the object identifier, in bytes. It cannot exceed 128 bytes.
+ * @param flags Indicates the flags of the object opened.
+ * The value can be one or more of <b>Data_Flag_Constants</b> or <b>Handle_Flag_Constants</b>.
+ * @param object Indicates the pointer to the <b>TEE_ObjectHandle</b> returned
+ * after the function is successfully executed.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_ITEM_NOT_FOUND storageID不存在或找不到对象标识符
- * @return TEE_ERROR_ACCESS_CONFLICT 访问冲突
- * @return TEE_ERROR_OUT_OF_MEMORY 内存不足，无法完成操作
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the storage specified by <b>storageID</b> does not exist
+ * or the object identifier cannot be found in the storage.
+ * @return Returns <b>TEE_ERROR_ACCESS_CONFLICT</b> if an access conflict occurs.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_OpenPersistentObject(uint32_t storageID, const void *ojbectID, size_t objectIDLen, uint32_t flags,
                                     TEE_ObjectHandle *object);
 
 /**
- * @brief 从对象的数据流读取数据的大小字节到缓冲区
+ * @brief Reads data from the data stream associated with an object into the buffer.
  *
- * 从对象的数据流读取数据的大小字节到缓冲区，TEE_ObjectHandle需要使用TEE_DATA_FLAG_ACCESS_READ权限打开
+ * The <b>TEE_ObjectHandle</b> of the object must have been opened with the <b>TEE_DATA_FLAG_ACCESS_READ</b> permission.
  *
- * @param ojbect [IN]要读取的TEE_ObjectHandle
- * @param buffer [OUT]存储读数据的缓冲区
- * @param size [IN]按字节读取的数据大小
- * @param count [OUT]按字节实际读取的数据大小
+ * @param ojbect Indicates the <b>TEE_ObjectHandle</b> of the object to read.
+ * @param buffer Indicates the pointer to the buffer used to store the data read.
+ * @param size Indicates the number of bytes to read.
+ * @param count Indicates the pointer to the variable that contains the number of bytes read.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_OUT_OF_MEMORY 内存不足，无法完成操作
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_ReadObjectData(TEE_ObjectHandle ojbect, void *buffer, size_t size, uint32_t *count);
 
 /**
- * @brief 将数据从缓冲区写入对象的数据流的大小字节
+ * @brief Writes bytes from the buffer to the data stream associated with an object.
  *
- * 将数据从缓冲区写入对象的数据流的大小字节,TEE_ObjectHandle需要使用TEE_DATA_FLAG_ACCESS_WRITE权限打开
+ * The <b>TEE_ObjectHandle</b> must have been opened with the <b>TEE_DATA_FLAG_ACCESS_WRITE</b> permission.
  *
- * @param ojbect [IN]要写入的TEE_ObjectHandle
- * @param buffer [IN]存储要写入的数据
- * @param size [IN]要写入的数据长度，大小不超过4096字节
+ * @param ojbect Indicates the <b>TEE_ObjectHandle</b> of the object.
+ * @param buffer Indicates the pointer to the buffer that stores the data to be written.
+ * @param size Indicates the number of bytes to be written. It cannot exceed 4096 bytes.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_OUT_OF_MEMORY 内存不足，无法完成操作
- * @return TEE_ERROR_STORAGE_NO_SPACE 没有足够的空间来执行操作
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
+ * @return Returns <b>TEE_ERROR_STORAGE_NO_SPACE</b> if the storage space is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_WriteObjectData(TEE_ObjectHandle ojbect, const void *buffer, size_t size);
 
 /**
- * @brief 更改数据流的大小
+ * @brief Changes the size of a data stream.
  *
- * 如果大小小于当前数据流的大小，则删除所有多余的字节。如果大小大于当前数据流的大小，则使用“0”扩展TEE_ObjectHandle\n
- * 需要具有TEE_DATA_FLAG_ACCESS_WRITE权限打开
+ * If the size is less than the current size of the data stream, all bytes beyond <b>size</b> are deleted. If the size
+ * is greater than the current size of the data stream, add 0s at the end of the stream to extend the stream.
+ * The object handle must be opened with the <b>TEE_DATA_FLAG_ACCESS_WRITE</b> permission.
  *
- * @param object [IN]要截断的TEE_ObjectHandle
- * @param size [IN]数据流的新长度，大小不超过4096字节
+ * @param object Indicates the <b>TEE_ObjectHandle</b> of the object.
+ * @param size Indicates the new size of the data stream. It cannot exceed 4096 bytes.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_STORAGE_NO_SPACE 没有足够的空间来执行操作
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_STORAGE_NO_SPACE</b> if the storage space is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_TruncateObjectData(TEE_ObjectHandle object, size_t size);
 
 /**
- * @brief
- * 设置TEE_ObjectHandle指向的数据流位置
+ * @brief Sets the position of the data stream to which <b>TEE_ObjectHandle</b> points.
  *
- * 设置TEE_ObjectHandle指向的数据流位置，将数据流位置设置为：起始位置+偏移量参数wherece控制偏移量的起始位置，\n
- * 该值可以在TEE_Whence中选择，含义如下：\n
- * TEE_DATA_SEEK_SET，数据流偏移量的起始位置为文件头，为0\n
- * TEE_DATA_SEEK_CUR，数据流偏移的起始位置为当前位置\n
- * TEE_DATA_SEEK_END，数据流偏移量的起始位置是文件的末尾当参数偏移量为正数时，它向后偏移，当参数偏移量为负数时，它向前偏移。
+ * The data position indicator is determined by the start position and an offset together.
+ * The <b>whence</b> parameter determines the start position. Its value is set in <b>TEE_Whence</b> as follows:
+ * <b>TEE_DATA_SEEK_SET = 0</b>: The start position is the beginning of the data stream.
+ * <b>TEE_DATA_SEEK_CUR</b>: The start position is the current position of the data stream.
+ * <b>TEE_DATA_SEEK_END</b>: The start position is the end of the data stream.
+ * If the parameter <b>offset</b> is a positive number, the data position is moved forward.
+ * If <b>offset</b> is a negative number, the data position is moved backward.
  *
- * @param object [IN]需要设置的TEE_ObjectHandle
- * @param offset [IN]数据流位置移动的大小，大小不超过4096字节
- * @param whence [IN]数据流偏移量的初始位置
+ * @param object Indicates the <b>TEE_ObjectHandle</b> of the object.
+ * @param offset Indicates the number of bytes to move the data position. It cannot exceed 4096 bytes.
+ * @param whence Indicates the start position in the data stream to calculate the new position.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_OVERFLOW 该操作导致位置指示器的值超过其系统限制TEE_DATA_MAX_POSIT
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_OVERFLOW</b> if the position indicator resulting from this operation
+ * is greater than <b>TEE_DATA_MAX_POSIT</b>.
  *
  */
 TEE_Result TEE_SeekObjectData(TEE_ObjectHandle object, int32_t offset, TEE_Whence whence);
 
 /**
- * @brief 同步打开的TEE_ObjectHandle并同步相应的安全属性文件到磁盘
+ * @brief Synchronizes the opened <b>TEE_ObjectHandle</b> and the corresponding security attribute file to the disk.
  *
- * @param object [IN]需要同步的TEE_ObjectHandle
+ * @param object Indicates the <b>TEE_ObjectHandle</b> of the object.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
  *
  */
 TEE_Result TEE_SyncPersistentObject(TEE_ObjectHandle object);
 
 /**
- * @brief 更改对象标识符
+ * @brief Changes the object identifier.
  *
- * 需要使用TEE_DATA_FLAG_ACCESS_WRITE_META权限打开TEE_ObjectHandle
+ * The <b>TEE_ObjectHandle</b> must have been opened with the <b>TEE_DATA_FLAG_ACCESS_WRITE_META</b> permission.
  *
- * @param object [IN/OUT]要修改的对象句柄
- * @param newObjectID [IN]新对象标识符
- * @param newObjectIDLen [IN]新对象标识符长度
+ * @param object Indicates the handle of the target object.
+ * @param newObjectID Indicates the pointer to the new object identifier.
+ * @param newObjectIDLen Indicates the length of the new object identifier.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
  *
  */
 TEE_Result TEE_RenamePersistentObject(TEE_ObjectHandle object, void *newObjectID, size_t newObjectIDLen);
 
 /**
- * @brief 分配未初始化对象枚举器的句柄
+ * @brief Allocates a handle on an uninitialized object enumerator.
  *
- * @param obj_enumerator [OUT]指向新创建的对象枚举器句柄的指针
+ * @param obj_enumerator Indicates the pointer to the handle of the newly created object enumerator.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_OUT_OF_MEMORY 没有足够的内存来分配
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_AllocatePersistentObjectEnumerator(TEE_ObjectEnumHandle *obj_enumerator);
 
 /**
- * @brief 释放已分配的对象枚举器句柄。
+ * @brief Releases all resources associated with an object enumerator handle.
  *
- * 函数调用后句柄失效，所有分配的句柄都被释放，与TEE_AllocatePersistentObjectEnumerator配对使用
+ * After this function is called, the object handle is no longer valid and all resources associated with
+ * the object enumerator handle will be reclaimed.
+ * <b>TEE_FreePersistentObjectEnumerator</b> and <b>TEE_AllocatePersistentObjectEnumerator</b>are used in pairs.
  *
- * @param obj_enumerator [IN]待发布的TEE_ObjectEnumHandle
+ * @param obj_enumerator Indicates the <b>TEE_ObjectEnumHandle</b> to release.
  *
  */
 void TEE_FreePersistentObjectEnumerator(TEE_ObjectEnumHandle obj_enumerator);
 
 /**
- * @brief 将临时对象枚举器重置为其初始状态，即分配后的状态
+ * @brief Resets an object enumerator handle to its initial state after allocation.
  *
- * @param obj_enumerator [IN]需要重置的对象枚举器的TEE_ObjectEnumHandle
+ * @param obj_enumerator Indicates the <b>TEE_ObjectEnumHandle</b> of the object enumerator to reset.
  *
  */
 void TEE_ResetPersistentObjectEnumerator(TEE_ObjectEnumHandle obj_enumerator);
 
 /**
- * @brief 开始枚举给定存储空间中的所有对象
+ * @brief Starts the enumeration of all the objects in the given trusted storage.
  *
- * 对象的信息可以通过TEE_GetNextPersistentObject函数获取
+ * The object information can be obtained by using <b>TEE_GetNextPersistentObject</b>.
  *
- * @param obj_enumerator [IN]分配的对象枚举器TEE_ObjectEnumHandle
- * @param storage_id [IN]对应于每个应用程序的单独存储空间，值为Object_Storage_Constants，\n
- * 目前仅支持TEE_STORAGE_PRIVATE
+ * @param obj_enumerator Indicates the <b>TEE_ObjectEnumHandle</b> of the object enumerator.
+ * @param storage_id Indicates the storage, in which the objects are enumerated.
+ * The value is specified by <b>Object_Storage_Constants</b>.
+ * Currently, only <b>TEE_STORAGE_PRIVATE</b> is supported.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ITEM_NOT_FOUND storageID不是TEE_STORAGE_PRIVATE或者存储空间中没有对象
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ITEM_NOT_FOUND</b> if <b>storageID</b> is not <b>TEE_STORAGE_PRIVATE</b>
+ * or there is no object in the specified storage.
  *
  */
 TEE_Result TEE_StartPersistentObjectEnumerator(TEE_ObjectEnumHandle obj_enumerator, uint32_t storage_id);
 
 /**
- * @brief 获取对象枚举器中的下一个对象
+ * @brief Obtains the next object in the object enumerator.
  *
- * 返回对象的TEE_ObjectInfo、objectID、objectIDLen信息
+ * Information such as <b>TEE_ObjectInfo</b>, <b>objectID</b>, and <b>objectIDLen</b> will be obtained.
  *
- * @param obj_enumerator [IN]初始化对象枚举器TEE_ObjectEnumHandle
- * @param object_info [IN]存储获取到的TEE_ObjectInfo结构体指针
- * @param object_id [IN]缓冲区指针，用于存储获取的objectID
- * @param object_id_len[IN]用于存储获取到的对象IDLen
+ * @param obj_enumerator Indicates the <b>TEE_ObjectEnumHandle</b> of the object enumerator.
+ * @param object_info Indicates the pointer to the obtained<b>TEE_ObjectInfo</b>.
+ * @param object_id Indicates the pointer to the buffer used to store the obtained <b>objectID</b>.
+ * @param object_id_len Indicates the pointer to the <b>objectIDLen</b>.
  *
- * @param TEE_SUCCESS 指示函数已成功执行
- * @param TEE_ITEM_NOT_FOUND 枚举器没有对象或枚举器尚未初始化
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @param Returns <b>TEE_ITEM_NOT_FOUND</b> if the object enumerator has no element
+ * or the enumerator has not been initialized.
  *
  */
 TEE_Result TEE_GetNextPersistentObject(TEE_ObjectEnumHandle obj_enumerator,
     TEE_ObjectInfo *object_info, void *object_id, size_t *object_id_len);
 
 /**
- * @brief 关闭打开的TEE_ObjectHandle并删除对象
+ * @brief Closes a <b>TEE_ObjectHandle</b> and deletes the object.
  *
- * 该对象是持久对象，并且需要使用TEE_DATA_FLAG_ACCESS_WRITE_META权限打开
+ * The object must be a persistent object, and the object handle must have been opened with
+ * the <b>TEE_DATA_FLAG_ACCESS_WRITE_META</b> permission.
  *
- * @param object [IN]需要关闭和删除的TEE_ObjectHandle
+ * @param object Indicates the object handle to close.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_STORAGE_NOT_AVAILABLE 无法访问文件所在的存储区域
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_STORAGE_NOT_AVAILABLE</b> if the object is stored
+ * in a storage area that is inaccessible currently.
  *
  */
 TEE_Result TEE_CloseAndDeletePersistentObject1(TEE_ObjectHandle object);

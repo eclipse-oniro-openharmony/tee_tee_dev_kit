@@ -13,9 +13,9 @@
 /**
  * @file tee_time_api.h
  *
- * @brief 安全时间接口
+ * @brief Provides APIs for managing the Trusted Execution Environment (TEE) time.
  *
- * 开发者可以使用这些接口实现安全时间相关的功能。
+ * You can use these APIs to implement time-related features in a TEE.
  *
  * @since 1
  */
@@ -32,55 +32,57 @@
  */
 
 /**
- * @brief 获取当前TEE系统时间
+ * @brief Obtains the current TEE system time.
  *
- * @param time [OUT]当前系统时间
+ * @param time Indicates the pointer to the current system time obtained.
  *
  */
 void TEE_GetSystemTime(TEE_Time *time);
 
 /**
- * @brief 等待指定的毫秒数
+ * @brief Waits for the specified period of time, in milliseconds.
  *
- * @param timeout [IN]指定的毫秒数
+ * @param timeout Indicates the period of time to wait, in milliseconds.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_CANCEL 等待已取消
- * @return TEE_ERROR_OUT_OF_MEMORY 没有足够的内存来完成操作
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_CANCEL</b> if the wait is canceled.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_Wait(uint32_t timeout);
 
 /**
- * @brief 检索受信任应用程序的持久时间
+ * @brief Obtains the persistent time of this trusted application (TA).
  *
- * @param time [IN]受信任应用程序的持久时间
+ * @param time Indicates the pointer to the persistent time of the TA.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_TIME_NOT_SET 持久时间尚未设置
- * @return TEE_ERROR_TIME_NEEDS_RESET 永久时间已设置，但可能已损坏，不得再信任
- * @return TEE_ERROR_OVERFLOW TA持续时间中的秒数超过了uint32_t的范围
- * @return TEE_ERROR_OUT_OF_MEMORY 没有足够的内存来完成操作
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_TIME_NOT_SET</b> if the persistent time has not been set.
+ * @return Returns <b>TEE_ERROR_TIME_NEEDS_RESET</b> if the persistent time is corrupted and
+ * the application is not longer trusted.
+ * @return Returns <b>TEE_ERROR_OVERFLOW</b> if the number of seconds in the TA persistent time
+ * exceeds the range of <b>uint32_t</b>.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_GetTAPersistentTime(TEE_Time *time);
 
 /**
- * @brief 设置当前受信任应用程序的持久化时间
+ * @brief Sets the persistent time for this TA.
  *
- * @param time [IN]受信任应用程序的持久时间
+ * @param time Indicates the pointer to the persistent time of the TA.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_OUT_OF_MEMORY 没有足够的内存来完成操作
- * @return TEE_ERROR_STORAGE_NO_SPACE 没有足够的存储空间来完成操作
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is not sufficient to complete the operation.
+ * @return Returns <b>TEE_ERROR_STORAGE_NO_SPACE</b> if the storage space is not sufficient to complete the operation.
  *
  */
 TEE_Result TEE_SetTAPersistentTime(TEE_Time *time);
 
 /**
- * @brief 获取当前REE系统时间
+ * @brief Obtains the current Rich Execution Environment (REE) system time.
  *
- * @param time [OUT]当前REE系统时间
+ * @param time Indicates the pointer to the REE system time obtained.
  *
  */
 void TEE_GetREETime(TEE_Time *time);

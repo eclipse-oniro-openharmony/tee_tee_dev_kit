@@ -13,9 +13,9 @@
 /**
  * @file tee_mem_mgmt_api.h
  *
- * @brief ÄÚ´æ²Ù×÷½Ó¿Ú
+ * @brief Provides APIs for memory management.
  *
- * ¿ª·¢Õß¿ÉÒÔÊ¹ÓÃÕâĞ©½Ó¿ÚÊµÏÖ¶ÔÄÚ´æ²Ù×÷Ïà¹ØµÄ¹¦ÄÜ¡£
+ *
  *
  * @since 1
  */
@@ -26,9 +26,9 @@
 #include "tee_mem_monitoring_api.h"
 
 /*
- * below definitions are defined by Global Platform or Platform SDK released previously
- * for compatibility:
- * don't make any change to the content below
+ * The definitions below are defined by Global Platform or Platform SDK released previously
+ * for compatibility.
+ * Do not make any change to the content below.
  */
 #ifndef ZERO_SIZE_PTR
 #define ZERO_SIZE_PTR       ((void *)16)
@@ -38,14 +38,14 @@
 enum MALLOC_HINT {
     ZERO           = 0,
     NOT_ZERO       = 1,
-    ALIGN_004      = 0x80000002, /* buf align */
+    ALIGN_004      = 0x80000002, /* Buffer alignment */
     ALIGN_008      = 0x80000003,
     ALIGN_016      = 0x80000004,
     ALIGN_032      = 0x80000005,
     ALIGN_064      = 0x80000006,
     ALIGN_128      = 0x80000007,
     ALIGN_256      = 0x80000008,
-    ALIGN_004_ZERO = 0x80000012, /* buf align and set to zero */
+    ALIGN_004_ZERO = 0x80000012, /* The buffer is 4-byte aligned and initialized to zeros. */
     ALIGN_008_ZERO = 0x80000013,
     ALIGN_016_ZERO = 0x80000014,
     ALIGN_032_ZERO = 0x80000015,
@@ -63,11 +63,11 @@ enum MALLOC_HINT {
 #define TEE_MEMORY_ACCESS_ANY_OWNER 0x00000004
 
 /**
- * @brief ÓÃxÌî³ä»º³åÇøµÄµÚÒ»¸ö´óĞ¡×Ö½Ú
+ * @brief Fills <b>x</b> into the first <b>size</b> bytes of the buffer.
  *
- * @param buffer [OUT]»º³åÇøÖ¸Õë
- * @param x [IN]Ìî³äÖµ
- * @param size [IN]×Ö½ÚÊı
+ * @param buffer Indicates the pointer to the buffer.
+ * @param x Indicates the value to fill.
+ * @param size Indicates the number of bytes to fill.
  *
  */
 #if defined(API_LEVEL) && (API_LEVEL >= API_LEVEL1_2)
@@ -77,94 +77,99 @@ void TEE_MemFill(void *buffer, uint32_t x, size_t size);
 #endif
 
 /**
- * @brief ½«´óĞ¡×Ö½Ú´Ósrc¸´ÖÆµ½dest
+ * @brief Copies bytes.
  *
- * @param dest [OUT]dest»º³åÇøÖ¸Õë
- * @param src [IN]src»º³åÇøÖ¸Õë
- * @param size [IN]×Ö½ÚÊı
+ * @param dest Indicates the pointer to the buffer that holds the bytes copied.
+ * @param src Indicates the pointer to the buffer that holds the bytes to copy.
+ * @param size Indicates the number of bytes to copy.
  *
  */
 void TEE_MemMove(void *dest, const void *src, size_t size);
 
 /**
- * @brief Ê¹ÓÃÌáÊ¾Öµ·ÖÅä´óĞ¡×Ö½ÚµÄÄÚ´æ·µ»ØµÄÖ¸Õë½«¼æÈİÈÎºÎC»ù±¾Êı¾İÀàĞÍ
+ * @brief Allocates space of the specified size for an object.
  *
- * @param size [IN]½«·ÖÅäµÄÄÚ´æ´óĞ¡
- * @param hint [IN]±êÖ¾£¬0±íÊ¾·µ»ØµÄÄÚ´æ½«Ìî³ä¡°\0¡±
+ * @param size Indicates the size of the memory to be allocated.
+ * @param hint Indicates a hint to the allocator. The value <b>0</b> indicates that the memory block
+ * returned is filled with "\0".
  *
- * @return Ö¸ÏòĞÂ·ÖÅäÄÚ´æµÄÖ¸Õë
- * @return NULL ±íÊ¾·ÖÅäÊ±Ê§°Ü
+ * @return Returns a pointer to the newly allocated space if the operation is successful.
+ * @return Returns a <b>NULL</b> pointer if the allocation fails.
  *
  */
 void *TEE_Malloc(size_t size, uint32_t hint);
 
  /**
-  * @brief ÊÍ·ÅTEE_Malloc·ÖÅäµÄÄÚ´æ
+  * @brief Releases the memory allocated by <b>TEE_Malloc</b>.
   *
-  * Èç¹û»º³åÇøµÈÓÚNULL£¬ÔòTEE_Free½«²»Ö´ĞĞÈÎºÎ²Ù×÷\n
-  * µ÷ÓÃÕßÓ¦È·±£»º³åÇøÊÇÓÉTEE_Malloc»òTEE_Realloc´´½¨µÄ£¬²¢ÇÒ²»Ó¦Á½´ÎÊÍ·ÅÒ»¸öÄÚ´æ£¬²Ù×÷½á¹û²»¿ÉÔ¤²â
+  * If the buffer is a <b>NULL</b> pointer, <b>TEE_Free</b> does nothing.
+  * The buffer to be released must have been allocated by <b>TEE_Malloc</b> or <b>TEE_Realloc</b> and cannot be
+  * released repeatedly. Otherwise, unexpected result may be caused.
   *
-  * @param buffer [IN]Ö¸ÏòÄÚ´æµÄÖ¸Õë
+  * @param buffer Indicates the pointer to the memory to release.
   *
   */
 void TEE_Free(void *buffer);
 
 /**
- * @brief ÖØĞÂ·ÖÅäÄÚ´æ
+ * @brief Reallocates memory.
  *
- * Èç¹ûnew_size´óÓÚ¾Ésize£¬Ôò¾ÉÄÚ´æµÄÄÚÈİ²»»á¸ü¸Ä£¬Ê£ÓàÄÚ´æÊÇËæ»ú×Ö½Ú\n
- * ĞŞ¸ÄÄÚ´æ´óĞ¡Ê±½«ÓĞÒ»¸öĞÂµÄ·ÖÅä²Ù×÷\n
- * Èç¹û·ÖÅäÊ§°Ü£¬½«·µ»Ø¾ÉÄÚ´æ£¬´Ëº¯Êı½«·µ»ØNULL\n
- * Èç¹û»º³åÇøµÈÓÚNULL£¬Ôò´Ëº¯ÊıÓëTEE_MallocÏàÍ¬
+ * If <b>new_size</b> is greater than the old size, the content of the original memory does not change
+ * and the space in excess of the old size contains unspecified content.
+ * If the new size of the memory object requires movement of the object, the space for the previous
+ * instantiation of the object is deallocated.
+ * If the space cannot be allocated, the original object remains allocated and this function
+ * returns a <b>NULL</b> pointer.
+ * If the buffer is <b>NULL</b>, this function is equivalent to <b>TEE_Malloc</b>.
  *
- * @param buffer [IN]Ö¸ÏòÄÚ´æµÄÖ¸Õë
- * @param new_size [IN]ÖØĞÂ·ÖÅäµÄ´óĞ¡
+ * @param buffer Indicates the pointer to the memory to reallocate.
+ * @param new_size Indicates the new size required.
  *
- * @return Ö¸ÏòĞÂÄÚ´æµÄÖ¸Õë£¬²»Ó¦ÎªNULL
- * @return NULL±íÊ¾Ê§°Ü
+ * @return Returns a pointer to the allocated memory if the operation is successful.
+ * @return Returns a <b>NULL</b> pointer if the operation fails.
  *
  */
 void *TEE_Realloc(void *buffer, size_t new_size);
 
 /**
- * @brief ÄÚ´æÄÚÈİ±È½Ï
+ * @brief Compares memory content from the beginning.
  *
- * @param buffer1 [IN]µÚÒ»¸öÖ¸Õë
- * @param buffer2 [IN]µÚ¶ş¸öÖ¸Õë
- * @param size [IN]Òª±È½ÏµÄ×Ö½Ú´óĞ¡
+ * @param buffer1 Indicates the pointer to the first buffer.
+ * @param buffer2 Indicates the pointer to the second buffer.
+ * @param size Indicates the number of the bytes to compare.
  *
- * @return -1 buffer1 < buffer2
- * @return 0 buffer1 == buffer2
- * @return 1 buffer1 > buffer2
+ * @return Returns <b>â€“1</b> if buffer1 < buffer2.
+ * @return Returns <b>0</b> if buffer1 == buffer2.
+ * @return Returns <b>1</b> if buffer1 > buffer2.
  *
  */
 int32_t TEE_MemCompare(const void *buffer1, const void *buffer2, size_t size);
 
 /**
- * @brief ¼ì²é»º³åÇøµÄ·ÃÎÊÈ¨ÏŞ
+ * @brief Checks whether this TA has the requested permissions to access a buffer.
  *
- * @param accessFlags [IN]´ı¼ì²éµÄ·ÃÎÊÈ¨ÏŞ
- * @param buffer [IN]Ö¸ÏòÄÚ´æµÄÖ¸Õë
- * @param size [IN]Òª¼ì²éµÄÄÚ´æ´óĞ¡
+ * @param accessFlags Indicates the access permissions to check.
+ * @param buffer Indicates the pointer to the target buffer.
+ * @param size Indicates the size of the buffer to check.
  *
- * @return TEE_SUCCESS ¾ßÓĞ·ÃÎÊÈ¨ÏŞ
- * @return TEE_ERROR_ACCESS_DENIED Ã»ÓĞ·ÃÎÊÈ¨ÏŞ
+ * @return Returns <b>TEE_SUCCESS</b> if the TA has the requested permissions.
+ * @return Returns <b>TEE_ERROR_ACCESS_DENIED</b> otherwise.
  */
 TEE_Result TEE_CheckMemoryAccessRights(uint32_t accessFlags, const void *buffer, size_t size);
 
 /**
- * @brief ÓÃÓÚÔÚÍ¬Ò»ÊµÀıµÄ²»Í¬»á»°ÖĞ¹²ÏíµÄÈ«¾Ö±äÁ¿
+ * @brief Sets the TA instance data pointer.
  *
- * @param instanceData [IN]È«¾Ö±äÁ¿µØÖ·
+ * @param instanceData Indicates the pointer to the global TA instance data.
  *
  */
 void TEE_SetInstanceData(void *instanceData);
 
 /**
- * @brief »ñÈ¡TEE_SetInstanceDataÉèÖÃµÄÖ¸Õë
+ * @brief Obtains the instance data pointer set by the TA using <b>TEE_SetInstanceData</b>.
  *
- * @return Ö¸ÏòTEE_SetInstanceDataÉèÖÃµÄ±äÁ¿µÄÖ¸Õë£¬Ö¸Õë²»Ó¦ÎªNULL
- * @return NULL Î´ÉèÖÃInstanceData
+ * @return Returns the pointer to the instance data set by <b>TEE_SetInstanceData</b>
+ * @return or <b>NULL</b> if no instance data pointer has been set.
  *
  */
 void *TEE_GetInstanceData(void);

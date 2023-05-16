@@ -13,9 +13,9 @@
 /**
  * @file tee_log.h
  *
- * @brief tee log api
+ * @brief Provides TEE log APIs.
  *
- * Reference of TEE log api and internal definitions.
+ * Reference of TEE log APIs and internal definitions.
  *
  * @since 1
  */
@@ -115,7 +115,7 @@ extern const char *g_debug_prefix;
 #endif /* TA_LOG_LEVEL >= TA_LOG_LEVEL_WARNING */
 
 /* tloge */
-#if (TA_LOG_LEVEL >= TA_LOG_LEVEL_ERROR) /* Always meet this condition */
+#if (TA_LOG_LEVEL >= TA_LOG_LEVEL_ERROR) /* Always meet this condition. */
 #ifndef TLOGE_NO_TIMESTAMP
 #ifdef DRIVER_LOG_TAG
 #define tloge(fmt, args...) \

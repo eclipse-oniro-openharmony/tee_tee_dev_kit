@@ -13,7 +13,7 @@
 /**
  * @file tee_ext_api.h
  *
- * @brief 扩展接口
+ * @brief Provides extended interfaces.
  *
  * @since 1
  */
@@ -31,21 +31,22 @@ extern "C" {
 
 
 /**
- * @brief TA可以调用此API添加调用者信息，允许调用此TA。此API用于CA，以二进制可执行文件的形式
+ * @brief Adds information about a caller that can invoke this TA.
+ * This API applies to the client applications (CAs) in the binary executable file format.
  *
- * @param ca_name[IN]CA调用方的进程名称
- * @param ca_uid[IN]CA调用方的uid
+ * @param ca_name Indicates the process name of the caller of the CA.
+ * @param ca_uid Indicates the UID of the caller.
  *
- * @return TEE_SUCCESS 操作成功
- * @return others 无法为目标CA添加主叫方信息
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns other information otherwise.
  *
  */
 TEE_Result AddCaller_CA_exec(const char *ca_name, uint32_t ca_uid);
 
 /**
- * @brief 获取当前会话类型
+ * @brief Obtains the session type.
  *
- * @return 当前会话的会话类型
+ * @return Returns the session type obtained.
  *
  */
 uint32_t TEE_GetSessionType(void);
