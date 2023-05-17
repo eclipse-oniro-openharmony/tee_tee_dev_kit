@@ -12,6 +12,7 @@ ConfigInfo/TA_Manifest_Info/multi_session,17,TYPE_CHAR,gpd.ta.multiSession
 ConfigInfo/TA_Manifest_Info/single_instance,19,TYPE_CHAR,gpd.ta.singleInstance
 ConfigInfo/TA_Manifest_Info/sdk_version,21,TYPE_CHAR,gpd.sdk.version
 ConfigInfo/TA_Manifest_Info/is_tee_service,23,TYPE_CHAR,gpd.ta.is_tee_service
+ConfigInfo/TA_Manifest_Info/mem_page_align,33,TYPE_CHAR,gpd.ta.mem_page_align
 ConfigInfo/TA_Manifest_Info/is_lib,25,TYPE_CHAR,gpd.ta.is_lib
 ConfigInfo/TA_Manifest_Info/objectEnumEnable,27,TYPE_CHAR,gpd.ta.objectEnumEnable
 ConfigInfo/TA_Manifest_Info/distribution,29,TYPE_CHAR,gpd.ta.distribution

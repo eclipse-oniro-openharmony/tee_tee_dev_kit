@@ -11,7 +11,18 @@
 
 set(TEE_BUILD_PATH $ENV{TEE_BUILD_PATH})
 
+set(INTERNAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../internal/)
+
+if (EXISTS ${INTERNAL_DIR})
+    set(IS_INTERNAL_TA y)
+else()
+    set(IS_INTERNAL_TA n)
+endif()
+
 include (${TEE_BUILD_PATH}/build/cmake/common_flags.cmake)
+if ("${IS_INTERNAL_TA}" STREQUAL "y")
+    include (${TEE_BUILD_PATH}/../../internal/cmake/internal_common.cmake)
+endif()
 
 if (NOT "${TARGET_IS_ARM64}" STREQUAL "y")
     set(SDK_C_SOURCES ${TEE_BUILD_PATH}/src/TA/ta_magic.c)
@@ -35,10 +46,16 @@ if (NOT "${TARGET_IS_ARM64}" STREQUAL "y")
     list(APPEND COMMON_CFLAGS
         -marm
     )
+    if ("${IS_INTERNAL_TA}" STREQUAL "y")
+	list(APPEND COMMON_LDFLAGS
+	    "-T${INTERNAL_DIR}/tools/ta_link.ld"
+	)
+    else()
+        list(APPEND COMMON_LDFLAGS
+            "-T${TEE_BUILD_PATH}/build/tools/ta_link.ld"
+        )
+    endif()
 
-    list(APPEND COMMON_LDFLAGS
-        "-T${TEE_BUILD_PATH}/build/tools/ta_link.ld"
-    )
 else()
     list(APPEND COMMON_INCLUDES
         ${TEE_BUILD_PATH}/thirdparty/open_source/musl/libc

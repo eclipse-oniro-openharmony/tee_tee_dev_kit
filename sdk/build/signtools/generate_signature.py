@@ -16,8 +16,9 @@
 
 import os
 import stat
+import sys
 import subprocess
-
+import logging
 from generate_hash import gen_hash
 
 HASH256 = 0
@@ -27,56 +28,60 @@ HASH512 = 1
 def run_cmd(command):
     ret = subprocess.run(command, shell=False, check=True)
     if ret.returncode != 0:
-        print("run command failed.")
-        exit()
+        logging.error("run command failed.")
+        sys.exit(1)
 
 
 def gen_ta_signature(cfg, uuid_str, raw_data, raw_data_path, hash_file_path, \
     out_file_path, out_path, key_info_data):
-    msg_file = out_path + '/temp/config_msg'
-    fd_msg = os.open(msg_file, os.O_WRONLY | os.O_CREAT, \
+    fd_raw = os.open(raw_data_path, os.O_WRONLY | os.O_CREAT, \
         stat.S_IWUSR | stat.S_IRUSR)
-    msg_file_fp = os.fdopen(fd_msg, "wb")
-    msg_file_fp.write(raw_data)
-    msg_file_fp.close()
+    raw_fp = os.fdopen(fd_raw, "wb")
+    raw_fp.write(raw_data)
+    raw_fp.close()
 
-    if cfg.sign_alg == "ECDSA":
-        if int(cfg.hash_type) == HASH256:
-            cmd = ["openssl", "dgst", "-sha256", "-sign", cfg.sign_key, \
-                   "-out", out_file_path, msg_file]
-        else:
-            cmd = ["openssl", "dgst", "-sha512", "-sign", cfg.sign_key, \
-                   "-out", out_file_path, msg_file]
-        run_cmd(cmd)
-        print('Sign sec Success')
-        return
-    else: # rsa
-        if cfg.padding_type == '0': # pkcsv1_5
-            gen_hash(cfg.hash_type, raw_data, hash_file_path)
-            cmd = "openssl rsautl -sign -inkey {} -in {} -out {}".\
-                format(cfg.sign_key, hash_file_path, out_file_path)
-            try:
-                subprocess.check_output(cmd.split(), shell=False)
-            except Exception:
-                print("sign operation failed")
-                raise RuntimeError
-        else: # pss
-            if cfg.hash_type == '0':
-                cmd = "openssl dgst -sign {} -sha256 -sigopt \
-                    rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
-                    -out {} {}".format(cfg.sign_key, out_file_path, msg_file)
-                try:
-                    subprocess.check_output(cmd.split(), shell=False)
-                except Exception:
-                    print("sign operation failed")
-                    raise RuntimeError
+    if cfg.sign_type == '0': # don't sign for debug version
+        logging.critical("generate dummy signature for DEBUG version")
+        fd_file = os.open(out_file_path, os.O_WRONLY | os.O_CREAT, \
+            stat.S_IWUSR | stat.S_IRUSR)
+        file_op = os.fdopen(fd_file, "wb")
+        file_op.write(str.encode('\0' * 256, encoding = 'utf-8'))
+        file_op.close()
+    elif cfg.sign_type == '1': # signed with local key
+        if cfg.sign_alg == "ECDSA":
+            if int(cfg.hash_type) == HASH256:
+                cmd = ["openssl", "dgst", "-sha256", "-sign", cfg.sign_key, \
+                    "-out", out_file_path, raw_data_path]
             else:
-                cmd = "openssl dgst -sign {} -sha512 -sigopt \
-                    rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
-                    -out {} {}".format(cfg.sign_key, out_file_path, msg_file)
-                try:
-                    subprocess.check_output(cmd.split(), shell=False)
-                except Exception:
-                    print("sign operation failed")
-                    raise RuntimeError
+                cmd = ["openssl", "dgst", "-sha512", "-sign", cfg.sign_key, \
+                    "-out", out_file_path, raw_data_path]
+            run_cmd(cmd)
+            logging.critical("Sign sec Success")
+        else: # rsa
+            if cfg.padding_type == '1': # pss
+                if cfg.hash_type == '0': # sha256
+                    cmd = "openssl dgst -sign {} -sha256 -sigopt \
+                        rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
+                        -out {} {}".format(cfg.sign_key, out_file_path, raw_data_path)
+                else: # sha512
+                    cmd = "openssl dgst -sign {} -sha512 -sigopt \
+                        rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
+                        -out {} {}".format(cfg.sign_key, out_file_path, raw_data_path)
+                run_cmd(cmd.split())
+                logging.critical("pss sign sec Success")
+            else:
+                logging.error("padding type %s is not support!", cfg.padding_type)
+                exit(0)
+    elif cfg.sign_type == '2': # signed by sign server 
+        if os.path.exists("../../../internal/signtools/sign_internal.py"):
+            sys.path.append("../../../internal/signtools")
+            from sign_internal import signed_by_jar_tool
+            signed_by_jar_tool(cfg, raw_data, hash_file_path, uuid_str, raw_data_path, out_file_path)
+        else:
+            logging.error("unhandled signtype %s", cfg.sign_type)
+            exit(0)
+    else:
+        logging.error("unhandled signtype %s", cfg.sign_type)
+
     return
+

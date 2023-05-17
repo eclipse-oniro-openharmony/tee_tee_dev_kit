@@ -27,6 +27,7 @@ sec_binary:combine
 # attention: must add ta_entry_check.sh as below to check whether ta is valid
 combine: $(TARGET)
 	$(LD) $(LDFLAGS) $(TARGET) $(EXTRAO) -o libcombine.so
+	python3 ${SIGNTOOL_DIR}/ta_check_undefined_symbol.py libcombine.so
 	bash $(TEE_BUILD_PATH)/build/tools/ta_entry_check.sh $(READELF) $(shell pwd)/libcombine.so n y $(TARGET_IS_ARM64)
 
 src/%.o: ./src/%.c

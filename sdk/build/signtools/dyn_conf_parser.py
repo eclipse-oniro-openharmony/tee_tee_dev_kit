@@ -16,11 +16,16 @@
 
 import string
 import os
+import sys
+import stat
+import logging
 from defusedxml import ElementTree as ET
 from dyn_conf_checker import dyn_perm_check
 from dyn_conf_checker import check_and_classify_attr
 from dyn_conf_checker import check_csv_sym
 from dyn_conf_checker import check_ta_config
+from dyn_conf_checker import dyn_conf_clean
+
 
 type_trans = {"TYPE_NONE": "-1",
               "TYPE_CLASS": "0",
@@ -113,8 +118,8 @@ def get_value_by_name_in_config(config_name, in_path):
 
     config_file = os.path.join(in_path, config_name)
     if not os.path.exists(config_file):
-        print("configs.xml file doesn't exist")
-        return
+        logging.error("configs.xml file doesn't exist")
+        return ""
     xml_tree = ET.parse(config_file)
     drv_perm = xml_tree.find('./TA_Basic_Info/service_name')
     return drv_perm.text
@@ -130,7 +135,7 @@ def get_value_by_name_in_manifest(manifest_name, in_path):
     else:
         with open(manifest, 'r') as mani_fp:
             for each_line in mani_fp:
-                if each_line.startswith("#") or not len(each_line.strip()):
+                if each_line.startswith("#") or not each_line.strip():
                     continue
                 name = each_line.split(":")[0].strip()
                 if "{" + name + "}" == manifest_name:
@@ -148,7 +153,7 @@ def get_value_trans(old_item, value, attrib, key, in_path):
     if ".csv" in trans_dict.get(key):
         manifest_name = trans_dict.get(key).split(".csv")[0]
         manifest_value = get_value_by_name_in_manifest(manifest_name, in_path)
-        trans_file_path = os.path.join(in_path, manifest_value + ".csv")
+        trans_file_path = os.path.join(in_path, "{}.csv".format(manifest_value))
         return handle_trans(value, trans_file_path)
     # if name not contains '.csv' means
     # we can transform value by {attrib[attri]}.csv
@@ -171,6 +176,9 @@ def item_zip(old_item, attr, value, attrib, in_path):
     dyn_key = old_item + attr
     dyn_type = type_dict.get(dyn_key)
     origin_value = value
+
+    if dyn_type is None:
+        raise RuntimeError("tag " + dyn_key + " is not support!")
 
     if len(trans_dict.get(dyn_key)) > 0:
         value = get_value_trans(old_item, value, attrib, dyn_key, in_path)
@@ -204,7 +212,7 @@ def get_length(value):
     off = int((DYN_CONF_LEN_LEN / 2 - 1) * 8)
     ans = ""
 
-    for i in range(int(DYN_CONF_LEN_LEN / 2)):
+    for _ in range(int(DYN_CONF_LEN_LEN / 2)):
         tmp = ""
         dyn_len = (length >> off) & 0xFF;
         if dyn_len >= 0 and dyn_len <= 0xF:
@@ -240,6 +248,11 @@ def do_parser_dyn_conf(old_item, ele, in_path):
                 continue
             attrs = attrs + tmp_attrs
 
+    if os.path.exists("../../../internal/signtools/sign_internal.py"):
+        sys.path.append("../../../internal/signtools")
+        from config_checker import check_ta_config_internal
+        check_ta_config_internal(old_item, ele.text)
+
     # handle inner context
     if check_ta_config(old_item, ele.text) is True and \
        ele.text is not None and len(ele.text.strip()) > 0:
@@ -259,11 +272,11 @@ def parser_dyn_conf(dyn_conf_xml_file_path, manifest_ext_path,
                     tag_parse_dict_path, in_path):
 
     if not os.path.exists(dyn_conf_xml_file_path):
-        print("dyn perm xml file doesn't exist")
+        logging.error("dyn perm xml file doesn't exist")
         return
 
     if not os.path.exists(tag_parse_dict_path):
-        print("tag_parse_dict.csv file doesn't exist")
+        logging.error("tag_parse_dict.csv file doesn't exist")
         return
 
     handle_tag_dict(tag_parse_dict_path)
@@ -271,6 +284,7 @@ def parser_dyn_conf(dyn_conf_xml_file_path, manifest_ext_path,
     root = tree.getroot()
 
     ans = do_parser_dyn_conf(root.tag + "/", root, in_path)
+    dyn_conf_clean()
     if ans == "":
         ans = "00000"
 
@@ -278,7 +292,9 @@ def parser_dyn_conf(dyn_conf_xml_file_path, manifest_ext_path,
 
     if not os.path.exists(manifest_ext_path):
         out_tlv = os.path.join(in_path, "config_tlv")
-        with open(out_tlv, 'w+') as conf:
+        with os.fdopen(os.open(out_tlv, \
+            os.O_RDWR | os.O_TRUNC | os.O_CREAT, \
+            stat.S_IWUSR | stat.S_IRUSR), 'w+') as conf:
             conf.write(ans)
     else:
         #write items to mani_ext
@@ -291,10 +307,10 @@ def parser_config_xml(config_xml_file_path, tag_parse_dict_path, \
     out_path, in_path):
 
     if not os.path.exists(config_xml_file_path):
-        print("config xml file doesn't exist")
+        logging.error("config xml file doesn't exist")
         return
     if not os.path.exists(tag_parse_dict_path):
-        print("tag_parse_dict.csv file doesn't exist")
+        logging.error("tag_parse_dict.csv file doesn't exist")
         return
 
     handle_tag_dict(tag_parse_dict_path)
@@ -302,6 +318,7 @@ def parser_config_xml(config_xml_file_path, tag_parse_dict_path, \
     root = tree.getroot()
 
     ans = do_parser_dyn_conf(root.tag + "/", root, in_path)
+    dyn_conf_clean()
     if ans == "":
         ans = "00000"
 
