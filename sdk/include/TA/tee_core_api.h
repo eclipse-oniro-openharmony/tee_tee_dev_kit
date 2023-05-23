@@ -12,7 +12,7 @@
  /**
  * @file tee_core_api.h
  *
- * @brief TA会话操作接口
+ * @brief Provides APIs for managing trusted application (TA) sessions.
  *
  * @since 1
  */
@@ -26,51 +26,54 @@ typedef uint32_t TEE_TASessionHandle;
 #endif
 
 /**
- * @brief 在受信任的应用程序实例中引发死机\
+ * @brief Raises a panic in the TA instance.
  *
- * @param panicCode [IN]TA定义的信息性恐慌代码
+ * @param panicCode Indicates an informative panic code defined by the TA.
  *
  */
 void TEE_Panic(TEE_Result panicCode);
 
 /**
- * @brief 使用受信任应用程序打开新会话
+ * @brief Opens a new session with a TA.
  *
- * @param destination [IN]指向包含目标受信任应用程序的UUID的TEE_UUID结构的指针
- * @param cancellationRequestTimeout [IN]以毫秒为单位的超时或特殊值
- * @param paramTypes [IN]操作中传递的所有参数的类型
- * @param params [IN]操作中传递的参数
- * @param session [OUT]指向将接收客户端会话句柄的变量的指针
- * @param returnOrigin [OUT]指向将包含返回原点的变量的指针
+ * @param destination Indicates the pointer to the <b>TEE_UUID</b> structure that contains
+ * the Universal Unique Identifier (UUID) of the target TA.
+ * @param cancellationRequestTimeout Indicates the timeout period in milliseconds or a special value
+ * if there is no timeout.
+ * @param paramTypes Indicates the types of all parameters passed in the operation.
+ * @param params Indicates the parameters passed in the operation.
+ * @param session Indicates the pointer to the variable that will receive the client session handle.
+ * @param returnOrigin Indicates the pointer to the variable that holds the return origin.
  *
- * @return TEE_SUCCESS 成功打开会话
- * @return TEE_ERROR_ITEM_NOT_FOUND 在TEE中找不到目标TA
- * @return TEE_ERROR_ACCESS_DENIED 对目标受信任应用程序的访问被拒绝
+ * @return Returns <b>TEE_SUCCESS</b> if the session is opened.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the TA cannot be found in the Trusted Execution Environment (TEE).
+ * @return Returns <b>TEE_ERROR_ACCESS_DENIED</b> if the access request to the TA is denied.
  *
  */
 TEE_Result TEE_OpenTASession(const TEE_UUID *destination, uint32_t cancellationRequestTimeout, uint32_t paramTypes,
                              TEE_Param params[TEE_PARAMS_NUM], TEE_TASessionHandle *session, uint32_t *returnOrigin);
 
 /**
- * @brief 关闭由TEE_OpenTASession打开的客户端会话
+ * @brief Closes a client session.
  *
- * @param session [IN]TEE_OpenTASession打开的会话句柄
+ * @param session Indicates the handle of the session to close.
  *
  */
 void TEE_CloseTASession(TEE_TASessionHandle session);
 
 /**
- * @brief 在客户端受信任应用程序实例和目标受信任应用程序实例之间打开的会话中调用命令
+ * @brief Invokes a command in a session opened between this client TA instance and a target TA instance.
  *
- * @param session [IN]打开的会话句柄
- * @param cancellationRequestTimeout [IN]以毫秒为单位的超时或特殊值
- * @param commandID [IN]要调用的命令的标识符
- * @param paramTypes [IN]操作中传递的所有参数的类型
- * @param params [IN]操作中传递的参数
- * @param returnOrigin [IN]指向将包含返回原点的变量的指针
+ * @param session Indicates the handle of the opened session.
+ * @param cancellationRequestTimeout Indicates the timeout period in milliseconds or a special value
+ * if there is no timeout.
+ * @param commandID Indicates the identifier of the command to invoke.
+ * @param paramTypes Indicates the types of all parameters passed in the operation.
+ * @param params Indicates the parameters passed in the operation.
+ * @param returnOrigin Indicates the pointer to the variable that holds the return origin.
  *
- * @return TEE_SUCCESS 调用操作成功
- * @return TEE_ERROR_ACCESS_DENIED 向目标TA调用命令被拒绝
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ACCESS_DENIED</b> if the command fails to be invoked.
  *
  */
 TEE_Result TEE_InvokeTACommand(TEE_TASessionHandle session, uint32_t cancellationRequestTimeout, uint32_t commandID,

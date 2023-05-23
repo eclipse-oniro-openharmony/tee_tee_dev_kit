@@ -16,9 +16,9 @@
 #include "tee_defines.h"
 
 /*
- * below definitions are defined by Global Platform or Platform SDK released previously
- * for compatibility:
- * don't make any change to the content below
+ * The definitions below are defined by Global Platform or Platform SDK released previously
+ * for compatibility.
+ * Do not make any change to the content below.
  */
 typedef enum {
     TEE_PROPSET_UNKNOW             = 0,
@@ -30,157 +30,158 @@ typedef enum {
 typedef uint32_t TEE_PropSetHandle;
 
 /*
- * performs a lookup in a property set to retrieve an individual
- * property and convert its value into a printable string
+ * @brief Obtains a property from a property set and converts its value into a printable string.
  *
- * @param propsetOrEnumerator [IN] One of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator
- * @param name                [IN] Pointer to the zero-terminated string containing name of the property to retrieve
- * @param valueBuffer         [OUT] Output buffer for the property value
- * @param valueBufferLen      [IN/OUT] Output buffer length
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND cannot find target property
- * @return TEE_ERROR_SHORT_BUFFER the value buffer is not large enough to hold the whole property value
+ * @param propsetOrEnumerator Indicates one of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator.
+ * @param name Indicates the pointer to the zero-terminated string containing the name of the property to obtain.
+ * @param valueBuffer Indicates the pointer to the buffer for holding the property value obtained.
+ * @param valueBufferLen Indicates the pointer to the buffer length.
+ *
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the target property cannot be obtained.
+ * @return Returns <b>TEE_ERROR_SHORT_BUFFER</b> if the value buffer is too small to hold the property value obtained.
  */
 TEE_Result TEE_GetPropertyAsString(TEE_PropSetHandle propsetOrEnumerator, const char *name, char *valueBuffer,
                                    size_t *valueBufferLen);
 
 /*
- * retrieves a single property in a property set and converts its value to a Boolean
+ * @brief Obtains a property from a property set and converts its value into a Boolean value.
  *
- * @param propsetOrEnumerator [IN] One of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator
- * @param name                [IN] Pointer to the zero-terminated string containing name of the property to retrieve
- * @param value               [OUT] A pointer to the variable that will contain the value of the property
+ * @param propsetOrEnumerator Indicates one of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator.
+ * @param name Indicates the pointer to the zero-terminated string containing the name of the property to obtain.
+ * @param value Indicates the pointer to the variable that holds the property value obtained.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND cannot find target property
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the target property cannot be obtained.
  */
 TEE_Result TEE_GetPropertyAsBool(TEE_PropSetHandle propsetOrEnumerator, const char *name, bool *value);
 
 /*
- * retrieves a single property in a property set and converts its value to a 32-bit unsigned integer
+ * @brief Obtains a property from a property set and converts its value into a 32-bit unsigned integer.
  *
- * @param propsetOrEnumerator [IN] One of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator
- * @param name                [IN] Pointer to the zero-terminated string containing name of the property to retrieve
- * @param value               [OUT] A pointer to the variable that will contain the value of the property
+ * @param propsetOrEnumerator Indicates one of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator.
+ * @param name Indicates the pointer to the zero-terminated string containing the name of the property to obtain.
+ * @param value Indicates the pointer to the variable that holds the property value obtained.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND cannot find target property
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the target property cannot be obtained.
  */
 TEE_Result TEE_GetPropertyAsU32(TEE_PropSetHandle propsetOrEnumerator, const char *name, uint32_t *value);
 
 #if defined(API_LEVEL) && (API_LEVEL >= API_LEVEL1_2)
 /*
- * retrieves a single property in a property set and converts its value to a 64-bit unsigned integer
+ * @brief Obtains a property from a property set and converts its value into a 64-bit unsigned integer.
  *
- * @param propsetOrEnumerator [IN] One of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator
- * @param name                [IN] Pointer to the zero-terminated string containing name of the property to retrieve
- * @param value               [IN/OUT] A pointer to the variable that will contain the value of the property
+ * @param propsetOrEnumerator Indicates one of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator.
+ * @param name Indicates the pointer to the zero-terminated string containing the name of the property to obtain.
+ * @param value Indicates the pointer to the variable that holds the property value obtained.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND cannot find target property
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the target property cannot be obtained.
  */
 TEE_Result TEE_GetPropertyAsU64(TEE_PropSetHandle propsetOrEnumerator, const char *name, uint64_t *value);
 #endif // API_LEVEL
 
 /*
- * retrieves an individual property and converts its value into a binary block
+ * @brief Obtains a property from a property set and converts its value into a binary block.
  *
- * @param propsetOrEnumerator [IN] One of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator
- * @param name                [IN] Pointer to the zero-terminated string containing name of the property to retrieve
- * @param valueBuffer         [OUT] Output buffer for the property value
- * @param valueBufferLen      [IN/OUT] Output buffer length
+ * @param propsetOrEnumerator Indicates one of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator.
+ * @param name Indicates the pointer to the zero-terminated string containing the name of the property to obtain.
+ * @param valueBuffer Indicates the pointer to the buffer for holding the property value obtained.
+ * @param valueBufferLen Indicates the pointer to the buffer length.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND cannot find target property
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the target property cannot be obtained.
  * @return TEE_ERROR_SHORT_BUFFER the value buffer is not large enough to hold the whole property value
  */
 TEE_Result TEE_GetPropertyAsBinaryBlock(TEE_PropSetHandle propsetOrEnumerator, const char *name, void *valueBuffer,
                                         size_t *valueBufferLen);
 
 /*
- * retrieves a single property in a property set and converts its value to TEE_UUID struct
+ * @brief Obtains a property from a property set and converts its value to the <b>TEE_UUID</b> struct.
  *
- * @param propsetOrEnumerator [IN] One of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator
- * @param name                [IN] Pointer to the zero-terminated string containing name of the property to retrieve
- * @param value               [OUT] A pointer to the variable that will contain the value of the property
+ * @param propsetOrEnumerator Indicates one of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator.
+ * @param name Indicates the pointer to the zero-terminated string containing the name of the property to obtain.
+ * @param value Indicates the pointer to the variable that holds the property value obtained.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND cannot find target property
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the target property cannot be obtained.
  */
 TEE_Result TEE_GetPropertyAsUUID(TEE_PropSetHandle propsetOrEnumerator, const char *name, TEE_UUID *value);
 
 /*
- * retrieves a single property in a property set and converts its value to TEE_Identity struct
+ * @brief Obtains a property from a property set and converts its value to the <b>TEE_Identity</b> struct.
  *
- * @param propsetOrEnumerator [IN] One of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator
- * @param name                [IN] Pointer to the zero-terminated string containing name of the property to retrieve
- * @param value               [OUT] A pointer to the variable that will contain the value of the property
+ * @param propsetOrEnumerator Indicates one of the TEE_PROPSET_XXX pseudo-handles or a handle on a property enumerator.
+ * @param name Indicates the pointer to the zero-terminated string containing the name of the property to obtain.
+ * @param value Indicates the pointer to the variable that holds the property value obtained.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND cannot find target property
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the target property cannot be obtained.
  */
 TEE_Result TEE_GetPropertyAsIdentity(TEE_PropSetHandle propsetOrEnumerator, const char *name, TEE_Identity *value);
 
 /*
- * allocates a property enumerator object
+ * @brief Allocates a property enumerator object.
  *
- * @param enumerator [OUT] A pointer filled with an opaque handle on the property enumerator
+ * @param enumerator Indicates the pointer to the property enumerator filled with an opaque handle.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_OUT_OF_MEMORY not enough resources to allocate the property enumerator
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if there is no enough resources to allocate the property enumerator.
  */
 TEE_Result TEE_AllocatePropertyEnumerator(TEE_PropSetHandle *enumerator);
 
 /*
- * deallocates a property enumerator object
+ * @brief Releases a property enumerator object.
  *
- * @param enumerator [IN] A handle on the enumerator to free
+ * @param enumerator Indicates the handle on the property enumerator to release.
  *
  * @return void
  */
 void TEE_FreePropertyEnumerator(TEE_PropSetHandle enumerator);
 
 /*
- * starts to enumerate the properties in an enumerator
+ * @brief Starts to enumerate the properties in an enumerator.
  *
- * @param enumerator [IN] A handle on the enumerator
- * @param propSet    [IN] A pseudo-handle on the property set to enumerate
+ * @param enumerator Indicates the handle on the enumerator.
+ * @param propSet Indicates the pseudo-handle on the property set to enumerate.
  *
  * @return void
  */
 void TEE_StartPropertyEnumerator(TEE_PropSetHandle enumerator, TEE_PropSetHandle propSet);
 
 /*
- * resets a property enumerator to its state immediately after allocation
+ * @brief Resets a property enumerator immediately after allocation.
  *
- * @param enumerator A handle on the enumerator to reset
+ * @param enumerator Indicates the handle on the enumerator to reset.
  *
  * @return void
  */
 void TEE_ResetPropertyEnumerator(TEE_PropSetHandle enumerator);
 
 /*
- * gets the name of the current property in an enumerator
+ * @brief Obtains the name of this property in an enumerator.
  *
- * @param enumerator    [IN]     A handle on the enumerator
- * @param nameBuffer    [OUT]    The buffer to be filled with the name
- * @param nameBufferLen [IN/OUT] The length of buffer to be filled
+ * @param enumerator Indicates the handle on the enumerator.
+ * @param nameBuffer Indicates the pointer to the buffer that stores the property name obtained.
+ * @param nameBufferLen Indicates the pointer to the buffer length.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND no current property either because the enumerator has not started
- * or because it has reached the end of the property set
- * @return TEE_ERROR_SHORT_BUFFER If the name buffer is not large enough to contain the property name
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the property is not found because the enumerator has not started
+ * or has reached the end of the property set.
+ * @return Returns <b>TEE_ERROR_SHORT_BUFFER</b> if the buffer is too small to hold the property name.
  */
 TEE_Result TEE_GetPropertyName(TEE_PropSetHandle enumerator, void *nameBuffer, size_t *nameBufferLen);
 
 /*
- * advances the enumerator to the next property
+ * @brief Obtains the next property in an enumerator.
  *
- * @param enumerator [IN] A handle on the enumerator
+ * @param enumerator Indicates the handle on the enumerator.
  *
- * @return TEE_SUCCESS operation success
- * @return TEE_ERROR_ITEM_NOT_FOUND  enumerator has reached the end of the property set or if it has not started
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the property is not found because the enumerator
+ * has not started or has reached the end of the property set.
  */
 TEE_Result TEE_GetNextProperty(TEE_PropSetHandle enumerator);
 #endif

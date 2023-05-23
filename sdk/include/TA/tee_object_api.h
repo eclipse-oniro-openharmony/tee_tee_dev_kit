@@ -13,9 +13,9 @@
 /**
  * @file tee_object_api.h
  *
- * @brief 安全存储接口
+ * @brief Provides trusted storage APIs.
  *
- * 开发者可以使用这些接口实现安全存储的相关功能。
+ * You can use these APIs to implement trusted storage features.
  *
  * @since 1
  */
@@ -25,48 +25,49 @@
 #include "tee_defines.h"
 
 /**
- * @brief HANDLE_NULL的定义，无效的对象句柄
+ * @brief Defines <b>HANDLE_NULL</b>, which is used to denote the absence of a handle.
  */
 #define TEE_HANDLE_NULL 0x00000000
 
 /**
- * @brief TEE_ObjectHandle的密钥使用方式，决定了对象密钥的使用情况
+ * @brief Enumerates the usages of the key of the <b>TEE_ObjectHandle</b>.
  */
 enum Usage_Constants {
-    /** 可以提取对象的密钥 */
+    /** The object's key is extractable. */
     TEE_USAGE_EXTRACTABLE = 0x00000001,
-    /** 对象的密钥可以用于加密 */
+    /** Used for encryption. */
     TEE_USAGE_ENCRYPT     = 0x00000002,
-    /** 对象的密钥可以用于解密 */
+    /** Used for decryption. */
     TEE_USAGE_DECRYPT     = 0x00000004,
-    /** 对象的密钥可以用于哈希计算 */
+    /** Used for hash calculation. */
     TEE_USAGE_MAC         = 0x00000008,
-    /** 对象的密钥可以用于签名 */
+    /** Used for creating a signature. */
     TEE_USAGE_SIGN        = 0x00000010,
-    /** 对象的密钥可以用来验签 */
+    /** Used for signature verification. */
     TEE_USAGE_VERIFY      = 0x00000020,
-    /** 对象的密钥可用于派生 */
+    /** Used for key derivation. */
     TEE_USAGE_DERIVE      = 0x00000040,
-    /** 对象初始化，默认分配所有权限 */
+    /** Used for object initialization, with all permissions assigned by default. */
     TEE_USAGE_DEFAULT     = 0xFFFFFFFF,
 };
 
 /**
- * @brief TEE_ObjectHandle的句柄标志指示对象的一些信息，是否为永久对象，是否已初始化等。
+ * @brief Defines information about the object pointed to by the flag of the <b>TEE_ObjectHandle</b>,
+ * for example, whether the object is a persistent object or is initialized.
  */
 enum Handle_Flag_Constants {
-    /** 持久化对象 */
+    /** The object is a persistent object. */
     TEE_HANDLE_FLAG_PERSISTENT      = 0x00010000,
-    /** 对象已初始化 */
+    /** The object is initialized. */
     TEE_HANDLE_FLAG_INITIALIZED     = 0x00020000,
-    /** 未使用 */
+    /**Reserved */
     TEE_HANDLE_FLAG_KEY_SET         = 0x00040000,
-    /** 未使用 */
+    /**Reserved */
     TEE_HANDLE_FLAG_EXPECT_TWO_KEYS = 0x00080000,
 };
 
 /**
- * @brief 属性标识符标志列表
+ * @brief Defines a list of attribute identifier flags.
  */
 #define TEE_ATTR_FLAG_VALUE  0x20000000
 #define TEE_ATTR_FLAG_PUBLIC 0x10000000
@@ -78,184 +79,200 @@ enum Handle_Flag_Constants {
 #define TEE_ATTR_IS_PUBLIC(attribute_id)    ((((attribute_id) << 3) >> 31) == 1)
 
 /**
- * @brief 在TEE_ObjectHandle指向的对象的TEE_Attribute结构中获取联合的缓冲区内容
+ * @brief Obtains a buffer attribute from the <b>TEE_Attribute</b> struct of the object pointed
+ * to by <b>TEE_ObjectHandle</b>.
  *
- * TEE_Attribute结构中的联合成员需要是ref。如果TEE_Attribute是私有的，则对象的使用常数必须包括TEE_USAGE_EXTRACTABLE
+ * The members in the <b>TEE_Attribute</b> struct must be <b>ref</b>. If the <b>TEE_Attribute</b> is private,
+ * the <b>Usage_Constants</b> of the object must include <b>TEE_USAGE_EXTRACTABLE</b>.
  *
- * @param object [IN]源TEE_ObjectHandle
- * @param attributeID [IN]要获取的属性ID，如TEE_ObjectAttribute，也可以自定义
- * @param buffer [OUT]指针，指向的缓冲区用于存储获取的缓冲区的内容
- * @param size [IN/OUT]指针，存储内容字节长度
+ * @param object Indicates the handle of the object.
+ * @param attributeID Indicates the ID of the attribute to obtain, for example, <b>TEE_ObjectAttribute</b>.
+ * The attribute ID can also be customized.
+ * @param buffer Indicates the pointer to the buffer that stores the attribute obtained.
+ * @param size Indicates the pointer to the length of the content stored.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_ITEM_NOT_FOUND 在对象中找不到要查找的TEE_Attribute，或者对象未初始化
- * @return TEE_ERROR_SHORT_BUFFER提供的缓冲区太小，无法存储获取的内容
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the <b>TEE_Attribute</b> cannot be found in the object
+ * or the object is not initialized.
+ * @return Returns <b>TEE_ERROR_SHORT_BUFFER</b> if the buffer is too small to store the content obtained.
  *
  */
 TEE_Result TEE_GetObjectBufferAttribute(TEE_ObjectHandle object, uint32_t attributeID, void *buffer, size_t *size);
 
 /**
- * @brief 在对象中的TEE_Attribute中获取联合的值
+ * @brief Obtains a value attribute from the <b>TEE_Attribute</b> of an object.
  *
- * TEE_Attribute结构中联合的成员必须为value。如果TEE_Attribute是私有的，则对象的Usage_Constants需要包括TEE_USAGE_EXTRACTABLE
+ * The members of the <b>TEE_Attribute</b> struct must be values. If the <b>TEE_Attribute</b> is private,
+ * the <b>Usage_Constants</b> of the object must include <b>TEE_USAGE_EXTRACTABLE</b>.
  *
- * @param object [IN]源TEE_ObjectHandle
- * @param attributeID [IN]需要获取的属性ID，如TEE_ObjectAttribute，也可以自定义
- * @param a [OUT]指针，指向的空间用于存储
- * @param b [OUT]指针，指向的空间用于存储b
+ * @param object Indicates the handle of the object.
+ * @param attributeID Indicates the ID of the attribute to obtain, for example, <b>TEE_ObjectAttribute</b>.
+ * The attribute ID can also be customized.
+ * @param a Indicates the pointer to the placeholder filled with the attribute field <b>a</b>.
+ * @param b Indicates the pointer to the placeholder filled with the attribute field <b>b</b>.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_ITEM_NOT_FOUND 在对象中找不到要查找的TEE_Attribute，或者对象未初始化
- * @return TEE_ERROR_ACCESS_DENIED 尝试获取私有TEE_Attribute，但未设置TEE_USAGE_EXTRACTABLE
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_ITEM_NOT_FOUND</b> if the <b>TEE_Attribute</b> cannot be found in the object
+ * or the object is not initialized.
+ * @return Returns <b>TEE_ERROR_ACCESS_DENIED</b> if <b>TEE_Attribute</b> is private
+ * but the object <b>Usage_Constants</b> does not contain the <b>TEE_USAGE_EXTRACTABLE</b> flag.
  *
  */
 TEE_Result TEE_GetObjectValueAttribute(TEE_ObjectHandle object, uint32_t attributeID, uint32_t *a, uint32_t *b);
 
 /**
- * @brief 关闭打开的TEE_ObjectHandle对象
+ * @brief Closes a <b>TEE_ObjectHandle</b> object.
  *
- * 对象可以是持久对象，也可以是临时对象
+ * The object can be persistent or transient.
  *
- * @param object [IN]待关闭的TEE_ObjectHandle对象
+ * @param object Indicates the <b>TEE_ObjectHandle</b> object to close.
  *
  */
 void TEE_CloseObject(TEE_ObjectHandle object);
 
 /**
- * @brief 分配一个未初始化的对象来存储键
+ * @brief Allocates an uninitialized object to store keys.
  *
- * objectType和maxObjectSize需要指定以预分配
+ * <b>objectType</b> and <b>maxObjectSize</b> must be specified.
  *
- * @param objectType [IN]待创建对象的类型，取值为TEE_ObjectType
- * @param maxObjectSize [IN]对象的最大字节数
- * @param object [OUT]指向新创建对象句柄的指针
+ * @param objectType Indicates the type of the object to create. The value is <b>TEE_ObjectType</b>.
+ * @param maxObjectSize Indicates the maximum number of bytes of the object.
+ * @param object Indicates the pointer to the handle of the newly created object.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_OUT_OF_MEMORY 内存不足，无法分配
- * @return TEE_ERROR_NOT_SUPPORTED 不支持对象提供的字节
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if the memory is insufficient.
+ * @return Returns <b>TEE_ERROR_NOT_SUPPORTED</b> if the object type is not supported.
  *
  */
 TEE_Result TEE_AllocateTransientObject(uint32_t objectType, uint32_t maxObjectSize, TEE_ObjectHandle *object);
 
 /**
- * @brief 释放已分配的临时对象
+ * @brief Releases a transient object that is previously allocated with <b>TEE_AllocateTransientObject</b>.
  *
- * 函数调用后，句柄失效，所有分配的都被释放。与TEE_AllocateTransientObject配对
+ * After the function is called, the handle becomes invalid and all allocated resources are released.
+ * <b>TEE_FreeTransientObject</b> and <b>TEE_AllocateTransientObject</b> are used in pairs.
  *
- * @param object[IN]需要释放的TEE_ObjectHandle
+ * @param object Indicates the <b>TEE_ObjectHandle</b> to release.
  *
  */
 void TEE_FreeTransientObject(TEE_ObjectHandle object);
 
 /**
- * @brief 将瞬态对象重置为初始状态，即分配后的状态
+ * @brief Resets a transient object to its initial state after allocation.
  *
- * 可以重用已分配但未存储密钥的未初始化对象来存储密钥
+ * You can use an allocated object, which has not been initialized or used to store a key, to store a key.
  *
- * @param object [IN]需要重置的TEE_ObjectHandle
+ * @param object Indicates the <b>TEE_ObjectHandle</b> to reset.
  *
  */
 void TEE_ResetTransientObject(TEE_ObjectHandle object);
 
 /**
- * @brief 将参数attrs中的属性分配给未初始化的瞬态对象
+ * @brief Populates an uninitialized object with object attributes passed by the TA in the <b>attrs</b> parameter.
  *
- * 确保对象仍未初始化\n
- * 参数attrs由可信应用程序提供
+ * The object must be uninitialized. \n
+ * The <b>attrs</b> parameter is passed by a TA.
  *
- * @param object [IN/OUT]TEE_ObjectHandle已创建但未初始化
- * @param attrs [IN]对象属性数组，可以是一个或多个TEE_Attribute
- * @param attrCount [IN]数组成员数
+ * @param object Indicates the handle on a created but uninitialized object.
+ * @param attrs Indicates the pointer to an array of object attributes, which can be one or more <b>TEE_Attribute</b>s.
+ * @param attrCount Indicates the number of members in the attribute array.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_BAD_PARAMETERS 属性不正确或不一致
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if an incorrect or inconsistent attribute value is detected.
  *
  */
 TEE_Result TEE_PopulateTransientObject(TEE_ObjectHandle object, TEE_Attribute *attrs, uint32_t attrCount);
 
 /**
- * @brief 初始化缓冲区类型TEE_Attribute
+ * @brief Initializes the <b>TEE_Attribute</b> of the buffer type.
  *
- * TEE_Attribute结构中的联合成员需要是ref
+ * The members in the <b>TEE_Attribute</b> struct must be <b>ref</b>.
  *
- * @param attr [OUT]要初始化的TEE_Attribute
- * @param attributeID [IN]分配给TEE_Attribute的ID
- * @param buffer [IN]缓冲区存储要分配的内容
- * @param length [IN]赋值内容的字节长度
+ * @param attr Indicates the pointer to the <b>TEE_Attribute</b> initialized.
+ * @param attributeID Indicates the ID assigned to the <b>TEE_Attribute</b>.
+ * @param buffer Indicates the pointer to the buffer that stores the content to be allocated.
+ * @param length Indicates the length of the assigned value, in bytes.
  *
  */
 void TEE_InitRefAttribute(TEE_Attribute *attr, uint32_t attributeID, void *buffer, size_t length);
 
 /**
- * @brief 初始化TEE_Attribute
+ * @brief Initializes a <b>TEE_Attribute</b>.
  *
- * @param attr [OUT]要初始化的TEE_Attribute
- * @param attributeID [IN]分配给TEE_Attribute的ID
- * @param a [IN]将值赋值给TEE_Attribute中的联合的成员值a
- * @param b [IN]将值赋值给TEE_Attribute中的联合的成员值b
+ * @param attr Indicates the pointer to the <b>TEE_Attribute</b> initialized.
+ * @param attributeID Indicates the ID assigned to the <b>TEE_Attribute</b>.
+ * @param a Indicates the value to be assigned to the member <b>a</b> in the <b>TEE_Attribute</b>.
+ * @param b Indicates the value to be assigned to the member <b>b</b> in the <b>TEE_Attribute</b>.
  *
  */
 void TEE_InitValueAttribute(TEE_Attribute *attr, uint32_t attributeID, uint32_t a, uint32_t b);
 
 /**
- * @brief 此函数生成随机密钥或密钥对，并将其分配给临时对象
+ * @brief Generates a random key or a key pair and populates a transient key object with the generated key.
  *
- * @param object [IN]瞬态对象，用于存储生成的密钥
- * @param keySize [IN]所需密钥的字节数
- * @param params [IN]密钥生成参数说明
- * @param paramCount [IN]生成密钥所需的参数数
+ * @param object Indicates a transient object used to hold the generated key.
+ * @param keySize Indicates the number of bytes of the key.
+ * @param params Indicates the pointer to the parameters for key generation.
+ * @param paramCount Indicates the number of parameters required for key generation.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_BAD_PARAMETERS 生成的密钥与临时对象可以存储的密钥类型不一致
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the type of the key generated does not match
+ * the key that can be held in the transient object.
  *
  */
 TEE_Result TEE_GenerateKey(TEE_ObjectHandle object, uint32_t keySize, TEE_Attribute *params, uint32_t paramCount);
 
 /**
- * @brief 获取对象的TEE_ObjectInfo
+ * @brief Obtains <b>TEE_ObjectInfo</b>.
  *
- * 获取对象的TEE_ObjectInfo，并将其复制到参数objectInfo指向的空间中，该空间由用户预分配
+ * This function obtains <b>TEE_ObjectInfo</b> and copies the obtained information to the pre-allocated space
+ * pointed to by <b>objectInfo</b>.
  *
- * @param object [IN]源TEE_ObjectHandle
- * @param objectInfo [OUT]用于存储TEE_ObjectInfo的结构体指针
+ * @param object Indicates the handle of the object.
+ * @param objectInfo Indicates the pointer to the <b>TEE_ObjectInfo</b> obtained.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_CORRUPT_OBJECT 文件损坏，文件句柄将被关闭
- * @return TEE_ERROR_STORAGE_NOT_AVAILABLE 无法访问文件所在的存储区域
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_CORRUPT_OBJECT</b> if the object is corrupted and the object handle will be closed.
+ * @return Returns <b>TEE_ERROR_STORAGE_NOT_AVAILABLE</b> if the object is stored
+ * in a storage area that is inaccessible currently.
  *
  */
 TEE_Result TEE_GetObjectInfo1(TEE_ObjectHandle object, TEE_ObjectInfo *objectInfo);
 
 /**
- * @brief 使用初始化对象将TEE_Attribute赋值给未初始化的对象
+ * @brief Assigns the <b>TEE_Attribute</b> of an initialized object to an uninitialized object.
  *
- * 该函数使用初始化对象将TEE_Attribute赋值给未初始化的对象，相当于将srcobject的TEE_Attribute复制到destobject中\n
- * 两个对象的TEE_Attribute类型和编号必须匹配
+ * This function populates an uninitialized object with <b>TEE_Attribute</b>.
+ * That is, it copies <b>TEE_Attribute</b> of <b>srcobject</b> to <b>destobject</b>.
+ * The <b>TEE_Attribute</b> types and IDs of the two objects must match.
  *
- * @param destObject [IN]要分配的未初始化的TEE_ObjectHandle
- * @param srcObject [IN]初始化的TEE_ObjectHandle用于给另一个对象赋值
+ * @param destObject Indicates the uninitialized object.
+ * @param srcObject Indicates the initialized object.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_CORRUPT_OBJECT 文件损坏，文件句柄将被关闭
- * @return TEE_ERROR_STORAGE_NOT_AVAILABLE 无法访问文件所在的存储区域
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_CORRUPT_OBJECT</b> if the object is corrupted and the object handle will be closed.
+ * @return Returns <b>TEE_ERROR_STORAGE_NOT_AVAILABLE</b> if the object is stored
+ * in a storage area that is inaccessible currently.
  *
  */
 TEE_Result TEE_CopyObjectAttributes1(TEE_ObjectHandle destObject, TEE_ObjectHandle srcObject);
 
 /**
- * @brief 限制对象的objectUse位
+ * @brief Restricts the <b>objectUse</b> bit of an object.
  *
- * 此位决定对象中密钥的使用情况。取值范围为“使用量_常量”。对于参数objectUse的标志位：\n
- * 如果此位设置为1，则对象的使用标志不会改变\n
- * 当该参数设置为0时，清除该对象对应的对象使用标志。\n
- * 新创建的对象将包含所有的使用量_常量，并且使用量标志只能清除，不能设置
+ * This bit determines the usage of the key in the object. The value range is <b>Usage_Constant</b>.
+ * The bit in the <b>objectUse</b> parameter can be set as follows: \n
+ * If it is set to <b>1</b>, the corresponding usage flag in the object is left unchanged. \n
+ * If it is set to <b>0</b>, the corresponding usage flag in the object is cleared. \n
+ * The newly created object contains all <b>Usage_Constant</b>, and the usage flag can be cleared only.
  *
- * @param object [IN]需要限制的TEE_ObjectHandle
- * @param objectUsage [IN]用户希望更改的objectUsage
+ * @param object Indicates the <b>TEE_ObjectHandle</b> of the target object.
+ * @param objectUsage Indicates the new object usage.
  *
- * @return TEE_SUCCESS 指示函数已成功执行
- * @return TEE_ERROR_CORRUPT_OBJECT 文件损坏，文件句柄将被关闭
- * @return TEE_ERROR_STORAGE_NOT_AVAILABLE 无法访问文件所在的存储区域
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_CORRUPT_OBJECT</b> if the object is corrupted and the object handle will be closed.
+ * @return Returns <b>TEE_ERROR_STORAGE_NOT_AVAILABLE</b> if the object is stored
+ * in a storage area that is inaccessible currently.
  *
  */
 TEE_Result TEE_RestrictObjectUsage1(TEE_ObjectHandle object, uint32_t objectUsage);

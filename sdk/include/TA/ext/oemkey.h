@@ -13,9 +13,9 @@
 /**
  * @file oemkey.h
  *
- * @brief Interfaces related to the provision key function.
+ * @brief Provides the method for obtaining the hardware provision key.
  *
- * Provides the function of reading the hardware provision key.
+ * 
  *
  * @since 1
  */
@@ -26,13 +26,13 @@
 #include <stdlib.h>
 
 /**
- * @brief Get provision Key
+ * @brief Obtains the provision key.
  *
- * @param oem_key  [IN]Buffer for storing provision keys.
- * @param key_size [IN]The length of the buffer used to store the provision key is 16.
+ * @param oem_key Indicates the pointer to the buffer for storing the provision key.
+ * @param key_size Indicates the length of the buffer used to store the provision key, which is 16.
  *
- * @return 0 Indicates that the function executed successfully.
- * @return others Failed to obtain the provision key
+ * @return Returns <b>0</b> if the operation is successful.
+ * @return Returns other values otherwise.
  *
  */
 uint32_t tee_hal_get_provision_key(uint8_t *oem_key, size_t key_size);

@@ -13,9 +13,9 @@
 /**
  * @file tee_crypto_api.h
  *
- * @brief 加解密接口
+ * @brief Provides APIs for cryptographic operations.
  *
- * 开发者可以使用这些接口实现加解密的相关功能。
+ * You can use these APIs to implement encryption and decryption.
  *
  * @since 1
  */
@@ -29,30 +29,30 @@
 
 #ifndef NULL
 /**
- * NULL定义
+ * Definition of <b>NULL</b>.
  */
 #define NULL ((void *)0)
 #endif
 /**
- * @brief 密钥最大长度（以bits为单位）
+ * @brief Defines the maximum key length, in bits.
  */
 #define TEE_MAX_KEY_SIZE_IN_BITS      (1024 * 8)
 /**
- * @brief SW_RSA密钥长度
+ * @brief Defines the length of the SW_RSA key, in bytes.
  */
 #define SW_RSA_KEYLEN                 1024
 /**
- * @brief DH其它信息的最大长度
+ * @brief Defines the maximum length of other Diffie-Hellman (DH) information, in bytes.
  */
 #define TEE_DH_MAX_SIZE_OF_OTHER_INFO 64 /* bytes */
 
 /**
- * @brief 加解密Operation操作句柄
+ * @brief Enumerates the cryptographic operation handles.
  */
 enum __TEE_Operation_Constants {
     /** Cipher */
     TEE_OPERATION_CIPHER               = 0x1,
-    /** Mac */
+    /** MAC */
     TEE_OPERATION_MAC                  = 3,
     /** AE */
     TEE_OPERATION_AE                   = 4,
@@ -62,15 +62,15 @@ enum __TEE_Operation_Constants {
     TEE_OPERATION_ASYMMETRIC_CIPHER    = 6,
     /** Asymmetric Signature */
     TEE_OPERATION_ASYMMETRIC_SIGNATURE = 7,
-    /** Key Derication */
+    /** Key Derivation */
     TEE_OPERATION_KEY_DERIVATION       = 8,
 };
 
 /**
- * @brief 加解密算法标识
+ * @brief Enumerates the cryptographic algorithms.
  */
 enum __tee_crypto_algorithm_id {
-    /** 无效算法 */
+    /** Invalid algorithm */
     TEE_ALG_INVALID                      = 0x0,
     /** AES_ECB_NOPAD */
     TEE_ALG_AES_ECB_NOPAD                = 0x10000010,
@@ -259,12 +259,12 @@ enum __tee_crypto_algorithm_id {
  */
 typedef enum __tee_crypto_algorithm_id tee_crypto_algorithm_id;
 /**
- * @brief 无可选元素
+ * @brief No element is available.
  */
 #define TEE_OPTIONAL_ELEMENT_NONE 0x00000000
 
 /**
- * @brief 支持的ECC曲线
+ * @brief Enumerates the Elliptic-Curve Cryptography (ECC) curves supported.
  */
 typedef enum {
     /** CURVE_NIST_P192 */
@@ -284,7 +284,7 @@ typedef enum {
 } TEE_ECC_CURVE;
 
 /**
- * @brief MGF1掩码函数类型
+ * @brief Enumerates the Mask Generation Function (MGF1) modes.
  */
 typedef enum {
     TEE_DH_HASH_SHA1_mode   = 0,
@@ -296,32 +296,32 @@ typedef enum {
 } TEE_DH_HASH_Mode;
 
 /**
- * @brief 加解密算法模式
+ * @brief Enumerates the cryptographic operation modes.
  */
 enum __TEE_OperationMode {
-    /** 加密 */
+    /** Encryption */
     TEE_MODE_ENCRYPT = 0x0,
-    /** 解密 */
+    /** Decryption */
     TEE_MODE_DECRYPT,
-    /** 签名 */
+    /** Signing */
     TEE_MODE_SIGN,
-    /** 验签 */
+    /** Signature verification */
     TEE_MODE_VERIFY,
-    /** mac */
+    /** MAC */
     TEE_MODE_MAC,
-    /** 摘要 */
+    /** Digest */
     TEE_MODE_DIGEST,
-    /** 衍生 */
+    /** Key derivation */
     TEE_MODE_DERIVE
 };
 
 /**
- * @brief 加解密operation状态
+ * @brief Enumerates the cryptographic operation states.
  */
 enum tee_operation_state {
-    /** 初始状态 */
+    /** Initial */
     TEE_OPERATION_STATE_INITIAL = 0x00000000,
-    /** 激活状态 */
+    /** Active */
     TEE_OPERATION_STATE_ACTIVE  = 0x00000001,
 };
 
@@ -331,95 +331,95 @@ enum tee_operation_state {
 typedef uint32_t TEE_OperationMode;
 
 /**
- * @brief Operation信息
+ * @brief Defines the operation information.
  */
 struct __TEE_OperationInfo {
-    /** 算法ID */
+    /** Algorithm ID */
     uint32_t algorithm;        /* #__TEE_CRYPTO_ALGORITHM_ID */
-    /** operation类型 */
+    /** Operation type */
     uint32_t operationClass;   /* #__TEE_Operation_Constants */
-    /** Operation模式 */
+    /** Operation mode */
     uint32_t mode;             /* #__TEE_OperationMode */
-    /** 摘要长度 */
+    /** Digest length */
     uint32_t digestLength;
-    /** 最大密钥长度 */
+    /** Maximum key length */
     uint32_t maxKeySize;
-    /** 密钥长度 */
+    /** Key length*/
     uint32_t keySize;
-    /** 所需密钥用法 */
+    /** Required key usage */
     uint32_t requiredKeyUsage;
-    /** 句柄状态 */
+    /** Handle state */
     uint32_t handleState;
-    /** 密钥 */
+    /** Key */
     void *keyValue;
 };
 
 /**
- * @brief 用于定义__TEE_OperationInfo结构体类型
+ * @brief Defines the <b>__TEE_OperationInfo</b> struct.
  *
  * @see __TEE_OperationInfo
  */
 typedef struct __TEE_OperationInfo TEE_OperationInfo;
 
 /**
- * @brief Operation中存放的密钥信息
+ * @brief Defines the key information stored in the <b>OperationInfo</b>.
  */
 typedef struct {
-    /** 密钥长度 */
+    /** Key length */
     uint32_t keySize;
-    /** 所需密钥用法 */
+    /** Required key usage */
     uint32_t requiredKeyUsage;
 } TEE_OperationInfoKey;
 
 /**
- * @brief 包含了Operation中的密钥信息
+ * @brief Defines information about an operation.
  */
 typedef struct {
-    /** 算法ID */
+    /** Algorithm ID */
     uint32_t algorithm;
-    /** operation类型 */
+    /** Operation type */
     uint32_t operationClass;
-    /** Operation模式 */
+    /** Operation mode */
     uint32_t mode;
-    /** 摘要长度 */
+    /** Digest length */
     uint32_t digestLength;
-    /** 最大密钥长度 */
+    /** Maximum key length */
     uint32_t maxKeySize;
-    /** 句柄状态 */
+    /** Handle state */
     uint32_t handleState;
-    /** operation状态 */
+    /** Operation state */
     uint32_t operationState;
-    /** 密钥数量 */
+    /** Number of keys */
     uint32_t numberOfKeys;
-    /** 密钥信息 */
+    /** Key information */
     TEE_OperationInfoKey keyInformation[];
 } TEE_OperationInfoMultiple;
 
 /**
- * @brief 加解密操作需要的句柄
+ * @brief Defines the cryptographic operation handle.
  */
 struct __TEE_OperationHandle {
-    /** 算法ID */
+    /** Algorithm ID */
     uint32_t algorithm;        /* #__TEE_CRYPTO_ALGORITHM_ID */
-    /** operation类型 */
+    /** Operation type */
     uint32_t operationClass;   /* #__TEE_Operation_Constants */
-    /** Operation模式 */
+    /** Operation mode */
     uint32_t mode;             /* #__TEE_OperationMode */
-    /** 摘要长度 */
+    /** Digest length */
     uint32_t digestLength;
-    /** 最大密钥长度 */
+    /** Maximum key length */
     uint32_t maxKeySize;
-    /** 密钥长度 */
+    /** Key length */
     uint32_t keySize;
-    /** 密钥长度 */
+    /** Key length */
     uint32_t keySize2;
-    /** 所需密钥用法 */
+    /** Required key usage */
     uint32_t requiredKeyUsage;
-    /** 句柄状态 */
+    /** Handle state */
     uint32_t handleState;
-    /** 密钥 */
+    /** Key */
     void *keyValue;
-    /** 密钥 */
+    /** Key */
     void *keyValue2;
     /**  */
     void *crypto_ctxt;
@@ -427,229 +427,230 @@ struct __TEE_OperationHandle {
     void *hmac_rest_ctext;
     /** iv */
     void *IV;
-    /** 公钥 */
+    /** Public key */
     void *publicKey;
-    /** 公钥长度 */
+    /** Length of the public key */
     uint32_t publicKeyLen;
-    /** 私钥 */
+    /** Private key */
     void *privateKey;
-    /** 私钥长度 */
+    /** Length of the private key */
     uint32_t privateKeyLen;
-    /** iv长度 */
+    /** Length of the IV */
     uint32_t IVLen;
-    /** operation锁 */
+    /** Operation lock */
     pthread_mutex_t operation_lock;
-    /** hal信息 */
+    /** HAL information */
     void *hal_info;
 };
 
 /**
- * @brief 整数类型转换
+ * @brief Defines the data used for conversion of integers.
  */
 typedef struct {
-    /** 源 */
+    /** Source */
     uint32_t src;
-    /** 目标 */
+    /** Destination */
     uint32_t dest;
 } crypto_uint2uint;
 
 /**
- * @brief RSA公钥最大长度
+ * @brief Defines the maximum length of an RSA public key.
  */
 #define RSA_PUBKEY_MAXSIZE sizeof(CRYS_RSAUserPubKey_t)
 /**
- * @brief RES私钥最大长度
+ * @brief Defines the maximum length of an RES private key.
  */
 #define RSA_PRIVKEY_MAXSIZE sizeof(CRYS_RSAUserPrivKey_t)
 
 /**
- * @brief 存放输入输出数据
+ * @brief Defines a structure to hold the input and output data.
  */
 typedef struct {
-    /** 源数据 */
+    /** Source data */
     void *src_data;
-    /** 源数据长度 */
+    /** Length of the source data */
     size_t src_len;
-    /** 目标数据 */
+    /** Destination data */
     void *dest_data;
-    /** 目标数据长度 */
+    /** Length of the destination data */
     size_t *dest_len;
 } operation_src_dest;
 
 /**
- * @brief 存放ae算法初始化相关数据
+ * @brief Defines the AE initialization data.
  */
 typedef struct {
     /** nonce */
     void *nonce;
-    /** nonce长度 */
+    /** Leng of nonce */
     size_t nonce_len;
-    /** tag长度 */
+    /** Length of the tag */
     uint32_t tag_len;
-    /** aad长度 */
+    /** Length of the additional authenticated data (AAD) */
     size_t aad_len;
-    /** payload长度 */
+    /** Length of the payload */
     size_t payload_len;
 } operation_ae_init;
 
 /**
- * @brief 用于定义__TEE_OperationHandle指针类型
+ * @brief Defines the pointer to <b>__TEE_OperationHandle</b>.
  *
  * @see __TEE_OperationHandle
  */
 typedef struct __TEE_OperationHandle *TEE_OperationHandle;
 
 /**
- * @brief 用于定义__TEE_OperationHandle结构体类型
+ * @brief Defines the <b>__TEE_OperationHandle</b> struct.
  *
  * @see __TEE_OperationHandle
  */
 typedef struct __TEE_OperationHandle TEE_OperationHandleVar;
 
 /**
- * @brief 用于定义__TEE_ObjectHandle结构体类型
+ * @brief Defines the <b>__TEE_ObjectHandle</b> struct.
  */
 typedef struct __TEE_ObjectHandle TEE_ObjectHandleVar;
 
 /**
- * @brief 申请操作句柄
+ * @brief Allocates an operation handle.
  *
- * @param operation [IN/OUT]操作句柄
- * @param algorithm [IN]加密算法ID
- * @param mode [IN]操作模式
- * @param maxKeySize [IN]最大密钥大小
+ * @param operation Indicates the pointer to the operation handle.
+ * @param algorithm Indicates the cipher algorithm.
+ * @param mode Indicates the operation mode.
+ * @param maxKeySize Indicates the maximum length of the key.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_OUT_OF_MEMORY 操作句柄申请失败
- * @return TEE_ERROR_NOT_SUPPORTE 加密算法ID不支持
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation handle is allocated.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if there is no enough memory for this operation.
+ * @return Returns <b>TEE_ERROR_NOT_SUPPORTED</b> if the specified algorithm is not supported.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AllocateOperation(TEE_OperationHandle *operation, uint32_t algorithm, uint32_t mode,
                                  uint32_t maxKeySize);
 
 /**
- * @brief 释放操作句柄
+ * @brief Releases an operation handle.
  *
- * @param operation [IN/OUT]操作句柄
+ * @param operation Indicates the operation handle to release.
  *
  */
 void TEE_FreeOperation(TEE_OperationHandle operation);
 
 /**
- * @brief 获取操作信息
+ * @brief Obtains operation information.
  *
- * @param operation [IN/OUT]操作句柄
- * @param operationInfo [IN/OUT]操作信息
+ * @param operation Indicates the operation handle.
+ * @param operationInfo Indicates the pointer to the operation information.
  *
  */
 void TEE_GetOperationInfo(const TEE_OperationHandle operation, TEE_OperationInfo *operationInfo);
 
 /**
- * @brief 复位操作句柄
+ * @brief Resets an operation handle.
  *
- * @param operation [IN/OUT]操作句柄
+ * @param operation Indicates the operation handle to reset.
  *
  */
 void TEE_ResetOperation(TEE_OperationHandle operation);
 
 /**
- * @brief 设置操作密钥
+ * @brief Sets the key for an operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param key [IN/OUT]密钥
+ * @param operation Indicates the operation handle.
+ * @param key Indicates the key.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_OUT_OF_MEMORY 密钥缓冲区申请失败
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_OUT_OF_MEMORY</b> if there is no enough memory for this operation.
  *
  */
 TEE_Result TEE_SetOperationKey(TEE_OperationHandle operation, const TEE_ObjectHandle key);
 
 /**
- * @brief 设置操作密钥2
+ * @brief Sets two keys for an operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param key1 [IN/OUT]密钥1
- * @param key2 [IN/OUT]密钥2
+ * @param operation Indicates the operation handle.
+ * @param key1 Indicates key 1.
+ * @param key2 Indicates key 2.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
  *
  */
 TEE_Result TEE_SetOperationKey2(TEE_OperationHandle operation, const TEE_ObjectHandle key1,
                                 const TEE_ObjectHandle key2);
 
 /**
- * @brief 复制操作句柄
+ * @brief Copies an operation handle.
  *
- * @param dstOperation [IN/OUT]目标操作句柄
- * @param srcOperation [IN/OUT]源操作句柄
+ * @param dstOperation Indicates the destination operation handle.
+ * @param srcOperation Indicates the source operation handle.
  *
  */
 void TEE_CopyOperation(TEE_OperationHandle dstOperation, const TEE_OperationHandle srcOperation);
 
 /**
- * @brief 初始化密码上下文
+ * @brief Initializes the context to start a cipher operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param IV [IN]iv缓冲区，如果不使用设置为NULL
- * @param IVLen [IN]iv缓冲区的长度
+ * @param operation Indicates the operation handle.
+ * @param IV Indicates the pointer to the buffer storing the operation IV. If this parameter is not used,
+ * set it to <b>NULL</b>.
+ * @param IVLen Indicates the length of the IV buffer.
  *
  */
 void TEE_CipherInit(TEE_OperationHandle operation, const void *IV, size_t IVLen);
 
 /**
- * @brief 执行密码更新
+ * @brief Updates the data for a cipher operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param srcData [IN]源数据
- * @param srcLen [IN]源数据长度
- * @param destData [OUT]目标数据
- * @param destLen [OUT]目标数据长度
+ * @param operation Indicates the operation handle.
+ * @param srcData Indicates the pointer to the source data.
+ * @param srcLen Indicates the length of the source data.
+ * @param destData Indicates the pointer to the destination data.
+ * @param destLen Indicates the pointer to the destination data length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_CipherUpdate(TEE_OperationHandle operation, const void *srcData, size_t srcLen, void *destData,
                             size_t *destLen);
 
 /**
- * @brief 执行密码完成
+ * @brief Finalizes a cipher operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param srcData [IN]源数据
- * @param srcLen [IN]源数据长度
- * @param destData [OUT]目标数据
- * @param destLen [OUT]目标数据长度
+ * @param operation Indicates the operation handle.
+ * @param srcData Indicates the pointer to the source data.
+ * @param srcLen Indicates the length of the source data.
+ * @param destData Indicates the pointer to the destination data.
+ * @param destLen Indicates the pointer to the destination data length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_CipherDoFinal(TEE_OperationHandle operation, const void *srcData, size_t srcLen, void *destData,
                              size_t *destLen);
 
 /**
- * @brief 摘要更新
+ * @brief Updates the digest.
  *
- * @param operation [IN/OUT]操作句柄
- * @param chunk [IN]块缓冲区
- * @param chunkSize [IN]块缓冲区长度
+ * @param operation Indicates the operation handle.
+ * @param chunk Indicates the pointer to the chunk of data to be hashed.
+ * @param chunkSize Indicates the length of the chunk.
  *
  */
 void TEE_DigestUpdate(TEE_OperationHandle operation, const void *chunk, size_t chunkSize);
 
 /**
- * @brief 执行摘要结束
+ * @brief Finalizes the message digest operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param chunk [IN]块缓冲区
- * @param chunkLen [IN]块缓冲区大小
- * @param hash [out]哈希缓冲区
+ * @param operation Indicates the operation handle.
+ * @param chunk Indicates the pointer to the chunk of data to be hashed.
+ * @param chunkLen Indicates the length of the chunk.
+ * @param hash Indicates the pointer to the buffer storing the message hash.
  * @param hashLen
  *
  */
@@ -657,228 +658,229 @@ TEE_Result TEE_DigestDoFinal(TEE_OperationHandle operation, const void *chunk, s
                              size_t *hashLen);
 
 /**
- * @brief 执行mac初始化
+ * @brief Initializes a MAC operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param IV [IN]iv缓冲区，如果不使用设置为NULL
- * @param IVLen [IN]iv缓冲区长度
+ * @param operation Indicates the operation handle.
+ * @param IV Indicates the pointer to the buffer storing the operation IV. If this parameter is not used,
+ * set it to <b>NULL</b>.
+ * @param IVLen Indicates the length of the IV buffer.
  *
  */
 void TEE_MACInit(TEE_OperationHandle operation, void *IV, size_t IVLen);
 
 /**
- * @brief 执行mac更新
+ * @brief Updates the MAC.
  *
- * @param operation [IN/OUT]操作句柄
- * @param chunk [IN]块缓冲区
- * @param chunkSize [IN]块缓冲区大小
+ * @param operation Indicates the operation handle.
+ * @param chunk Indicates the pointer to the chunk of MAC data.
+ * @param chunkSize Indicates the size of the chunk.
  *
  */
 void TEE_MACUpdate(TEE_OperationHandle operation, const void *chunk, size_t chunkSize);
 
 /**
- * @brief mac计算完成
+ * @brief MAC Finalizes the MAC operation with a last chunk of message and computes the MAC.
  *
- * @param operation [IN/OUT]操作句柄
- * @param message [IN]message缓冲区
- * @param messageLen [IN]message缓冲区的大小
- * @param mac [OUT]mac缓冲区
- * @param macLen [OUT]mac缓冲区大小
+ * @param operation Indicates the operation handle.
+ * @param message Indicates the pointer to the buffer containing the last message chunk to MAC.
+ * @param messageLen Indicates the length of the message buffer.
+ * @param mac Indicates the pointer to the buffer storing the computed MAC.
+ * @param macLen Indicates the pointer to the MAC buffer length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_MACComputeFinal(TEE_OperationHandle operation, const void *message, size_t messageLen, void *mac,
                                size_t *macLen);
 
 /**
- * @brief mac比较完成
+ * @brief Finalizes the MAC operation and compares the MAC with the one passed in.
  *
- * @param operation [IN/OUT]操作句柄
- * @param message [IN]message缓冲区
- * @param messageLen [IN]message缓冲区大小
- * @param mac [OUT]mac缓冲区
- * @param macLen [OUT]mac缓冲区大小
+ * @param operation Indicates the operation handle.
+ * @param message Indicates the pointer to the buffer containing the last message chunk to MAC.
+ * @param messageLen Indicates the length of the buffer.
+ * @param mac Indicates the pointer to the buffer storing the computed MAC.
+ * @param macLen Indicates the MAC buffer length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_GENERIC 其它错误
- * @return TEE_ERROR_MAC_INVALID 比较失败
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
+ * @return Returns <b>TEE_ERROR_MAC_INVALID</b> if the computed MAC is not the same as that passed in.
  *
  */
 TEE_Result TEE_MACCompareFinal(TEE_OperationHandle operation, const void *message, size_t messageLen, const void *mac,
                                const size_t macLen);
 
 /**
- * @brief 派生密钥
+ * @brief Derives a key.
  *
- * @param operation [IN/OUT]操作句柄
- * @param params [IN]属性
- * @param paramCount [IN]属性的数量
- * @param derivedKey [OUT]派生密钥
+ * @param operation Indicates the operation handle.
+ * @param params Indicates the pointer to the parameters for this operation.
+ * @param paramCount Indicates the number of parameters.
+ * @param derivedKey Indicates the derived key.
  *
  */
 void TEE_DeriveKey(TEE_OperationHandle operation, const TEE_Attribute *params, uint32_t paramCount,
                    TEE_ObjectHandle derivedKey);
 
 /**
- * @brief 生成随机数据
+ * @brief Generates random data.
  *
- * @param randomBuffer [IN/OUT]随机缓冲区
- * @param randomBufferLen [IN]随机缓冲区大小
+ * @param randomBuffer Indicates the pointer to the buffer storing the random data generated.
+ * @param randomBufferLen Indicates the length of the buffer storing the random data.
  *
  */
 void TEE_GenerateRandom(void *randomBuffer, size_t randomBufferLen);
 
 /**
- * @brief ae初始化
+ * @brief Initializes an AE operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param nonce [IN]nonce缓冲区
- * @param nonceLen [IN]nonce缓冲区大小
- * @param tagLen [IN]tag的大小
- * @param AADLen [IN]aad的大小
- * @param payloadLen [IN]payload的大小
+ * @param operation Indicates the operation handle.
+ * @param nonce Indicates the pointer to the buffer for storing the nonce.
+ * @param nonceLen Indicates the length of the nonce.
+ * @param tagLen Indicates the length of the tag.
+ * @param AADLen Indicates the length of the AAD.
+ * @param payloadLen Indicates the length of the payload.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AEInit(TEE_OperationHandle operation, void *nonce, size_t nonceLen, uint32_t tagLen, size_t AADLen,
                       size_t payloadLen);
 
 /**
- * @brief 更新ae aad
+ * @brief Updates the AAD in an AE operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param AADdata [IN]aad缓冲区
- * @param AADdataLen [IN]aad缓冲区大小
+ * @param operation Indicates the operation handle.
+ * @param AADdata Indicates the pointer to the new AAD.
+ * @param AADdataLen Indicates the length of the new AAD.
  *
  */
 void TEE_AEUpdateAAD(TEE_OperationHandle operation, const void *AADdata, size_t AADdataLen);
 
 /**
- * @brief 更新ae
+ * @brief Updates data for an AE operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param srcData [IN]源数据
- * @param srcLen [IN]源数据大小
- * @param destData [OUT]目标数据
- * @param destLen [OUT]目标数据大小
+ * @param operation Indicates the operation handle.
+ * @param srcData Indicates the pointer to the source data.
+ * @param srcLen Indicates the length of the source data.
+ * @param destData Indicates the pointer to the destination data.
+ * @param destLen Indicates the pointer to the destination data length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AEUpdate(TEE_OperationHandle operation, void *srcData, size_t srcLen, void *destData, size_t *destLen);
 
 /**
- * @brief ae加密
+ * @brief Finalizes the AE encryption operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param srcData [IN]源数据
- * @param srcLen [IN]源数据长度
- * @param destData [OUT]目标数据
- * @param destLen [OUT]目标数据长度
- * @param tag [OUT]tag缓冲区
- * @param tagLen [OUT]tag缓冲区大小
+ * @param operation Indicates the operation handle.
+ * @param srcData Indicates the pointer to the source data.
+ * @param srcLen Indicates the length of the source data.
+ * @param destData Indicates the pointer to the destination data.
+ * @param destLen Indicates the pointer to the destination data length.
+ * @param tag Indicates the pointer to the buffer storing the computed tag.
+ * @param tagLen Indicates the pointer to the tag buffer length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AEEncryptFinal(TEE_OperationHandle operation, void *srcData, size_t srcLen, void *destData,
                               size_t *destLen, void *tag, size_t *tagLen);
 
 /**
- * @brief ae解密
+ * @brief Finalizes an AE decryption operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param srcData [IN]源数据
- * @param srcLen [IN]源数据长度
- * @param destData [OUT]目标数据
- * @param destLen [OUT]目标数据长度
- * @param tag [OUT]tag缓冲区
- * @param tagLen[OUT]tag缓冲区大小
+ * @param operation Indicates the operation handle.
+ * @param srcData Indicates the pointer to the source data.
+ * @param srcLen Indicates the length of the source data.
+ * @param destData Indicates the pointer to the destination data.
+ * @param destLen Indicates the pointer to the destination data length.
+ * @param tag Indicates the pointer to the buffer storing the computed tag.
+ * @param tagLen Indicates the tag buffer length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_MAC_INVALID tag是非法的
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_MAC_INVALID</b> if the computed tag does not match the provided tag.
  *
  */
 TEE_Result TEE_AEDecryptFinal(TEE_OperationHandle operation, void *srcData, size_t srcLen, void *destData,
                               size_t *destLen, void *tag, size_t tagLen);
 
 /**
- * @brief 非对称加密
+ * @brief Performs asymmetric encryption.
  *
- * @param operation [IN/OUT]操作句柄
- * @param params [IN]属性
- * @param paramCount [IN]属性数量
- * @param srcData [IN]源数据
- * @param srcLen [IN]源数据长度
- * @param destData [OUT]目标数据
- * @param destLen [OUT]目标数据长度
+ * @param operation Indicates the operation handle.
+ * @param params Indicates the pointer to the parameters for this operation.
+ * @param paramCount Indicates the number of parameters.
+ * @param srcData Indicates the pointer to the source data.
+ * @param srcLen Indicates the length of the source data.
+ * @param destData Indicates the pointer to the destination data.
+ * @param destLen Indicates the pointer to the destination data length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AsymmetricEncrypt(TEE_OperationHandle operation, const TEE_Attribute *params, uint32_t paramCount,
                                  void *srcData, size_t srcLen, void *destData, size_t *destLen);
 
 /**
- * @brief 非对称解密
+ * @brief Performs asymmetric decryption.
  *
- * @param operation [IN/OUT]操作句柄
- * @param params [IN]属性
- * @param paramCount [IN]属性数量
- * @param srcData [IN]源数据
- * @param srcLen [IN]源数据长度
- * @param destData [OUT]目标数据
- * @param destLen [OUT]目标数据长度
+ * @param operation Indicates the operation handle.
+ * @param params Indicates the pointer to the parameters for this operation.
+ * @param paramCount Indicates the number of parameters.
+ * @param srcData Indicates the pointer to the source data.
+ * @param srcLen Indicates the length of the source data.
+ * @param destData Indicates the pointer to the destination data.
+ * @param destLen Indicates the pointer to the destination data length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AsymmetricDecrypt(TEE_OperationHandle operation, const TEE_Attribute *params, uint32_t paramCount,
                                  void *srcData, size_t srcLen, void *destData, size_t *destLen);
 
 /**
- * @brief 非对称签名
+ * @brief Signs a message digest in an asymmetric operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param params [IN]属性
- * @param paramCount [IN]属性数量
- * @param digest [IN]摘要
- * @param digestLen [IN]摘要长度
- * @param signature [OUT]签名
- * @param signatureLen [OUT]签名长度
+ * @param operation Indicates the operation handle.
+ * @param params Indicates the pointer to the parameters for this operation.
+ * @param paramCount Indicates the number of parameters.
+ * @param digest Indicates the pointer to the message digest.
+ * @param digestLen Indicates the digest length.
+ * @param signature Indicates the pointer to the signature.
+ * @param signatureLen Indicates the pointer to the signature length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AsymmetricSignDigest(TEE_OperationHandle operation, const TEE_Attribute *params, uint32_t paramCount,
                                     void *digest, size_t digestLen, void *signature, size_t *signatureLen);
 
 /**
- * @brief 非对称验证
+ * @brief Verifies a message digest signature in an asymmetric operation.
  *
- * @param operation [IN/OUT]操作句柄
- * @param params [IN]属性
- * @param paramCount [IN]属性数量
- * @param digest [IN]摘要
- * @param digestLen [IN]摘要长度
- * @param signature [OUT]签名
- * @param signatureLen [OUT]签名长度
+ * @param operation Indicates the operation handle.
+ * @param params Indicates the pointer to the parameters for this operation.
+ * @param paramCount Indicates the number of parameters.
+ * @param digest Indicates the pointer to the message digest.
+ * @param digestLen Indicates the digest length.
+ * @param signature Indicates the pointer to the signature.
+ * @param signatureLen Indicates the signature length.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_GENERIC 其它错误
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_GENERIC</b> if the operation fails due to other errors.
  *
  */
 TEE_Result TEE_AsymmetricVerifyDigest(TEE_OperationHandle operation, const TEE_Attribute *params, uint32_t paramCount,
@@ -886,28 +888,29 @@ TEE_Result TEE_AsymmetricVerifyDigest(TEE_OperationHandle operation, const TEE_A
 
 
 /**
- * @brief 批量获取操作信息
+ * @brief Obtains information about the operation involving multiple keys.
  *
- * @param operation [IN/OUT]操作句柄
- * @param operationInfoMultiple [IN/OUT]批量操作信息
- * @param operationSize [IN/OUT]操作信息数量
+ * @param operation Indicates the operation handle.
+ * @param operationInfoMultiple Indicates the pointer to the operation information obtained.
+ * @param operationSize [IN/OUT] Indicates the pointer to the operation information size.
  *
- * @return TEE_SUCCESS 成功
- * @return TEE_ERROR_BAD_PARAMETERS 非法参数
- * @return TEE_ERROR_SHORT_BUFFER 缓冲区不足
+ * @return Returns <b>TEE_SUCCESS</b> if the operation is successful.
+ * @return Returns <b>TEE_ERROR_BAD_PARAMETERS</b> if the operation fails due to invalid parameters.
+ * @return Returns <b>TEE_ERROR_SHORT_BUFFER</b> if the operationInfo buffer is not large enough to
+ * hold the information obtained.
  *
  */
 TEE_Result TEE_GetOperationInfoMultiple(TEE_OperationHandle operation, TEE_OperationInfoMultiple *operationInfoMultiple,
                                         const size_t *operationSize);
 
 /**
- * @brief 检查算法是否被支持
+ * @brief Checks whether the algorithm is supported.
  *
- * @param algId [IN]算法ID
- * @param element [IN]元素
+ * @param algId Indicates the algorithm to check.
+ * @param element Indicates the cryptographic element.
  *
- * @return TEE_SUCCESS 支持
- * @return TEE_ERROR_NOT_SUPPORTED 不支持
+ * @return Returns <b>TEE_SUCCESS</b> if the algorithm is supported.
+ * @return Returns <b>TEE_ERROR_NOT_SUPPORTED</b> otherwise.
  *
  */
 TEE_Result TEE_IsAlgorithmSupported(uint32_t algId, uint32_t element);

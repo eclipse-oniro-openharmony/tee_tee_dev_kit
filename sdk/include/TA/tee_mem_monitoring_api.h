@@ -16,11 +16,11 @@
 #include <stdint.h>
 
 /*
- * get heap usage of current TA
+ * @brief Obtains the heap usage of this trusted application (TA).
  *
- * @param show [IN] weather need to print result in log file
+ * @param show Indicates whether to print the result in the log file.
  *
- * @return percentage of heap usage
+ * @return Returns the heap usage in percentage.
  */
 uint32_t get_heap_usage(bool show);
 
