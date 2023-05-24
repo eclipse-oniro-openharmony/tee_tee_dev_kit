@@ -8,7 +8,7 @@
 
 ## Introduction <a name="section11660541593"></a>
 
-The SDK capabilities include: TA compilation dependent scripts and header files, TA's ability to issue certificates and sign perm_config signatures, and sec file signatures.
+The SDK capabilities include: TA compilation dependent scripts and header files, TA's ability to issue certificates and sign perm_config signatures, and TA symbol checker, sec file signatures.
 
 ## Content <a name="section161941989596"></a>
 
@@ -22,7 +22,7 @@ The warehouse directory structure is as follows:
 │   ├── mk                                # make compile framework capabilities
 │   ├── pack-Config                       # Signature packaging perm_config capability
 │   ├── pack-TA                           # sec signature capability shell script
-│   ├── signtools                         # sec signature capability python script
+│   ├── signtools                         # sec signature capability python script and check TA undefined symbols.
 │   └── tools                             # ld file (32-bit and 64-bit) linked by sec file, sec file binary check shell script 
 ├── CHANGELOG                             # Changelog of sdk version.
 ├── include

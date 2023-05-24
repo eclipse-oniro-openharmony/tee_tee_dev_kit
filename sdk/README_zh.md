@@ -8,7 +8,7 @@
 
 ## 简介<a name="section11660541593"></a>
 
-SDK能力包含：TA编译依赖的脚本、头文件，TA颁发证书并签发perm_config签名的能力，以及sec文件签名。
+SDK能力包含：TA编译依赖的脚本、头文件，TA颁发证书并签发perm_config签名的能力，以及TA符号检查、sec文件签名。
 
 ## 目录<a name="section161941989596"></a>
 
@@ -22,7 +22,7 @@ SDK能力包含：TA编译依赖的脚本、头文件，TA颁发证书并签发p
 │   ├── mk                                # make编译框架能力
 │   ├── pack-Config                       # 签名打包perm_config能力
 │   ├── pack-TA                           # sec签名能力的shell脚本
-│   ├── signtools                         # sec签名能力的python脚本
+│   ├── signtools                         # sec签名能力的python脚本、TA未定义符号检查
 │   └── tools                             # sec文件链接的ld文件（32位和64位）、sec文件二进制检查shell脚本        
 ├── CHANGELOG                             # sdk版本的变更记录。
 ├── include
