@@ -737,7 +737,8 @@ keytools工具输出产物将放于output路径下，输出及用途如下表所
     ```
     ./build.sh
     ```
-
+编译生成so签名之前会对so进行符号检查：对TA中使用的未定义的符号进行检查。如果符号未出现在headers_check.txt中配置的路径里面的头文件中，则会报错退出。
+如果需要外部头文件声明的符号，可以将相对路径填写在headers_check.txt配置文件中。
 
 ## CA\(Certification Authority\)说明<a name="section1087132913217"></a>
 
