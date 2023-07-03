@@ -25,7 +25,7 @@ tzdriver总入口在core/tc\_client\_driver.c中的tc\_client\_ioctl函数。
 
 设备节点函数接口：
 
-```
+```c
 static const struct file_operations_vfs g_tc_ns_client_fops = {
     .open = tc_client_open,
     .close = tc_client_close,
