@@ -1,10 +1,10 @@
 # TEE开发指南
 
--   [TEE子系统概述](TEE子系统概述.md)
--   [TEE Client适配指导](TEE-Client适配指导.md)
--   [TEE Dev Kit适配指导](tee-dev-kit-adapt-guide.md)
--   [TEE Tzdriver适配指导](TEE-Tzdriver适配指导.md)
--   [TEE 安全驱动开发指导](TEE-安全驱动开发指导.md)
--   [TEE 安全镜像Loader适配指导](TEE-安全镜像Loader适配指导.md)
--   [TEE ATF适配指导](TEE-ATF适配指导.md)
+-   [TEE子系统概述](overview-of-tee-subsystem.md)
+-   [TEE Client适配指导](tee-client-guide.md)
+-   [TEE Dev Kit适配指导](tee-dev-kit-guide.md)
+-   [TEE Tzdriver适配指导](tee-tzdriver-guide.md)
+-   [TEE 安全驱动开发指导](tee-security-driver-guide.md)
+-   [TEE 安全镜像Loader适配指导](tee-security-mirror-loader-guide.md)
+-   [TEE ATF适配指导](tee-atf-guide.md)
 

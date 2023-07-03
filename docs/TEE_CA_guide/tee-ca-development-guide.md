@@ -1,11 +1,5 @@
 # TEE客户端应用开发指导<a name="ZH-CN_TOPIC_0000001202869620"></a>
 
--   [接口说明](#section373320286518)
--   [开发说明](#section1249761325219)
-    -   [特性与约束](#section139361816527)
-
--   [客户端应用错误码分析](#section950012975911)
-
 ## 接口说明<a name="section373320286518"></a>
 
 TEE为CA提供了一组标准API来访问TA，这些API声明在“tee\_client\_api.h”中，符合GP规范，详细接口定义及使用可参考GP文档：TEE Client API  [Specification](https://globalplatform.org/specs-library/?filter-committee=tee)  v1.0 \(GPD\_SPE\_007\)。CA必须按照合理的顺序调用这些API，才能正确访问TA，用户态CA接口列表如下：
