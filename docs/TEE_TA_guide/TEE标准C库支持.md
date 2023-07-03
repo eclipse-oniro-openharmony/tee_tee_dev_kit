@@ -2,7 +2,7 @@
 
 支持大多数的POSIX接口，具体支持情况请参考：POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf)
 
-支持绝大多数的libc接口。目前使用的musl-1.2.0/libc库请参考下表。
+支持绝大多数的libc接口。使用musl/libc库，接口支持请参考下表。
 
 >![](public_sys-resources/icon-note.gif) **说明：** 
 >-   不支持文件系统、控制台。
