@@ -1,8 +1,5 @@
 # 安全函数库<a name="ZH-CN_TOPIC_0000001241780915"></a>
 
--   [安全函数库介绍](#section11575152912113)
--   [函数清单](#section986312451913)
-
 ## 安全函数库介绍<a name="section11575152912113"></a>
 
 遵循C11 Annex K \(Bounds-checking interfaces\)的标准，选取并实现了常见的内存/字符串操作类的函数，如memcpy\_s、strcpy\_s等函数。

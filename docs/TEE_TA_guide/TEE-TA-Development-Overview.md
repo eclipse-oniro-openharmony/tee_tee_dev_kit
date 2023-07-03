@@ -1,7 +1,5 @@
 # TEE安全应用开发概述<a name="ZH-CN_TOPIC_0000001241773893"></a>
 
--   [基本概念](#section1335181741015)
-
 可信执行环境TEE（Trusted Execution Environment，TEE）基于TrustZone技术提供一个可信执行环境，用户的关键数据或应用在这个可信环境中使用和运行，保护了用户的关键数据和应用不被窃取、滥用和篡改。
 
 ## 基本概念<a name="section1335181741015"></a>

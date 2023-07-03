@@ -1,40 +1,6 @@
 # TEE TA接口指南<a name="ZH-CN_TOPIC_0000001196701012"></a>
 
--   [3.1 TA的API接口](#section1827174413371)
--   [3.2 TA入口函数](#section1736115211372)
--   [3.3 安全存储](#section1265118373811)
--   [3.3.1 安全存储概述](#section1147512643814)
--   [使用场景](#section1443234517117)
--   [使用注意事项](#section73695311130)
--   [相关接口](#section19433151766)
--   [3.3.2 安全存储开发指导](#section8463163517388)
--   [3.3.2.1 存储密钥](#section127865873819)
--   [场景说明](#section143491044197)
--   [实例步骤](#section54172661916)
--   [实例代码](#section20236154071919)
--   [3.3.2.2 存储文件](#section413714417396)
--   [场景说明](#section121024517124)
--   [实例步骤](#section1272017448221)
--   [实例代码](#section1312146192312)
--   [3.3.2.3 使用enumerator](#section798251363920)
--   [场景说明](#section88380272417)
--   [实例步骤](#section352861519248)
--   [实例代码](#section13978630152415)
--   [3.3.2.4 常见问题](#section135971912394)
--   [打开文件失败，返回错误码ffff0008](#section44551991222)
--   [打开文件失败，返回错误码ffff0003](#section124828202212)
--   [3.4加解密](#section1646110252391)
--   [概述](#section19905102422715)
--   [加解密支持算法](#section7885121218201)
--   [密钥长度要求](#section158246431176)
--   [加解密常见问题](#section53591633153611)
-    -   [密钥长度单位](#section17753135455011)
-    -   [AE算法接口参数单位](#section146312014535)
-
--   [3.5 安全时间](#section63711528193920)
--   [3.6 TA异常](#section197719315396)
-
-## 3.1 TA的API接口<a name="section1827174413371"></a>
+## TA的API接口<a name="section1827174413371"></a>
 
 TA的API接口在SDK中include/TA目录下。TA头文件在TEE支持情况如下：
 
@@ -66,7 +32,7 @@ TA的API接口在SDK中include/TA目录下。TA头文件在TEE支持情况如下
 </tbody>
 </table>
 
-## 3.2 TA入口函数<a name="section1736115211372"></a>
+## TA入口函数<a name="section1736115211372"></a>
 
 下表为TA入口函数。
 
@@ -107,9 +73,9 @@ TA的API接口在SDK中include/TA目录下。TA头文件在TEE支持情况如下
 </tbody>
 </table>
 
-## 3.3 安全存储<a name="section1265118373811"></a>
+## 安全存储<a name="section1265118373811"></a>
 
-## 3.3.1 安全存储概述<a name="section1147512643814"></a>
+## 安全存储概述<a name="section1147512643814"></a>
 
 安全存储提供对数据的可信存储，并保证数据机密性、完整性、原子性、隔离性和不可复制性。
 
@@ -137,9 +103,9 @@ TA的API接口在SDK中include/TA目录下。TA头文件在TEE支持情况如下
 
 安全存储相关接口以及内存申请相关接口的详细描述请参考tee\_trusted\_storage\_api.h、tee\_object\_api.h和tee\_mem\_mgmt\_api.h。
 
-## 3.3.2 安全存储开发指导<a name="section8463163517388"></a>
+## 安全存储开发指导<a name="section8463163517388"></a>
 
-## 3.3.2.1 存储密钥<a name="section127865873819"></a>
+## 存储密钥<a name="section127865873819"></a>
 
 ## 场景说明<a name="section143491044197"></a>
 
@@ -162,7 +128,7 @@ TA的API接口在SDK中include/TA目录下。TA头文件在TEE支持情况如下
 >![](public_sys-resources/icon-note.gif) **说明：** 
 >存储密钥的类型仅支持GlobalPlatform所列类型，不支持的密钥可做为普通数据存储（存储方法见[存储文件实例](#3322-存储文件)）。
 
-```
+``` C
  TEE_Result store_key_sample(void)
 {
     uint32_t storageID = TEE_OBJECT_STORAGE_PRIVATE;
@@ -222,7 +188,7 @@ cleanup_1:
 }
 ```
 
-## 3.3.2.2 存储文件<a name="section413714417396"></a>
+## 存储文件<a name="section413714417396"></a>
 
 ## 场景说明<a name="section121024517124"></a>
 
@@ -245,7 +211,7 @@ cleanup_1:
 >![](public_sys-resources/icon-note.gif) **说明：** 
 >安全存储的Object与文件操作类似，打开、创建和关闭必须成对操作，否则产生内存泄露。
 
-```
+``` C
 TEE_Result store_data_sample(void) 
  { 
      uint32_t storageID = TEE_OBJECT_STORAGE_PRIVATE; 
@@ -324,7 +290,7 @@ TEE_Result store_data_sample(void)
  }
 ```
 
-## 3.3.2.3 使用enumerator<a name="section798251363920"></a>
+## 使用enumerator<a name="section798251363920"></a>
 
 ## 场景说明<a name="section88380272417"></a>
 
@@ -341,7 +307,7 @@ TEE_Result store_data_sample(void)
 
 ## 实例代码<a name="section13978630152415"></a>
 
-```
+``` C
 #define HASH_LEN 32
 #define DIR_LEN 64
 #define HASH_NAME_BUFF_LEN (2 * HASH_LEN + 1 + DIR_LEN)
@@ -375,7 +341,7 @@ clean:
 }
 ```
 
-## 3.3.2.4 常见问题<a name="section135971912394"></a>
+## 常见问题<a name="section135971912394"></a>
 
 ## 打开文件失败，返回错误码ffff0008<a name="section44551991222"></a>
 
@@ -413,7 +379,7 @@ cpu5/02083: 01/15 20:20:08.584 [task_ssa] [error] 1660:open fail ffff0008
 -   如果是多session并发访问同一个文件，需要在打开文件时增加共享读写的标记。
 -   如果是打开的文件未关闭则需要关闭文件。
 
-## 3.4加解密<a name="section1646110252391"></a>
+## 加解密<a name="section1646110252391"></a>
 
 ## 概述<a name="section19905102422715"></a>
 
@@ -643,7 +609,7 @@ TEE\_AllocateOperation、TEE\_AllocateTransientObject、TEE\_GenerateKey的密�
 
 TEE\_AEInit接口参数中，tagLen的单位为bit，nonceLen、AADLen、payloadLen的单位为byte。
 
-## 3.5 安全时间<a name="section63711528193920"></a>
+## 安全时间<a name="section63711528193920"></a>
 
 独立timer，准确的系统时钟，保证时钟准确、安全可靠，防止假冒。时钟只能在TEE里面设置、访问。
 
@@ -670,16 +636,4 @@ TEE\_AEInit接口参数中，tagLen的单位为bit，nonceLen、AADLen、payload
 </tr>
 </tbody>
 </table>
-
-## 3.6 TA异常<a name="section197719315396"></a>
-
-常见的TA异常包括两类，TA运行崩溃或者TA运行卡死。
-
--   TA运行崩溃：TA任意一个线程崩溃会触发整个TA进程被回收，即假如TA有多个session同时运行，其中一个session崩溃会导致多个session同时被回收。
--   TA运行卡死：TA运行卡死的情况下，TEE不会主动杀掉TA进程，只有CA同时被杀掉的情况下，TEE在一段时间的延时之后才会杀掉TA进程，假如TA有多个session，会同时被回收。
-
-TA异常时返回给CA的错误码：
-
--   运行中的session如果被回收，TEE会向CA返回TEE\_ERROR\_TARGET\_DEAD错误码。
--   如果session在非运行状态时TA被回收，CA再次访问该session，由于TA被回收，TEE会返回TEE\_ERROR\_SERVICE\_NOT\_EXIST 错误码。
 

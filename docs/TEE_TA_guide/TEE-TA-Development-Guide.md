@@ -1,36 +1,8 @@
 # TEE TA开发指南<a name="ZH-CN_TOPIC_0000001241980213"></a>
 
--   [2.1 开发步骤及示例工程](#section181412311296)
--   [2.1.1 环境准备](#section1894134872916)
--   [编译开发环境准备](#section196631553554)
--   [签名开发环境准备](#section7597183533818)
--   [编译依赖的bounds\_checking\_function和musl头文件准备](#section1182315617500)
--   [2.1.2 TA编译及开发示例](#section87251833133019)
--   [2.1.2.1 编译入口示例](#section53541258123016)
--   [简介](#section24399485559)
--   [build.sh文件](#section18297126898)
--   [defconfig文件](#section885652814360)
--   [configs.xml文件](#section1893131414916)
--   [2.1.2.2 make编译配置示例](#section169056453214)
--   [config.mk文件](#section613734445614)
--   [Makefile文件](#section973417201288)
--   [Make编译方法](#section197921537291)
--   [2.1.2.3 cmake编译配置示例](#section111111007337)
--   [config.cmake文件](#section41061567813)
--   [CMakeList.txt文件](#section8649337289)
--   [CMake编译方法](#section99081322133314)
--   [2.2 SEC文件签名](#section175621346143317)
--   [密钥及证书生成](#section12730101601820)
--   [perm\_config文件签名](#section1023415229205)
--   [SEC文件签名步骤](#section193879205219)
--   [CA\(Certification Authority\)说明](#section1087132913217)
--   [2.3 SEC调试](#section1261347344)
--   [日志使用限制](#section413233117432)
--   [使用方法](#section61772276175810)
+## 开发步骤及示例工程<a name="section181412311296"></a>
 
-## 2.1 开发步骤及示例工程<a name="section181412311296"></a>
-
-## 2.1.1 环境准备<a name="section1894134872916"></a>
+## 环境准备<a name="section1894134872916"></a>
 
 ## 编译开发环境准备<a name="section196631553554"></a>
 
@@ -122,13 +94,13 @@
 
 分别按照thirdparty/open\_source/bounds\_checking\_function和thirdparty/open\_source/musl下的README指导文档来操作即可。
 
-## 2.1.2 TA编译及开发示例<a name="section87251833133019"></a>
+## TA编译及开发示例<a name="section87251833133019"></a>
 
 ## 简介<a name="section24399485559"></a>
 
 32位TA是可信应用程序的32位版本，64位TA是可信应用程序的64位版本。
 
-对于32位或者64位TA的支持，不同平台存在差异，请与对应产品或OHTEE负责人确认。
+对于32位或者64位TA的支持，不同平台存在差异，请与对应产品确认。
 
 目前支持Make和Cmake两种编译框架。
 
@@ -186,7 +158,7 @@
 </table>
 
 
-## 2.1.2.1 编译入口示例<a name="section53541258123016"></a>
+## 编译入口示例<a name="section53541258123016"></a>
 
 ## build.sh文件<a name="section18297126898"></a>
 
@@ -194,7 +166,7 @@ build.sh是TA样例编译的入口脚本，此脚本会解析同目录下的defc
 
 注意此文件与make编译配置、cmake编译配置文件需置于同级目录，对于TA依赖的工具链、头文件路径、安全编译选项等配置在SDK的build/mk和build/cmake目录下，建议新开发TA都参照此样例的编译框架来开发。
 
-```
+``` shell
 #!/bin/bash
 set -e
 
@@ -286,7 +258,7 @@ TARGET\_IS\_ARM64编译选项控制编译TA的版本，无此变量定义时默�
 
 32位defconfig文件配置示例：
 
-```
+``` shell
 #set CONFIG_BUILD_TOOL (cmake / make)
 CONFIG_BUILD_TOOL=make
 
@@ -299,7 +271,7 @@ TARGET_IS_ARM64=n
 
 64位defconfig文件配置示例：
 
-```
+``` shell
 #set CONFIG_BUILD_TOOL (cmake / make)
 CONFIG_BUILD_TOOL=make
 
@@ -318,7 +290,7 @@ TA开发时需提供configs.xml文本文件。
 
 configs.xml示例：
 
-```
+``` xml
 <ConfigInfo>
   <TA_Basic_Info>
     <service_name>demo-ta</service_name>
@@ -363,7 +335,7 @@ configs.xml示例：
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.2 "><p id="p399717171417"><a name="p399717171417"></a><a name="p399717171417"></a>Boolean</p>
 </td>
-<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.3 "><p id="p1799181721415"><a name="p1799181721415"></a><a name="p1799181721415"></a>系统是否给每一个客户端会话创建一个实例 (当前 OHTEE只支持singleInstance为TRUE的场景)</p>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.3 "><p id="p1799181721415"><a name="p1799181721415"></a><a name="p1799181721415"></a>系统是否给每一个客户端会话创建一个实例 (当前只支持singleInstance为TRUE的场景)</p>
 </td>
 <td class="cellrowborder" valign="top" width="25%" headers="mcps1.2.5.1.4 "><p id="p69971731418"><a name="p69971731418"></a><a name="p69971731418"></a>TRUE</p>
 </td>
@@ -440,7 +412,7 @@ config.mk文件是TA编译的配置文件，关键编译选项可以在config.mk
 
 config.mk示例：
 
-```
+``` mk
 # API_LEVEL which indicates the GP API version of TA
 # API_LEVEL=2 indicates GP 1.1.1 which is the current version of the partner
 # API_LEVEL=3 indicates GP 1.2 which is the version we both going to support
@@ -462,7 +434,7 @@ Makefile文件参考SDK 中test/TA/helloworld目录下示例内容，上述confi
 
 假设可信应用程序包含源文件ta_demo.c，编写Makefile文件编译生成目标文件libcombine.so，如下所示：
 
-```
+``` Makefile
 include ./config.mk
 include ../../../build/mk/common.mk
 
@@ -499,7 +471,7 @@ clean:
 
 修改config文件里的CONFIG\_BUILD\_TOOL为make，执行test/TA/helloworld/目录的build.sh脚本即可。默认进行可信应用编译以及镜像签名，生成以configs.xml文件中UUID命名的可信应用镜像文件。
 
-## 2.1.2.3 cmake编译配置示例<a name="section111111007337"></a>
+## cmake编译配置示例<a name="section111111007337"></a>
 
 >![](public_sys-resources/icon-note.gif) **说明：** 
 >请使用build.sh来触发编译，不要直接用cmake触发CMakelist.txt编译。
@@ -513,7 +485,7 @@ clean:
 -   对于config.camke中配置信息，TA源码编译和TA签名都会检查其中配置信息，修改后需要重新对TA编译和签名。
 -   通过build.sh脚本触发编译时，config.cmake文件里定义的TARGET\_IS\_ARM64会不生效，生效的配置位置是config文件里的TARGET\_IS\_ARM64定义，相反不通过build.sh触发编译时（不建议），才会用到config.cmake文件里的TARGET\_IS\_ARM64定义。
 
-```
+``` cmake
 # API_LEVEL which indicates the GP API version of TA
 # API_LEVEL=2 indicates GP 1.1.1 which is the current version of the partner
 # API_LEVEL=3 indicates GP 1.2 which is the version we both going to support
@@ -533,12 +505,12 @@ CMakeLists.txt文件参考SDK 中test/TA/helloworld目录下示例内容，上�
 
 **注意事项：**
 
-1.  OHTEE上加载的SEC文件需要携带perm\_config签名，需要先按照[SEC文件签名步骤](#sec文件签名步骤)章节的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[SEC文件签名步骤](#sec文件签名步骤)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
+1.  在TEE上加载的SEC文件需要携带perm\_config签名，需要先按照[SEC文件签名步骤](#sec文件签名步骤)章节的指导，签发出perm\_config文件（样例中已经提供，新开发TA需要重新按照[SEC文件签名步骤](#sec文件签名步骤)指导签发），且perm\_config文件的路径和对应TA证书私钥配置在config\_ta\_public.ini文件。
 2.  样例中CMakeList.txt文件里会编译出二进制libcombine.so后并调用signtool\_sec.py脚本签出sec文件。signtool\_sec.py脚本约束TA二进制编译产物名称需要是libcombine.so，否则签名会异常。
 
 假设可信应用程序包含源文件ta_demo.c，编写CMakeLists.txt文件编译生成目标文件libcombine.so，如下所示：
 
-```
+``` txt
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(tee_sdk C)
 
@@ -575,7 +547,7 @@ add_custom_command(
 
 修改config文件里的CONFIG\_BUILD\_TOOL为cmake，执行test/TA/helloworld/目录的build.sh脚本即可。默认进行可信应用编译以及镜像签名，生成以configs.xml文件中UUID命名的可信应用镜像文件。
 
-## 2.2 SEC文件签名<a name="section175621346143317"></a>
+## SEC文件签名<a name="section175621346143317"></a>
 
 进行安全业务开发前，需要进行密钥、证书申请及签发perm\_config文件，perm\_config文件用于管控TA在TEE中可用资源信息。
 
@@ -654,7 +626,7 @@ SDK中提供了生成密钥及证书的工具，位于build/keytools路径下。
 
 配置文件按实际情况填好后，运行如下指令
 
-```
+``` shell
 ./gen_key_cert.sh
 ```
 
@@ -701,7 +673,7 @@ keytools工具输出产物将放于output路径下，输出及用途如下表所
 
 -   将keytools工具生成的密钥、证书拷贝到相应的路径下
 
-    ```
+    ``` shell
     cp keytools/output/taconfig.der pack-Config/config_cert/.
     cp keytools/output/taconfig_key.pem pack-Config/config_cert/.
     cp keytools/output/ta_cert.der pack-Config/ta_cert/.
@@ -710,7 +682,7 @@ keytools工具输出产物将放于output路径下，输出及用途如下表所
 -   根据TA实际情况修改input路径下的configs.xml
 -   在pack-Config下执行如下指令，密钥口令为123456
 
-    ```
+    ``` shell
     python3 signtool_config.py ./input ./ta_cert/ta_cert.der ./output/perm_config
     ```
 
@@ -722,138 +694,20 @@ keytools工具输出产物将放于output路径下，输出及用途如下表所
 
 -   将2.2.2节生成的perm\_config 拷贝到test/TA/helloworld路径下
 
-    ```
+    ``` shell
     cp build/pack-Config/output/perm_config test/TA/helloworld/.
     ```
 
 -   将keytools工具生成的密钥拷贝到相应的路径下
 
-    ```
+    ``` shell
     cp build/keytools/output/sign_sec_priv.pem test/TA/helloworld/.
     ```
 
 -   在test/TA/helloworld路径下执行脚本，生成的sec文件位于test/TA/helloworld路径下
 
-    ```
+    ``` shell
     ./build.sh
     ```
 编译生成so签名之前会对so进行符号检查：对TA中使用的未定义的符号进行检查。如果符号未出现在headers_check.txt中配置的路径里面的头文件中，则会报错退出。
 如果需要外部头文件声明的符号，可以将相对路径填写在headers_check.txt配置文件中。
-
-## CA\(Certification Authority\)说明<a name="section1087132913217"></a>
-
-两个二级CA区分互通与不互通两个场景，互通场景下使用public CA，不互通场景下使用private CA。
-
--   互通：互通场景下二级CA由开放原子基金会统一分配，CA公钥打包在TEE镜像头中，各厂商一致。使用该CA颁发的证书最终签出的SEC文件，在TEE中加载时使用证书中携带的公钥进行验签，所以该场景下的SEC文件可以运行在所有厂商的TEE中。
--   不互通：不互通场景下二级CA由厂商部署，CA公钥打包在TEE镜像头中，各厂商不同。使用该CA颁发的证书最终签出的SEC文件，在TEE中加载时，SEC文件验签需要使用厂商打包在TEE镜像头中的密钥，所以该场景下的SEC文件只能运行在厂商适配的TEE中。
-
->![](public_sys-resources/icon-note.gif) **说明：** 
->SDK提供的keytools工具中使用的根CA及二级CA均为本地生成，只能用于功能演示，正式的证书服务器需要三方搭建
-
-## 2.3 SEC调试<a name="section1261347344"></a>
-
-当前TEE中日志分为以下5个级别。
-
-<a name="table263813112481"></a>
-<table><thead align="left"><tr id="row763951124815"><th class="cellrowborder" valign="top" width="21.052105210521052%" id="mcps1.1.4.1.1"><p id="p463916111482"><a name="p463916111482"></a><a name="p463916111482"></a>日志级别</p>
-</th>
-<th class="cellrowborder" valign="top" width="45.614561456145616%" id="mcps1.1.4.1.2"><p id="p46393115489"><a name="p46393115489"></a><a name="p46393115489"></a>说明</p>
-</th>
-<th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.1.4.1.3"><p id="p46391111204818"><a name="p46391111204818"></a><a name="p46391111204818"></a>对应的日志打印接口</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row563919117484"><td class="cellrowborder" valign="top" width="21.052105210521052%" headers="mcps1.1.4.1.1 "><p id="p18639511124817"><a name="p18639511124817"></a><a name="p18639511124817"></a>VERBOSE</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.614561456145616%" headers="mcps1.1.4.1.2 "><p id="p66391511134814"><a name="p66391511134814"></a><a name="p66391511134814"></a>细粒度信息事件，详细地记录程序的运行过程。</p>
-</td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.1.4.1.3 "><p id="p13639161117487"><a name="p13639161117487"></a><a name="p13639161117487"></a>tlogv</p>
-</td>
-</tr>
-<tr id="row10639201112487"><td class="cellrowborder" valign="top" width="21.052105210521052%" headers="mcps1.1.4.1.1 "><p id="p10639111184818"><a name="p10639111184818"></a><a name="p10639111184818"></a>DEBUG</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.614561456145616%" headers="mcps1.1.4.1.2 "><p id="p7558134616494"><a name="p7558134616494"></a><a name="p7558134616494"></a>细粒度信息事件，用于开发调试。</p>
-</td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.1.4.1.3 "><p id="p46391911164815"><a name="p46391911164815"></a><a name="p46391911164815"></a>tlogd</p>
-</td>
-</tr>
-<tr id="row176395115486"><td class="cellrowborder" valign="top" width="21.052105210521052%" headers="mcps1.1.4.1.1 "><p id="p146391611194810"><a name="p146391611194810"></a><a name="p146391611194810"></a>INFO</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.614561456145616%" headers="mcps1.1.4.1.2 "><p id="p1063911124815"><a name="p1063911124815"></a><a name="p1063911124815"></a>突出强调应用程序的运行过程。</p>
-</td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.1.4.1.3 "><p id="p1461319875015"><a name="p1461319875015"></a><a name="p1461319875015"></a>tlogi</p>
-</td>
-</tr>
-<tr id="row863981134816"><td class="cellrowborder" valign="top" width="21.052105210521052%" headers="mcps1.1.4.1.1 "><p id="p4639201113486"><a name="p4639201113486"></a><a name="p4639201113486"></a>WARNING</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.614561456145616%" headers="mcps1.1.4.1.2 "><p id="p7639911174815"><a name="p7639911174815"></a><a name="p7639911174815"></a>潜在的错误事件，不影响系统的继续运行。</p>
-</td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.1.4.1.3 "><p id="p9639111115480"><a name="p9639111115480"></a><a name="p9639111115480"></a>tlogw</p>
-</td>
-</tr>
-<tr id="row1639171113485"><td class="cellrowborder" valign="top" width="21.052105210521052%" headers="mcps1.1.4.1.1 "><p id="p14639151117487"><a name="p14639151117487"></a><a name="p14639151117487"></a>ERROR</p>
-</td>
-<td class="cellrowborder" valign="top" width="45.614561456145616%" headers="mcps1.1.4.1.2 "><p id="p1125856174915"><a name="p1125856174915"></a><a name="p1125856174915"></a>发生错误事件，影响系统的继续运行。</p>
-</td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.1.4.1.3 "><p id="p1563971113484"><a name="p1563971113484"></a><a name="p1563971113484"></a>tloge</p>
-</td>
-</tr>
-</tbody>
-</table>
-
->![](public_sys-resources/icon-note.gif) **说明：** 
->新开发TA推荐用上述日志接口，不建议使用其他接口。
-
-## 日志使用限制<a name="section413233117432"></a>
-
-1.  日志内存大小是有限的，当日志写入比较快时，会出现日志被覆盖的情况，日志内存采用的是内核申请的PAGES内存，大小是256K。
-2.  增加TA日志时，要符合安全规范，不能打印用户隐私信息、内存地址等，不打印调试日志，且一条日志内容要做到字符精简。
-
-## 使用方法<a name="section61772276175810"></a>
-
-在源代码文件中包含tee\_log.h，使用与日志级别对应的日志打印接口打印日志。
-
-日志级别和相应的接口如上面描述，其使用与标准C中的printf类似。
-
-tee\_log.h中默认使用的日志级别为INFO，即默认打印使用tloge、tlogw、tlogi接口的信息。如调试过程中希望打印其他级别，可选择下面方式中的一种进行修改，建议使用方式1：
-
-1.  在Makefile或CMakelist.txt文件中动态修改日志级别TA\_LOG\_LEVEL，具体值和对应的显示级别为：
-
-    <a name="table1136311211099"></a>
-    <table><thead align="left"><tr id="row936414211913"><th class="cellrowborder" valign="top" width="50%" id="mcps1.1.3.1.1"><p id="p10364172119913"><a name="p10364172119913"></a><a name="p10364172119913"></a>TA_LOG_LEVEL值</p>
-    </th>
-    <th class="cellrowborder" valign="top" width="50%" id="mcps1.1.3.1.2"><p id="p1364162113919"><a name="p1364162113919"></a><a name="p1364162113919"></a>日志显示级别</p>
-    </th>
-    </tr>
-    </thead>
-    <tbody><tr id="row2036413219915"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.1 "><p id="p93938731415"><a name="p93938731415"></a><a name="p93938731415"></a>0</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.2 "><p id="p1226241161412"><a name="p1226241161412"></a><a name="p1226241161412"></a>Error</p>
-    </td>
-    </tr>
-    <tr id="row5364202112914"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.1 "><p id="p539312714149"><a name="p539312714149"></a><a name="p539312714149"></a>1</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.2 "><p id="p122621511111413"><a name="p122621511111413"></a><a name="p122621511111413"></a>Error、Warn</p>
-    </td>
-    </tr>
-    <tr id="row536413217917"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.1 "><p id="p5393779149"><a name="p5393779149"></a><a name="p5393779149"></a>2--默认值</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.2 "><p id="p1426221181412"><a name="p1426221181412"></a><a name="p1426221181412"></a>Error、Warn、Info</p>
-    </td>
-    </tr>
-    <tr id="row183648211790"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.1 "><p id="p143931576149"><a name="p143931576149"></a><a name="p143931576149"></a>3</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.2 "><p id="p14262191141410"><a name="p14262191141410"></a><a name="p14262191141410"></a>Error、Warn、Info、Debug</p>
-    </td>
-    </tr>
-    <tr id="row236418211891"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.1 "><p id="p3393177121414"><a name="p3393177121414"></a><a name="p3393177121414"></a>&gt;=4</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.1.3.1.2 "><p id="p1526381111143"><a name="p1526381111143"></a><a name="p1526381111143"></a>Error、Warn、Info、Debug、Verbo</p>
-    </td>
-    </tr>
-    </tbody>
-    </table>
-
-2.  直接修改tee\_log.h中定义的TA\_LOG\_LEVEL\_DEFAULT为期望的级别。多个TA共用同一个tee\_log.h文件且期望打印的日志级别不一致时，不能选用此方式。
-3.  直接修改tee\_log.h中定义的TA\_LOG\_LEVEL为期望的级别。多个TA共用同一个tee\_log.h文件且期望打印的日志级别不一致时，不能选用此方式。
-
