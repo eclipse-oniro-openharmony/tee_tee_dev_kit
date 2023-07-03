@@ -1,21 +1,5 @@
 # TEE Tzdriver适配指导<a name="ZH-CN_TOPIC_0000001257014487"></a>
 
--   [概述](#section896014101054)
--   [适配指导以及适配实例](#section3853521853)
-    -   [tzdriver入口](#section24427168613)
-    -   [工程编译适配](#section17202641776)
-
--   [驱动初始化](#section837564171719)
--   [spi中断号配置](#section495111567195)
--   [配置选项](#section3247165292119)
-    -   [内核配置选项](#section19684124015119)
-    -   [TEE日志配置](#section95881957215)
-
--   [常见问题](#section4549193932515)
-    -   [ioctl失败，未执行到tzdriver](#section105004622512)
-    -   [ioctl时tzdriver报错invalid cmd](#section137051444142912)
-
-
 ## 概述<a name="section896014101054"></a>
 
 tzdriver是TEE的内核驱动，主要功能是在整个TEE子系统中起连接作用，是使用TEE OS服务的桥梁，tzdriver处理来自于tee\_client的ioctl命令，并通过smc指令从REE切换到TEE。
