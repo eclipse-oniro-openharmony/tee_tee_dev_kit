@@ -104,35 +104,12 @@ TEE为CA提供了一组标准API来访问TA，这些API声明在“tee\_client\_
 <td class="cellrowborder" valign="top" width="64%" headers="mcps1.1.3.1.2 "><p>在指定的会话session里，由CA向安全服务发送命令commandID，发送的数据为operation，如果发送命令失败，输出参数returnOrigin为错误来源.</p>
 </td>
 </tr>
-<tr><td class="cellrowborder" valign="top" width="36.05%" headers="mcps1.1.3.1.1 "><p>teek_register_shared_memory</p>
-</td>
-<td class="cellrowborder" valign="top" width="64%" headers="mcps1.1.3.1.2 "><p>在指定的TEE环境context内注册共享内存sharedMem。</p>
-</td>
-</tr>
-<tr><td class="cellrowborder" valign="top" width="36.05%" headers="mcps1.1.3.1.1 "><p>teek_allocate_shared_memory</p>
-</td>
-<td class="cellrowborder" valign="top" width="64%" headers="mcps1.1.3.1.2 "><p>在指定的TEE环境context内申请共享内存sharedMem。</p>
-</td>
-</tr>
-<tr><td class="cellrowborder" valign="top" width="36.05%" headers="mcps1.1.3.1.1 "><p>teek_release_shared_memory</p>
-</td>
-<td class="cellrowborder" valign="top" width="64%" headers="mcps1.1.3.1.2 "><p>释放已注册成功的的或已申请成功的共享内存sharedMem。
-如果是通过teek_allocate_shared_memory方式获取的共享内存，释放时会回收这块内存；
-如果是通过teek_register_shared_memory方式获取的共享内存，释放时不会回收共享内存所指向的本地内存。</p>
-</td>
-</tr>
-<tr><td class="cellrowborder" valign="top" width="36.05%" headers="mcps1.1.3.1.1 "><p>teek_request_cancellation</p>
-</td>
-<td class="cellrowborder" valign="top" width="64%" headers="mcps1.1.3.1.2 "><p>取消掉一个正在运行的open session或者是一个invoke command命令。
-此操作仅仅是发送一个cancel的消息，现版本TEEOS不支持该特性。</p>
-</td>
-</tr>
 </tbody>
 </table>
 
 ## 开发说明<a name="section1249761325219"></a>
 
-TEE对CA的形式不做限定，在openHarmony上可以是native程序、SA服务或者hap包，开发样例可参考GP文档：TEE Client API  [Specification](https://globalplatform.org/specs-library/?filter-committee=tee)  v1.0 \(GPD\_SPE\_007\)。
+TEE对CA的形式不做限定，在openHarmony上可以是native程序或SA服务，开发样例可参考GP文档：TEE Client API  [Specification](https://globalplatform.org/specs-library/?filter-committee=tee)  v1.0 \(GPD\_SPE\_007\)。
 
 ### 特性与约束<a name="section139361816527"></a>
 
@@ -140,7 +117,7 @@ TEE实现的接口与GP规范相同，但是结构体及使用限制与GP规范�
 
 1.  TEEC\_Context定义支持指定TA路径加载功能
 
-    TEEC\_Context中定义了ta文件路径，在调用TEEC\_OpenSession前，将TEEC\_Context中ta\_path赋值到具体TA路径（限制/data目录下），可将该路径的TA加载到TEEOS中，如果不指定TA路径，会从默认路径（标准系统：system/bin，小型化系统：vendor/bin）下根据UUID查找对应UUID.sec文件加载到TEEOS中。
+    TEEC\_Context中定义了ta文件路径，在调用TEEC\_OpenSession前，将TEEC\_Context中ta\_path赋值到具体TA路径（限制/data目录下），可将该路径的TA加载到TEEOS中，如果不指定TA路径，会从默认路径（系统组件：system/bin，芯片组件：vendor/bin）下根据UUID查找对应UUID.sec文件加载到TEEOS中。
 
     ```
     context.ta_path = (uint8_t *)"/data/58dbb3b9-4a0c-42d2-a84d-7c7ab17539fc.sec";
