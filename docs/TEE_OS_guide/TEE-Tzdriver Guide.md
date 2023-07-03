@@ -140,7 +140,7 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     </tr>
     <tr id="row560920412318"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1460916482311"><a name="p1460916482311"></a><a name="p1460916482311"></a>CONFIG_CPU_AFF_NR</p>
     </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1960913482311"><a name="p1960913482311"></a><a name="p1960913482311"></a>CA绑核功能，非零值代表限制仅cpuid小于CONFIG_CPU_AFF_NR的CPU可以进入TEE，0代表无限制</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1960913482311"><a name="p1960913482311"></a><a name="p1960913482311"></a>CA绑核功能，非零值代表限制仅cpuid小于CONFIG_CPU_AFF_NR的CPU可以进入TEE，0代表无限制，当前只支持在0核运行，所以值为1</p>
     </td>
     </tr>
     <tr id="row10656158102412"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p4656168192410"><a name="p4656168192410"></a><a name="p4656168192410"></a>CONFIG_KERNEL_CLIENT</p>
