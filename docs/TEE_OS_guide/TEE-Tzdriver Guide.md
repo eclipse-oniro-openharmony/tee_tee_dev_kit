@@ -114,10 +114,7 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     # TEE OS
     #
     CONFIG_TZDRIVER=y
-    # CONFIG_ASAN_DEBUG is not set
     CONFIG_CPU_AFF_NR=0
-    CONFIG_TA_AFFINITY=y
-    CONFIG_TA_AFFINITY_CPU_NUMS=8
     CONFIG_KERNEL_CLIENT=y
     CONFIG_TEELOG=y
     CONFIG_TEE_LOG_ACHIVE_PATH="/data/log/tee/last_teemsg"
@@ -141,24 +138,9 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p7608447236"><a name="p7608447236"></a><a name="p7608447236"></a>模块开关，使能tzdriver必须打开</p>
     </td>
     </tr>
-    <tr id="row660818472311"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p96091842239"><a name="p96091842239"></a><a name="p96091842239"></a>CONFIG_ASAN_DEBUG</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p389364412239"><a name="p389364412239"></a><a name="p389364412239"></a>地址消毒功能，一般用于定位内核的内存问题时debug版本可以打开，默认不需要打开</p>
-    </td>
-    </tr>
     <tr id="row560920412318"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1460916482311"><a name="p1460916482311"></a><a name="p1460916482311"></a>CONFIG_CPU_AFF_NR</p>
     </td>
     <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1960913482311"><a name="p1960913482311"></a><a name="p1960913482311"></a>CA绑核功能，非零值代表限制仅cpuid小于CONFIG_CPU_AFF_NR的CPU可以进入TEE，0代表无限制</p>
-    </td>
-    </tr>
-    <tr id="row160924192318"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p186092482311"><a name="p186092482311"></a><a name="p186092482311"></a>CONFIG_TA_AFFINITY</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p11609646238"><a name="p11609646238"></a><a name="p11609646238"></a>TA绑核功能支持，默认建议开启</p>
-    </td>
-    </tr>
-    <tr id="row773402192213"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1173413216223"><a name="p1173413216223"></a><a name="p1173413216223"></a>CONFIG_TA_AFFINITY_CPU_NUMS</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p16734192142219"><a name="p16734192142219"></a><a name="p16734192142219"></a>TA绑核功能支持的最大核数，建议与实际CPU数量相等，最大8个</p>
     </td>
     </tr>
     <tr id="row10656158102412"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p4656168192410"><a name="p4656168192410"></a><a name="p4656168192410"></a>CONFIG_KERNEL_CLIENT</p>
