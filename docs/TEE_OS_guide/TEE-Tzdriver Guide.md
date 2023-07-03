@@ -117,7 +117,6 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     CONFIG_CPU_AFF_NR=1
     CONFIG_KERNEL_CLIENT=y
     CONFIG_TEELOG=y
-    CONFIG_TEE_LOG_ACHIVE_PATH="/data/log/tee/last_teemsg"
     CONFIG_PAGES_MEM=y
     
     ```
@@ -153,11 +152,6 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p15516161182413"><a name="p15516161182413"></a><a name="p15516161182413"></a>TEE日志开关，默认建议开启</p>
     </td>
     </tr>
-    <tr id="row19461113152415"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1346141372415"><a name="p1346141372415"></a><a name="p1346141372415"></a>CONFIG_TEE_LOG_ACHIVE_PATH</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1846171319246"><a name="p1846171319246"></a><a name="p1846171319246"></a>TEE临终遗言日志路径，暂时不支持，开发者无需关心</p>
-    </td>
-    </tr>
     <tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_PAGES_MEM</p>
     </td>
     <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>tlogger使用的内存类型，开发者无需修改</p>
@@ -169,11 +163,11 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
 
 ## 常见问题<a name="section4549193932515"></a>
 
-### ioctl失败，未执行到tzdriver<a name="section105004622512"></a>
+### ioctl返回错误，未执行到tzdriver<a name="section105004622512"></a>
 
 **问题现象**1
 
-ioctl失败，未执行到tzdriver，且errno为EPERM。
+ioctl返回错误，未执行到tzdriver，且errno为EPERM。
 
 **可能原因**
 
@@ -185,7 +179,7 @@ ioctl失败，未执行到tzdriver，且errno为EPERM。
 
 **问题现象**2
 
-ioctl失败，未执行到tzdriver，且errno为Invalid Argument。
+ioctl返回错误，未执行到tzdriver，且errno为Invalid Argument。
 
 **可能原因**
 
