@@ -113,10 +113,12 @@
 </table>
 
 ### 开发步骤<a name="section1767617461112"></a>
+1. 编译适配
+    编译依赖的bounds\_checking\_function和musl头文件，分别按照/open\_source/bounds\_checking\_function和thirdparty/open\_source/musl下的README指导文档来操作即可。
 
-1.  证书服务适配
+2.  证书服务适配
 
-    sec文件中使用的证书，都是通过CA颁发的。OpenHarmony SDK中使用keytools工具来完成密钥生成和证书颁发。keytools工具中使用的CA通过OpenSSL命令行生成，只能用于功能演示，因此，厂商需要自行搭建证书服务（签名服务器的一部分），实现证书颁发的功能，替换keytools工具。证书服务需要提供的能力：
+    sec文件中使用的证书，都是通过CA颁发的。TEE SDK中使用keytools工具来完成密钥生成和证书颁发。keytools工具中使用的CA通过OpenSSL命令行生成，只能用于功能演示，因此，厂商需要自行搭建证书服务（签名服务器的一部分），实现证书颁发的功能，替换keytools工具。证书服务需要提供的能力：
 
     -   密钥生成
     -   证书请求生成
@@ -179,7 +181,7 @@
 
     3.  算法能力提供
 
-        当前OpenHarmony SDK中支持ECDSA/RSA签名算法，厂商可以根据CA部署情况对签名算法进行支持。
+        当前SDK中支持ECDSA/RSA签名算法，厂商可以根据CA部署情况对签名算法进行支持。
 
     4.  密钥管理
 
