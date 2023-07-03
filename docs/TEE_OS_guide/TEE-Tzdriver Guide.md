@@ -114,7 +114,7 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     # TEE OS
     #
     CONFIG_TZDRIVER=y
-    CONFIG_CPU_AFF_NR=0
+    CONFIG_CPU_AFF_NR=1
     CONFIG_KERNEL_CLIENT=y
     CONFIG_TEELOG=y
     CONFIG_TEE_LOG_ACHIVE_PATH="/data/log/tee/last_teemsg"
