@@ -150,94 +150,21 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     </tr>
     <tr id="row1051612110244"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p351620118241"><a name="p351620118241"></a><a name="p351620118241"></a>CONFIG_TEELOG</p>
     </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p15516161182413"><a name="p15516161182413"></a><a name="p15516161182413"></a>TEE日志开关，详细内容请参考tzdriver tlogger日志配置</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p15516161182413"><a name="p15516161182413"></a><a name="p15516161182413"></a>TEE日志开关，默认建议开启</p>
     </td>
     </tr>
     <tr id="row19461113152415"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1346141372415"><a name="p1346141372415"></a><a name="p1346141372415"></a>CONFIG_TEE_LOG_ACHIVE_PATH</p>
     </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1846171319246"><a name="p1846171319246"></a><a name="p1846171319246"></a>TEE日志路径，详细内容请参考tzdriver tlogger日志配置</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1846171319246"><a name="p1846171319246"></a><a name="p1846171319246"></a>TEE临终遗言日志路径，暂时不支持，开发者无需关心</p>
     </td>
     </tr>
     <tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_PAGES_MEM</p>
     </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>tlogger使用的内存类型，详细内容请参考tzdriver tlogger日志配置</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>tlogger使用的内存类型，开发者无需修改</p>
     </td>
     </tr>
     </tbody>
     </table>
-
-
-### tzdriver中tlogger日志配置<a name="section95881957215"></a>
-
-日志功能是基础的DFX能力，不推荐关闭此能力。开启TEE日志能力需要将上述配置选项CONFIG\_TEELOG在对应配置文件打开。
-
-1.  适配物理内存配置
-
-    >![](public_sys-resources/icon-note.gif) **说明：** 
-    >建议将TEE日志使用的内存替换成物理内存，基于此物理内存定制一些更强的维测能力，参考log\_cfg\_api.h文件的接口范围定制成log\_xxx\_cfg.c文件，并定义CONFIG\_XXX\_MEM宏来区分XXX内存类型，并将此文件编译到tzdriver里，同时关闭CONFIG\_PAGES\_MEM宏定义。
-
-    log\_xxx\_cfg.c文件需要适配的详细介绍如下：
-
-    **表 2**  接口适配说明
-
-    <a name="table314763748"></a>
-    <table><thead align="left"><tr id="row13147432415"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p145313240"><a name="p145313240"></a><a name="p145313240"></a>接口</p>
-    </th>
-    <th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.2"><p id="p1414817313416"><a name="p1414817313416"></a><a name="p1414817313416"></a>配置说明</p>
-    </th>
-    </tr>
-    </thead>
-    <tbody><tr id="row141481731741"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p71487320417"><a name="p71487320417"></a><a name="p71487320417"></a>register_log_mem</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p4148103545"><a name="p4148103545"></a><a name="p4148103545"></a>当前开源是内核虚拟日志内存注册，需切换成物理内存申请以及注册到TEEOS</p>
-    </td>
-    </tr>
-    <tr id="row3148931417"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p181482036420"><a name="p181482036420"></a><a name="p181482036420"></a>register_log_exception</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p11148237416"><a name="p11148237416"></a><a name="p11148237416"></a>Tlogger模块启动时，注册TEEOS异常时上报的异常属性配置，包括异常的模块为TEEOS、异常码、以及是否要触发整机重启等等之类。</p>
-    </td>
-    </tr>
-    <tr id="row1414813944"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p9148433414"><a name="p9148433414"></a><a name="p9148433414"></a>report_log_system_error</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p10148931243"><a name="p10148931243"></a><a name="p10148931243"></a>上报异常能力，上报register_log_exception接口配置的异常信息以及触发对应的异常响应。</p>
-    </td>
-    </tr>
-    <tr id="row16148163744"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p5148203844"><a name="p5148203844"></a><a name="p5148203844"></a>report_log_system_panic</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p8148637412"><a name="p8148637412"></a><a name="p8148637412"></a>TEEOS crash场景触发异常，如日志内存不支持log_exception功能时，可以通过此接口触发整机重启来恢复系统；否则此接口不需适配。</p>
-    </td>
-    </tr>
-    <tr id="row714812319410"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p2014853549"><a name="p2014853549"></a><a name="p2014853549"></a>map_log_mem</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p141483315417"><a name="p141483315417"></a><a name="p141483315417"></a>TEEOS 日志内存映射 ，需要适配成物理内存映射接口。</p>
-    </td>
-    </tr>
-    <tr id="row11680111317520"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p268021320516"><a name="p268021320516"></a><a name="p268021320516"></a>unmap_log_mem</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p176801113855"><a name="p176801113855"></a><a name="p176801113855"></a>TEEOS 日志内存映射 ，需要适配成物理内存去映射接口。</p>
-    </td>
-    </tr>
-    <tr id="row64289177516"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p2428817157"><a name="p2428817157"></a><a name="p2428817157"></a>get_log_chown</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p842811171658"><a name="p842811171658"></a><a name="p842811171658"></a>TEEOS临终遗言日志文件的chown属性，liteos上此文件不写入，此接口可以不适配；liunx版本此功能开启，适配成system群组，可适情况修改。</p>
-    </td>
-    </tr>
-    <tr id="row8881940154"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p19884401553"><a name="p19884401553"></a><a name="p19884401553"></a>unregister_log_exception</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p1288154017510"><a name="p1288154017510"></a><a name="p1288154017510"></a>Tlogger模块销毁时，适配注册取消异常配置能力，同register_log_exception。</p>
-    </td>
-    </tr>
-    <tr id="row1085212421454"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p14852134214517"><a name="p14852134214517"></a><a name="p14852134214517"></a>ta_crash_report_log</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p138521142754"><a name="p138521142754"></a><a name="p138521142754"></a>此接口为空即可。</p>
-    </td>
-    </tr>
-    </tbody>
-    </table>
-
-2.  临终遗言文件配置
-
-    Linux版本可通过CONFIG\_TEE\_LOG\_ACHIVE\_PATH宏来定制TEEOS或TA crash时，日志存储的文件为CONFIG\_TEE\_LOG\_ACHIVE\_PATH的定义位置。
 
 
 ## 常见问题<a name="section4549193932515"></a>
