@@ -1,9 +1,5 @@
 # TEE Client适配指导<a name="ZH-CN_TOPIC_0000001256734441"></a>
 
--   [TeeClient概述](#section1670413315410)
--   [TeeClient使能实例](#section0405457154914)
--   [可配置选项](#section15305122712509)
-
 ## TeeClient概述<a name="section1670413315410"></a>
 
 TeeClient模块在标准系统使能，向应用提供访问TEE OS接口，让非安全侧应用可以访问TEE OS内运行的安全应用。
