@@ -163,11 +163,11 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
 
 ## 常见问题<a name="section4549193932515"></a>
 
-### ioctl返回错误，未执行到tzdriver<a name="section105004622512"></a>
+### ioctl返回错误，未执行到tzdriver（内核日志中未观察到tzdriver打印）<a name="section105004622512"></a>
 
 **问题现象**1
 
-ioctl返回错误，未执行到tzdriver，且errno为EPERM。
+ioctl返回错误，未执行到tzdriver（内核日志中未观察到tzdriver打印），且errno为EPERM。
 
 **可能原因**
 
@@ -179,7 +179,7 @@ ioctl返回错误，未执行到tzdriver，且errno为EPERM。
 
 **问题现象**2
 
-ioctl返回错误，未执行到tzdriver，且errno为Invalid Argument。
+ioctl返回错误，未执行到tzdriver（内核日志中未观察到tzdriver打印），且errno为Invalid Argument。
 
 **可能原因**
 
@@ -189,15 +189,15 @@ ioctl返回错误，未执行到tzdriver，且errno为Invalid Argument。
 
 排查ioctl的参数，是否有误用的情况，比如ioctl的第一个参数是fd，误传递文件指针，就会出现invalid argument的错误。
 
-### ioctl时tzdriver报错invalid cmd<a name="section137051444142912"></a>
+### ioctl时tzdriver报错打印invalid cmd<a name="section137051444142912"></a>
 
 **问题现象**
 
-ioctl时tzdriver报错invalid cmd。
+ioctl时tzdriver报错打印invalid cmd。
 
 **可能原因**
 
-可能是teecd和tzdriver之间命令字定义不一样，重点排查结构体大小不一致的情况。
+可能是teec客户端和tzdriver之间命令字定义不一样，重点排查结构体大小不一致的情况。
 
 **解决办法**
 
