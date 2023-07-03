@@ -182,7 +182,7 @@
         -   不互通场景下，release TA签名。
 
     **图 2**  签名基本流程示意图<a name="fig1796118481577"></a>  
-    ![](figures/签名基本流程示意图.png "签名基本流程示意图")
+    ![](figures/schematic-diagram-of-the-signature-process.png "签名基本流程示意图")
 
     替换签名服务器后，sec文件生成的基本流程：
 
