@@ -26,5 +26,5 @@
 可信应用的设计分为客户端应用和可信端应用，GlobalPlatform API标准定义（GP规范）定义了CA和TA之间的API接口，CA和TA按照规定的接口进行通信，其典型交互模型如下图所示：
 
 **图 1**  客户端应用和可信端应用接口交互过程<a name="fig1715519229495"></a>  
-![](figures/客户端应用和可信端应用接口交互过程.png "客户端应用和可信端应用接口交互过程")
+![](figures/Interaction-process-between-ca-and-ta-interfaces.png "客户端应用和可信端应用接口交互过程")
 
