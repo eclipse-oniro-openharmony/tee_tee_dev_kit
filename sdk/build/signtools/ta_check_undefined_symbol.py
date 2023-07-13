@@ -132,9 +132,8 @@ def gen_whitelist_from_headers(headers_path):
     with open(whitelist_path, 'a+') as f:
         paths = get_all_headers_file_path(headers_path)
         if paths == []:
-            logging.error("Not found any headers files!")
-            clean_temp_file()
-            exit(1)
+            logging.critical("Not found any headers files!")
+            return
         for file_name in paths:
             try:
                 header = CppHeaderParser.CppHeader(file_name)
