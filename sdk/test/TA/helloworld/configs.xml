@@ -19,8 +19,8 @@
   </TA_Basic_Info>
   <TA_Manifest_Info>
     <instance_keep_alive>false</instance_keep_alive>
-    <stack_size>8192</stack_size>
-    <heap_size>81920</heap_size>
+    <stack_size>32768</stack_size>
+    <heap_size>327680</heap_size>
     <multi_command>false</multi_command>
     <multi_session>false</multi_session>
     <single_instance>true</single_instance>
