@@ -1,0 +1,7 @@
+if ("${ARCH}" STREQUAL "aarch64")
+    if ("${CONFIG_RUST_HUKSERVICE}" STREQUAL "y")
+        include(${CMAKE_CURRENT_SOURCE_DIR}/rust_features.cmake)
+        execute_process(COMMAND echo "rust_features ${rust_huk_features}")
+        execute_process(COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build.sh ${CMAKE_CURRENT_SOURCE_DIR}/../../build_cmake/out64/ "${rust_huk_features}")
+    endif()
+endif()

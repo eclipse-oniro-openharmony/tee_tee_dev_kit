@@ -1,0 +1,46 @@
+[workspace]
+
+[package]
+name = "rust_perm_service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+librust_service_ffi = { path = "../../libs/teelib/librust_service_ffi/"}
+
+[lib]
+crate-type = ["staticlib"]
+
+[features]
+config_dyn_import_cert = []
+config_remote_attestation = []
+config_remote_attestation_a32 = []
+config_livepatch_enable = []
+config_otrp_support = []
+config_adapt_big_memory = []
+config_ta_auth_max_ca_caller_num32 = []
+config_ta_cms_signature = []
+config_timer_disable = []
+config_off_drv_timer = []
+dyn_ta_support_v1 = []
+dyn_ta_support_v2 = []
+dyn_ta_support_v3 = []
+dyn_ta_support_v5 = []
+mbedtls_enable = []
+openssl_enable = []
+openssl3_enable = []
+hitls_enable = []
+config_ta_cms_rsa_signature = []
+config_apm_protection_a32 = []
+config_apm_protection = []
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+opt-level = "z"
+lto = "fat"
+debug = false
+strip = "symbols"
+codegen-units = 1
