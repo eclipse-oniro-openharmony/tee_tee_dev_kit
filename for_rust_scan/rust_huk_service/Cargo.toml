@@ -1,0 +1,29 @@
+[workspace]
+
+[package]
+name = "rust_huk_service"
+version = "0.1.0"
+edition = "2021"
+
+[target.aarch64-unknown-teeos.dependencies]
+librust_service_ffi = { path = "../../libs/teelib/librust_service_ffi/", features = ["no_std"] }
+
+[dev-dependencies]
+librust_service_ffi = { path = "../../libs/teelib/librust_service_ffi/" }
+
+[lib]
+crate-type = ["staticlib"]
+
+[features]
+config_tee_upgrade = []
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+opt-level = "z"
+lto = "fat"
+debug = false
+strip = "symbols"
+codegen-units = 1
