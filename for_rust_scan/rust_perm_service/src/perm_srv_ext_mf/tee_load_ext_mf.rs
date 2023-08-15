@@ -1,9 +1,12 @@
-//!
-//! Copyright (c) Huawei Technologies Co., Ltd. 2022-2023. All rights reserved.
-//! Description: perm service load ext manifest
-//! Create: 2023-03-30
-//!
-
+// Copyright (C) 2023 Huawei Technologies Co., Ltd.
+// Licensed under the Mulan PSL v2.
+// You can use this software according to the terms and conditions of the Mulan
+// PSL v2.
+// You may obtain a copy of Mulan PSL v2 at:
+//     http://license.coscl.org.cn/MulanPSL2
+// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 use core::mem::size_of;
 use librust_service_ffi::{core::TEE_Malloc, TeeResult};
 
