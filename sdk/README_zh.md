@@ -31,6 +31,7 @@ SDK能力包含：TA编译依赖的脚本、头文件，TA颁发证书并签发p
 ├── README.md                             # sdk包的英文说明文件
 ├── README_zh.md                          # sdk包的中文说明文件
 ├── src
+│   ├── rust_apis                         # Rust语言封装的TA接口
 │   └── TA                                # TA编译依赖的ta_magic.c，32位TA包含此定义时，可以控制TA走tarunner加载器加载，否则32位TA走taloader加载器；64位TA不涉及，64位TA都走tarunner加载器
 ├── test
 │   ├── CA

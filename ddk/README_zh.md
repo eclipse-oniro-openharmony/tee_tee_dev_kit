@@ -28,6 +28,7 @@ DDK能力包含：驱动编译依赖的脚本、头文件，驱动颁发证书�
 ├── README.md                             # DDK包的英文说明文件
 ├── README_zh.md                          # DDK包的中文说明文件
 ├── demo                                  # 驱动开发样例
+├── rust_drv_apis                         # Rust语言封装的驱动接口
 ├── thirdparty
 │   └── open_source
 │       ├── libboundscheck                # 驱动编译依赖的安全函数库头文件归档路径
