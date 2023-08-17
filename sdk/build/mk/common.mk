@@ -13,10 +13,6 @@ CUR_DIR=$(shell pwd)
 INTERNAL_DIR=$(CUR_DIR)/../../../../internal/
 IS_INTERNAL_TA=$(shell if [ -d $(INTERNAL_DIR) ]; then echo "y"; else echo "n"; fi)
 
-ifeq ($(TEE_BUILD_PATH), )
-    TEE_BUILD_PATH=${CUR_DIR}/../../..
-endif
-
 include $(TEE_BUILD_PATH)/build/mk/common_flags.mk
 ifeq ($(IS_INTERNAL_TA), y)
     include $(INTERNAL_DIR)/mk/internal_common.mk
@@ -31,7 +27,6 @@ CFLAGS += -Wstack-protector --param ssp-buffer-size=4
 
 ifneq ($(TARGET_IS_ARM64), y)
     CFLAGS += -marm
-    SRC += $(TEE_BUILD_PATH)/src/TA/ta_magic.c
 endif
 
 ifneq ($(TARGET_IS_ARM64),y)
@@ -48,18 +43,12 @@ endif
 
 ifneq ($(TARGET_IS_ARM64),y)
     ifeq ($(IS_INTERNAL_TA), y)
-	LDFLAGS += -T$(INTERNAL_DIR)/tools/ta_link.ld
+	LDFLAGS += -T$(INTERNAL_DIR)/ld/ta_link.ld
     else
-        LDFLAGS += -T$(TEE_BUILD_PATH)/build/tools/ta_link.ld
+        LDFLAGS += -T$(TEE_BUILD_PATH)/build/ld/ta_link.ld
     endif
 else
-    LDFLAGS += -T$(TEE_BUILD_PATH)/build/tools/ta_link_64.ld
+    LDFLAGS += -T$(TEE_BUILD_PATH)/build/ld/ta_link_64.ld
 endif
 
-# choose compile method
-ifeq ($(CONFIG_GCC),y)
-    include $(TEE_BUILD_PATH)/build/mk/common_gcc.mk
-else
-    include $(TEE_BUILD_PATH)/build/mk/common_llvm.mk
-endif
-
+include $(TEE_BUILD_PATH)/build/mk/common_llvm.mk

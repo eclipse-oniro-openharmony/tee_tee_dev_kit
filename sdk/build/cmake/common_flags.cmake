@@ -17,13 +17,11 @@ list(APPEND COMMON_LDFLAGS
     "SHELL:-z noexecstack"
     "-shared"
 )
-if ("${CONFIG_GCC}" STREQUAL "n")
-    list(APPEND COMMON_LDFLAGS
-        "SHELL:-z max-page-size=4096"
-    )
+list(APPEND COMMON_LDFLAGS
+    "SHELL:-z max-page-size=4096"
+)
 if ("${TARGET_IS_ARM64}" STREQUAL "y")
     list(APPEND COMMON_LDFLAGS "-execute-only")
-endif()
 endif()
 set(COMMON_LDFLAGS ${COMMON_LDFLAGS} CACHE INTERNAL "")
 
@@ -41,35 +39,25 @@ list(APPEND COMMON_CFLAGS
     -fno-common
     -fsigned-char
 )
-if ("${CONFIG_GCC}" STREQUAL "y")
+list(APPEND COMMON_CFLAGS
+    -fstack-protector-strong
+    -funwind-tables
+    -Oz
+    -munaligned-access
+    -fmax-type-align=1
+    -flto
+    -fvisibility=default
+    -fsanitize=cfi
+    -fno-exceptions
+)
+if ("${TARGET_IS_ARM64}" STREQUAL "n")
     list(APPEND COMMON_CFLAGS
-        -W
-        -fstack-protector
-        -Os
-        -fno-peephole
-        -fno-peephole2
+        --target=arm-linux-gnu
+        -mfloat-abi=soft
     )
 else()
     list(APPEND COMMON_CFLAGS
-        -fstack-protector-strong
-        -funwind-tables
-        -Oz
-        -munaligned-access
-        -fmax-type-align=1
-        -flto
-        -fvisibility=default
-        -fsanitize=cfi
-        -fno-exceptions
+        --target=aarch64-linux-gnu
     )
-    if ("${TARGET_IS_ARM64}" STREQUAL "n")
-        list(APPEND COMMON_CFLAGS
-            --target=arm-linux-gnu
-            -mfloat-abi=soft
-        )
-    else()
-        list(APPEND COMMON_CFLAGS
-            --target=aarch64-linux-gnu
-        )
-    endif()
 endif()
 set(COMMON_CFLAGS ${COMMON_CFLAGS} CACHE INTERNAL "")

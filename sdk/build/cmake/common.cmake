@@ -24,10 +24,6 @@ if ("${IS_INTERNAL_TA}" STREQUAL "y")
     include (${TEE_BUILD_PATH}/../../internal/cmake/internal_common.cmake)
 endif()
 
-if (NOT "${TARGET_IS_ARM64}" STREQUAL "y")
-    set(SDK_C_SOURCES ${TEE_BUILD_PATH}/src/TA/ta_magic.c)
-endif()
-
 set(COMMON_INCLUDES
     ${COMMON_INCLUDES}
     ${TEE_BUILD_PATH}/include/TA
@@ -48,11 +44,11 @@ if (NOT "${TARGET_IS_ARM64}" STREQUAL "y")
     )
     if ("${IS_INTERNAL_TA}" STREQUAL "y")
 	list(APPEND COMMON_LDFLAGS
-	    "-T${INTERNAL_DIR}/tools/ta_link.ld"
+	    "-T${INTERNAL_DIR}/ld/ta_link.ld"
 	)
     else()
         list(APPEND COMMON_LDFLAGS
-            "-T${TEE_BUILD_PATH}/build/tools/ta_link.ld"
+            "-T${TEE_BUILD_PATH}/build/ld/ta_link.ld"
         )
     endif()
 
@@ -65,6 +61,6 @@ else()
     )
 
     list(APPEND COMMON_LDFLAGS
-        "-T${TEE_BUILD_PATH}/build/tools/ta_link_64.ld"
+        "-T${TEE_BUILD_PATH}/build/ld/ta_link_64.ld"
     )
 endif()
