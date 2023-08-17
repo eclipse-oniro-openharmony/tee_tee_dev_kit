@@ -17,34 +17,25 @@ CFLAGS += -Wextra -nostdinc
 CFLAGS += -march=armv8-a -fPIC
 CFLAGS += -fno-common -fsigned-char
 
-ifeq ($(CONFIG_GCC),y)
-    # set compile parameters
-    CFLAGS += -W
-    CFLAGS += -fstack-protector
-    CFLAGS += -Os -fno-peephole -fno-peephole2
+# set compile parameters
+CFLAGS += -fstack-protector-strong
+CFLAGS += -funwind-tables
+CFLAGS += -Oz
+CFLAGS += -munaligned-access -fmax-type-align=1
+CFLAGS += -flto -fvisibility=default -fsanitize=cfi
+CFLAGS += -fno-exceptions
+ifeq ($(TARGET_IS_ARM64),y)
+    CFLAGS += --target=aarch64-linux-gnu
 else
-    # set compile parameters
-    CFLAGS += -fstack-protector-strong
-    CFLAGS += -funwind-tables
-    CFLAGS += -Oz
-    CFLAGS += -munaligned-access -fmax-type-align=1
-    CFLAGS += -flto -fvisibility=default -fsanitize=cfi
-    CFLAGS += -fno-exceptions
-    ifeq ($(TARGET_IS_ARM64),y)
-        CFLAGS += --target=aarch64-linux-gnu
-    else
-        CFLAGS += --target=arm-linux-gnu
-        CFLAGS += -mfloat-abi=soft
-    endif
-    # set LD flags
-    LDFLAGS += -z max-page-size=4096
-    # enable XOM
-    ifeq ($(TARGET_IS_ARM64),y)
-        LDFLAGS += -execute-only
-    endif
+    CFLAGS += --target=arm-linux-gnu
+    CFLAGS += -mfloat-abi=soft
+endif
+# set LD flags
+LDFLAGS += -z max-page-size=4096
+# enable XOM
+ifeq ($(TARGET_IS_ARM64),y)
+    LDFLAGS += -execute-only
 endif
 
 # common LDFLAGS
 LDFLAGS += -s -z text -z now -z relro -z noexecstack -shared
-
-SIGNTOOL_DIR=${TEE_BUILD_PATH}/build/signtools
