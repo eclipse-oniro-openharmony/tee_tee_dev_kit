@@ -28,6 +28,7 @@ The warehouse directory structure is as follows:
 ├── README.md                             # English description file of DDK package
 ├── README_zh.md                          # Chinese description file of DDK package
 ├── demo                                  # Driver development sample
+├── rust_drv_apis                         # Rust FFI interfaces for driver
 ├── thirdparty
 │   └── open_source
 │       ├── libboundscheck                # Driver compilation depends on the security function library header file archive path

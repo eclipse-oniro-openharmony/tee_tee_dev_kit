@@ -31,6 +31,7 @@ The warehouse directory structure is as follows:
 ├── README.md                             # English description file of sdk package
 ├── README_zh.md                          # Chinese description file of sdk package
 ├── src
+│   ├── rust_apis                         # rust interfaces for TA
 │   └── TA                                # TA compilation depends on ta_magic.c. When the 32-bit TA includes this definition, you can control the TA to use the tarunner loader to load, otherwise the 32-bit TA uses the taloader loader; 64-bit TA is not involved, and the 64-bit TA uses the tarunner loader.
 ├── test
 │   ├── CA
