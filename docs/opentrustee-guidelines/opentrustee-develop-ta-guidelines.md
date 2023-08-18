@@ -70,6 +70,7 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 ##### 配置编译工具链
 
 OpenTrustee使用的编译工具链为llvm，与OpenHarmony一致。开发者需要先下载OpenHarmony编译工具链，并在编译环境中声明该编译工具链的路径。可通过如下命令声明编译工具链路径：
+
 export PATH=openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
 
 此处仅是示例，开发者需要指定正确的编译工具链路径。
