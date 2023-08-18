@@ -110,7 +110,7 @@ pip install defusedxml
 
 OpenTrustee支持CA访问TA，也支持TA访问TA。TA采用命令响应机制，交互流程如下：
 
-![](D:\work\TA交互.drawio.png)
+![](figures/ca-ta.png)
 
 文字描述如下：
 
