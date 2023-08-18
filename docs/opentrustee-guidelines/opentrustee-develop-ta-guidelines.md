@@ -32,7 +32,7 @@ TA签名：由于TA安装包放在非安全侧文件系统中，需要对TA安�
 
 TA验签：在TA安装包加载到OpenTrustee操作系统中时，由OpenTrustee TA管理框架对TA安装包做签名验证，验证通过之后才允许该TA加载运行。需要在OpenTrustee操作系统中预置TA验签的公钥。
 
-![](figures/icon-warning.gif)为了方便社区开发者调试，社区的OpenTrustee SDK开发套件已经预置了TA签名私钥，OpenTrustee操作系统中预置了验签的公钥。开发者在OpenTrustee商用版本中应自行替换该签名私钥和验签公钥。
+![](public_sys-resources/icon-warning.gif)为了方便社区开发者调试，社区的OpenTrustee SDK开发套件已经预置了TA签名私钥，OpenTrustee操作系统中预置了验签的公钥。开发者在OpenTrustee商用版本中应自行替换该签名私钥和验签公钥。
 
 ### SDK开发套件
 
@@ -121,7 +121,7 @@ OpenTrustee支持CA访问TA，也支持TA访问TA。TA采用命令响应机制�
 4. 客户端调用TEEC_CloseSession关闭与TA的会话。OpenTrustee系统会调用TA的TA_CloseSessionEntryPoint接口清理资源。在TA最后一个会话被关闭时，OpenTrustee系统会调用TA的TA_DestroyEntryPoint接口清理全局资源。
 5. 客户端调用TEEC_FinalizeContext，清理上下文。
 
-![](figures/icon-note.gif)OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
+![](public_sys-resources/icon-note.gif)OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
 
 ##### TA代码编写
 
