@@ -61,6 +61,7 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 
 - 开发语言：C语言
 - 开发环境：linux操作系统
+OpenTrustee SDK套件的下载地址：https://gitee.com/openharmony-sig/tee_tee_dev_kit
 
 #### 开发套件准备
 
@@ -104,7 +105,7 @@ pip install defusedxml
 
 ### TA开发步骤
 
-
+##### TA代码编写
 ##### TA属性配置
 
 ### TA API
