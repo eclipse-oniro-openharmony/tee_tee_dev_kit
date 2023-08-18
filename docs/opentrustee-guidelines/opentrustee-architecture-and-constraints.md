@@ -35,7 +35,11 @@ OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构
 
 ## 贡献
 
+[如何贡献](https://gitee.com/openharmony/docs/blob/HEAD/zh-cn/contribute/%E5%8F%82%E4%B8%8E%E8%B4%A1%E7%8C%AE.md)
+
 ### 编码规范
+
+[OpenHarmony C&C++ 安全编程指南](https://gitee.com/openharmony/docs/blob/master/zh-cn/contribute/OpenHarmony-c-cpp-secure-coding-guide.md)
 
 ### license
 
