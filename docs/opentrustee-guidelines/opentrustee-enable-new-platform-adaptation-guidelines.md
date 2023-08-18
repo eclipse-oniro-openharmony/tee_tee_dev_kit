@@ -1,218 +1,243 @@
-# 使能新平台的指南
-## TEE 安全镜像Loader适配指导
+# OpenTrustee 使能新平台的指南
+本章节介绍如何针对一款芯片适配OpenTrustee，包含TEE CLient、TEE Tzdriver、TEE Loader、TEE ATF的适配。
+## Tee Client的适配
 
-### 概述
+### Tee Client使能实例
 
-#### 功能简介
+适配TEE Client，在相应配置json文件中增加tee_client部件即可。
 
-TEE Loader主要负责加载安全镜像并将启动参数传递给TEE OS的功能。
+以RK3568芯片为例，在vendor/hihope/rk3568/config.json中增加以下内容：
 
-#### 约束与限制
-
--   芯片架构为ARMv7/ARMv8架构。
--   CPU需支持安全内存和非安全内存的划分，安全和非安全外设的划分。
-
-### 开发指导
-
-#### 场景介绍
-
-由于安全镜像在flash中是以加密形式存储的，因此需要对镜像进行解密处理，随后拷贝到目标执行地址。在TEE OS启动时，需要对其传递启动参数。以上这些都是在Loader中进行的。因此在芯片使能TEE时，需要对Loader进行开发适配。
-
-#### 接口说明<a name="section125843344514"></a>
-
-以下接口说明列表将介绍我们在实际使能TEE过程中对Loader适配将用到的接口。包括：
-
--   启动参数配置
--   镜像加载
-
-**表 1**  启动参数配置调用接口表
-
-<a name="table1496711447522"></a>
-
-<table><thead align="left"><tr id="row596815449522"><th class="cellrowborder" valign="top" width="47.67%" id="mcps1.2.4.1.1"><p id="p196816442521"><a name="p196816442521"></a><a name="p196816442521"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="32.129999999999995%" id="mcps1.2.4.1.2"><p id="p09681444165214"><a name="p09681444165214"></a><a name="p09681444165214"></a>描述</p>
-</th>
-<th class="cellrowborder" valign="top" width="20.200000000000003%" id="mcps1.2.4.1.3"><p id="p19431194717249"><a name="p19431194717249"></a><a name="p19431194717249"></a>必选/可选</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row51478313471"><td class="cellrowborder" valign="top" width="47.67%" headers="mcps1.2.4.1.1 "><p id="p497mcpsimp"><a name="p497mcpsimp"></a><a name="p497mcpsimp"></a>void set_teeos_mem(uintptr_t teeos_base_addr, uint64_t size)</p>
-</td>
-<td class="cellrowborder" valign="top" width="32.129999999999995%" headers="mcps1.2.4.1.2 "><p id="p498mcpsimp"><a name="p498mcpsimp"></a><a name="p498mcpsimp"></a>设置TEE OS的起始地址size大小。</p>
-</td>
-<td class="cellrowborder" valign="top" width="20.200000000000003%" headers="mcps1.2.4.1.3 "><p id="p12431947122419"><a name="p12431947122419"></a><a name="p12431947122419"></a><strong id="b1532325172812"><a name="b1532325172812"></a><a name="b1532325172812"></a>必选，OS需要。</strong></p>
-</td>
-</tr>
-<tr id="row214793104714"><td class="cellrowborder" valign="top" width="47.67%" headers="mcps1.2.4.1.1 "><p id="p66112184581"><a name="p66112184581"></a><a name="p66112184581"></a>void set_teeos_uart(uint64_t uart_addr)</p>
-</td>
-<td class="cellrowborder" valign="top" width="32.129999999999995%" headers="mcps1.2.4.1.2 "><p id="p196103189585"><a name="p196103189585"></a><a name="p196103189585"></a>设置串口地址。</p>
-</td>
-<td class="cellrowborder" valign="top" width="20.200000000000003%" headers="mcps1.2.4.1.3 "><p id="p164311747112411"><a name="p164311747112411"></a><a name="p164311747112411"></a>可选，建议配置，启动调试用。</p>
-</td>
-</tr>
-<tr id="row3147173114720"><td class="cellrowborder" valign="top" width="47.67%" headers="mcps1.2.4.1.1 "><p id="p512mcpsimp"><a name="p512mcpsimp"></a><a name="p512mcpsimp"></a>void set_gic(struct gic_config_t gic_config)</p>
-</td>
-<td class="cellrowborder" valign="top" width="32.129999999999995%" headers="mcps1.2.4.1.2 "><p id="p513mcpsimp"><a name="p513mcpsimp"></a><a name="p513mcpsimp"></a>配置gic寄存器。结构体定义见。</p>
-</td>
-<td class="cellrowborder" valign="top" width="20.200000000000003%" headers="mcps1.2.4.1.3 "><p id="p1043194716242"><a name="p1043194716242"></a><a name="p1043194716242"></a><strong id="b0722234132818"><a name="b0722234132818"></a><a name="b0722234132818"></a>必选，OS需要。</strong></p>
-</td>
-</tr>
-<tr id="row914714313476"><td class="cellrowborder" valign="top" width="47.67%" headers="mcps1.2.4.1.1 "><p id="p2744165514582"><a name="p2744165514582"></a><a name="p2744165514582"></a>bool copy_extend_datas(void * extend_datas, uint64_t extend_length)</p>
-</td>
-<td class="cellrowborder" valign="top" width="32.129999999999995%" headers="mcps1.2.4.1.2 "><p id="p519mcpsimp"><a name="p519mcpsimp"></a><a name="p519mcpsimp"></a>保留字段拷贝。</p>
-</td>
-<td class="cellrowborder" valign="top" width="20.200000000000003%" headers="mcps1.2.4.1.3 "><p id="p1431194762415"><a name="p1431194762415"></a><a name="p1431194762415"></a>可选，根据实际情况。</p>
-</td>
-</tr>
-<tr id="row514715384711"><td class="cellrowborder" valign="top" width="47.67%" headers="mcps1.2.4.1.1 "><p id="p520mcpsimp"><a name="p520mcpsimp"></a><a name="p520mcpsimp"></a>bool copy_teeos_cfg(void)</p>
-</td>
-<td class="cellrowborder" valign="top" width="32.129999999999995%" headers="mcps1.2.4.1.2 "><p id="p521mcpsimp"><a name="p521mcpsimp"></a><a name="p521mcpsimp"></a>拷贝启动参数到目标位置，<strong id="b163513559278"><a name="b163513559278"></a><a name="b163513559278"></a>配置TEE OS属性后再调用此接口</strong>。</p>
-</td>
-<td class="cellrowborder" valign="top" width="20.200000000000003%" headers="mcps1.2.4.1.3 "><p id="p3431747192413"><a name="p3431747192413"></a><a name="p3431747192413"></a><strong id="b625310456284"><a name="b625310456284"></a><a name="b625310456284"></a>必选，OS需要。</strong></p>
-</td>
-</tr>
-</tbody>
-</table>
-
-
-**表 2**  镜像加载调用接口表
-
-<a name="table15516113715563"></a>
-<table><thead align="left"><tr id="row5516113795615"><th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.1"><p id="p10101114295614"><a name="p10101114295614"></a><a name="p10101114295614"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="50%" id="mcps1.2.3.1.2"><p id="p161017421562"><a name="p161017421562"></a><a name="p161017421562"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row14516237105613"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p1336862755413"><a name="p1336862755413"></a><a name="p1336862755413"></a>uintptr_t read_teeos(const char *part_name, uint32_t part_size)</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p1351643714569"><a name="p1351643714569"></a><a name="p1351643714569"></a>将TEE OS从flash分区读镜像到RAM中。</p>
-</td>
-</tr>
-<tr id="row051633710563"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p1463764075419"><a name="p1463764075419"></a><a name="p1463764075419"></a>int32_t verify_teeos(uintptr_t buf_addr)</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p105166372562"><a name="p105166372562"></a><a name="p105166372562"></a>TEE OS镜像验签。</p>
-</td>
-</tr>
-<tr id="row15516143712565"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p155165377567"><a name="p155165377567"></a><a name="p155165377567"></a>int32_t decrypt_teeos(uintptr_t buf_addr)</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p851619377562"><a name="p851619377562"></a><a name="p851619377562"></a>TEE OS镜像解密。</p>
-</td>
-</tr>
-<tr id="row13516153714567"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p351653735618"><a name="p351653735618"></a><a name="p351653735618"></a>int32_t copy_teeos(uintptr_t buf_addr)</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p152771458171114"><a name="p152771458171114"></a><a name="p152771458171114"></a>TEE OS镜像拷贝到目标执行地址。</p>
-</td>
-</tr>
-<tr id="row15835727135513"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p158111828105519"><a name="p158111828105519"></a><a name="p158111828105519"></a>uint64_t get_teeos_start(void)</p>
-</td>
-<td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p281114283558"><a name="p281114283558"></a><a name="p281114283558"></a>获取TEE OS启动地址。</p>
-</td>
-</tr>
-</tbody>
-</table>
-
-
-#### 接口参数结构体定义<a name="section15511163311570"></a>
-
-```
-struct gic_config_t {
-    char version;
-    union {
-    struct v2_t {
-        p_region_t dist;
-        p_region_t contr;
-    } v2;
-    struct v3_t {
-        p_region_t dist;
-        uint32_t redist_num;
-        uint32_t redist_stride;
-        p_region_t redist[GICR_MAX_NUM];
-        } v3;
-   };
-};
+```c
+{
+  "subsystem": "tee",
+  "components": [
+    {
+      "component": "tee_client",
+      "features": []
+    }
+  ]
+}
 ```
 
-#### 开发步骤
+### Tee Client编译命令
 
-1.  启动参数配置
+Tee Client代码位置：`base/tee/tee_client`
 
-    启动参数包含TEE OS用到的安全内存地址和大小，串口的地址，gic寄存器配置，其它拓展参数。
+本模块支持单独编译，以RK3568芯片为例，运行以下命令编译TEE Client部件，产物路径：out/rk3568/tee/tee_client
 
-    loader中启动参数的适配方法可以按照产品的习惯要求采用不同的方法，例如结构体中直接填写相应的参数，或者增加配置文件的方法。
+```shell
+./build.sh --product-name rk3568 --ccache --build-target tee_client
+```
 
-    **表 3**  启动参数列表
+单独编译的产物需要自行推入设备中。
+```shell
+hdc file send cadaemon.json /system/profile/
+hdc file send cadaemon.cfg /system/etc/init/
+hdc file send libteec.z.so /system/lib/
+hdc file send libcadaemon.z.so /system/lib/
+hdc file send tlogcat /system/bin/
+```
 
-    <a name="table31859499130"></a>
-    <table><thead align="left"><tr id="row3185174941311"><th class="cellrowborder" valign="top" width="20.31%" id="mcps1.2.4.1.1"><p id="p9186154916134"><a name="p9186154916134"></a><a name="p9186154916134"></a>参数</p>
+## Tzdriver的适配和构建
+
+tzdriver是TEE的内核驱动，主要功能是在整个TEE子系统中起连接作用，是使用TEE OS服务的桥梁，tzdriver处理来自于tee\_client的ioctl命令，并通过smc指令从REE切换到TEE。
+
+### 适配指导以及适配实例
+
+本章节中会讲述如何针对一款芯片适配tzdriver，此章节中以RK3568芯片为例。
+
+Linux内核tzdriver代码位置：base/tee/tee\_tee\_tzdriver/linux。
+
+tzdriver是内核中的一个字符设备驱动。tzdriver初始化时会创建一个字符设备文件，一般为/dev/tc\_ns\_client，用户态进程可以打开此节点，以及通过ioctl接口调用tzdriver相关功能。
+
+#### 工程编译适配
+
+tzdriver需要被编译到内核中作为内核驱动。
+
+-   Linux内核tzdriver编译适配
+
+    在Linux内核可以通过defconfig文件中的CONFIG\_TZDRIVER选项控制tzdriver的编译使能。
+
+    1.  defconfig文件修改
+
+        defconfig文件在kernel/linux/config仓，每个芯片应当创建自己的defconfig文件，后面会介绍tzdriver中的所有defconfig配置项。
+
+    2.  kernel补丁
+
+        其他内核相关修改在kernel/linux/patches仓，以补丁方式提供。
+
+        RK3568芯片的patch在kernel/linux/patches/linux-5.10/rk3568_patch/kernel.patch，其他芯片平台也可以参考这个patch，每个芯片应该创建自己的patch文件。此patch补丁中应当包含以下内容：
+
+        -   对于内核的根Makefile的修改（在其中引用tzdriver仓的子Makefile，其中tzdriver path需要修改为实际的相对路径，注意Linux kernel的编译是会将kernel仓代码拷贝到out目录打patch，因此这个相对路径是相对于out下的临时kernel仓的路径）。
+
+            ```
+            obj-y += {tzdriver path}
+            ```
+
+        -   对于内核的根Kconfig的需改（在其中引用tzdriver仓的子Kconfig，其中tzdriver path需要修改为实际的相对路径，同上需要注意这个相对路径应当是在out目录下的临时kernel仓路径）。
+
+            ```
+            source "{tzdriver path}/Kconfig"
+            ```
+
+        -   dtsi的修改：需要在相应芯片的disi文件中包含trusted\_core节点，对于RK3568芯片，需要修改patch中的/arch/arm64/boot/dts/rockchip/rk3568-toybrick-x0.dtsi文件，新增以下内容
+
+            ```
+            /{
+                trusted_core {
+                    compatible = "trusted_core";
+                    interrupts = <0 73 4>;
+                };
+            };
+            ```
+        其中，Linux内核中tzdriver支持中断号的动态配置，上面的73为spi中断号
+        >![](public_sys-resources/icon-caution.gif) **注意：** 
+        >注意dtsi里面的spi中断号应该比实际的中断号小32，且需要保证不与其他组件的中断号冲突。
+
+
+#### 驱动初始化
+
+-   Linux内核中tzdriver驱动初始化方式
+
+    自动初始化，无需适配修改。
+
+#### 配置选项
+
+tzdriver有一些特性或者选项，可以选择配置，控制这些选项的地方如下：
+
+-   Linux内核tzdriver配置选项
+
+    tzdriver选项应该写在kernel/linux/config仓，修改芯片的defconfig文件：
+
+    ```
+    #
+    # TEE OS
+    #
+    CONFIG_TZDRIVER=y
+    CONFIG_CPU_AFF_NR=1
+    CONFIG_KERNEL_CLIENT=y
+    CONFIG_TEELOG=y
+    CONFIG_PAGES_MEM=y
+    CONFIG_THIRDPARTY_COMPATIBLE=y
+
+    ```
+
+    各选项其含义如下表所示：
+
+    **表 1**  配置选项说明
+
+    <a name="table17608341239"></a>
+    <table><thead align="left"><tr id="row1860844162318"><th class="cellrowborder" valign="top" width="44.2%" id="mcps1.2.3.1.1"><p id="p106081345231"><a name="p106081345231"></a><a name="p106081345231"></a>参数</p>
     </th>
-    <th class="cellrowborder" valign="top" width="28.64%" id="mcps1.2.4.1.2"><p id="p16186104911131"><a name="p16186104911131"></a><a name="p16186104911131"></a>含义</p>
-    </th>
-    <th class="cellrowborder" valign="top" width="51.05%" id="mcps1.2.4.1.3"><p id="p12200103644211"><a name="p12200103644211"></a><a name="p12200103644211"></a>备注</p>
+    <th class="cellrowborder" valign="top" width="55.800000000000004%" id="mcps1.2.3.1.2"><p id="p560812472313"><a name="p560812472313"></a><a name="p560812472313"></a>说明</p>
     </th>
     </tr>
     </thead>
-    <tbody><tr id="row20186849151316"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p5186194911131"><a name="p5186194911131"></a><a name="p5186194911131"></a>plat_cfg_size</p>
+    <tbody><tr id="row186081645232"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1160813419237"><a name="p1160813419237"></a><a name="p1160813419237"></a>CONFIG_TZDRIVER</p>
     </td>
-    <td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p618617496136"><a name="p618617496136"></a><a name="p618617496136"></a>启动参数大小，包含extend_paras部分</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p1520073664218"><a name="p1520073664218"></a><a name="p1520073664218"></a>整个启动参数的buffer大小，值为sizeof（struct platform_info） + extend _length。</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p7608447236"><a name="p7608447236"></a><a name="p7608447236"></a>模块开关，使能tzdriver必须打开</p>
     </td>
     </tr>
-    <tr id="row1618618496132"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p292mcpsimp"><a name="p292mcpsimp"></a><a name="p292mcpsimp"></a>phys_region_size</p>
+    <tr id="row560920412318"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1460916482311"><a name="p1460916482311"></a><a name="p1460916482311"></a>CONFIG_CPU_AFF_NR</p>
     </td>
-    <td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p294mcpsimp"><a name="p294mcpsimp"></a><a name="p294mcpsimp"></a>TEE OS内存大小</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p320093615420"><a name="p320093615420"></a><a name="p320093615420"></a>2MB的整数倍。</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1960913482311"><a name="p1960913482311"></a><a name="p1960913482311"></a>CA绑核功能，非零值代表限制仅cpuid小于CONFIG_CPU_AFF_NR的CPU可以进入TEE，0代表无限制，当前只支持在0核运行，所以值为1</p>
     </td>
     </tr>
-    <tr id="row01861049151317"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p297mcpsimp"><a name="p297mcpsimp"></a><a name="p297mcpsimp"></a>phys_region_start</p>
+    <tr id="row10656158102412"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p4656168192410"><a name="p4656168192410"></a><a name="p4656168192410"></a>CONFIG_KERNEL_CLIENT</p>
     </td>
-    <td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p299mcpsimp"><a name="p299mcpsimp"></a><a name="p299mcpsimp"></a>TEE OS内存起始物理地址</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p1020063614220"><a name="p1020063614220"></a><a name="p1020063614220"></a>2MB的整数倍。</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1565616817245"><a name="p1565616817245"></a><a name="p1565616817245"></a>内核CA支持，默认建议开启</p>
     </td>
     </tr>
-    <tr id="row18186649111319"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p302mcpsimp"><a name="p302mcpsimp"></a><a name="p302mcpsimp"></a>uart_addr</p>
+    <tr id="row1051612110244"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p351620118241"><a name="p351620118241"></a><a name="p351620118241"></a>CONFIG_TEELOG</p>
     </td>
-    <td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p304mcpsimp"><a name="p304mcpsimp"></a><a name="p304mcpsimp"></a>串口寄存器的基地址</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p1920015362427"><a name="p1920015362427"></a><a name="p1920015362427"></a>-</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p15516161182413"><a name="p15516161182413"></a><a name="p15516161182413"></a>TEE日志开关，默认建议开启</p>
     </td>
     </tr>
-    <tr id="row59731131174610"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p9973113119460"><a name="p9973113119460"></a><a name="p9973113119460"></a>struct gic_config_t</p>
+    <tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_PAGES_MEM</p>
     </td>
-    <td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p11973103114611"><a name="p11973103114611"></a><a name="p11973103114611"></a>gic寄存器参数</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p797319312466"><a name="p797319312466"></a><a name="p797319312466"></a>-</p>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>tlogger使用的内存类型，默认需要开启</p>
     </td>
     </tr>
-    <tr id="row1188221104618"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p19884213469"><a name="p19884213469"></a><a name="p19884213469"></a>extend_datas</p>
+    <tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_THIRDPARTY_COMPATIBLE</p>
     </td>
-    <td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p98811215461"><a name="p98811215461"></a><a name="p98811215461"></a>其它参数</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p18872120461"><a name="p18872120461"></a><a name="p18872120461"></a>格式需要和TEE OS核对。</p>
-    </td>
+    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>兼容第三方opteed的适配，例如适配RK3568芯片需要开启此选项</p>
+    </td> 
     </tr>
     </tbody>
     </table>
-    
-2.  镜像加载
 
-    tee loader适配在芯片平台的bios或者fastboot、preloader中，主要完成的功能有配置并传递TEE OS的启动参数、将TEE OS镜像加载到目标内存位置、传递共享内存信息给TEE OS。loader中启动参数的适配方法可以按照产品的习惯和要求采用不同的方法，例如结构体中直接填写相应的参数，或者增加配置文件。以下为镜像加载步骤：
+### TEE Tzdriver编译命令
+tzdriver部件跟随kernel一起编译，以rk3568为例，可以重编boot_linux.img，编译命令如下
+```Bash
+./build.sh --product-name rk3568 --ccache --build-target kernel --gn-args linux_kernel_version=\"linux-5.10\"
+```
 
-    1.  从flash分区读镜像到RAM中。
-    2.  TEE OS镜像验签。
-    3.  TEE OS镜像解密。
-    4.  TEE OS镜像拷贝到目标执行地址。
-    5.  TEE OS启动地址传递。获取TEE OS的启动地址，一般情况下需要将这个值传给atf, 作为ATF初始化TEE OS的入口地址。
+## TEE 的适配指导
+芯片使能TEE时，需要对Loader和ATF进行适配。
 
-相关配置接口见[接口说明](#section125843344514)。
+### TEE Loader的适配
+TEE Loader主要负责加载安全镜像并将启动参数传递给TEE OS的功能。启动参数包含TEE OS用到的安全内存地址和大小，串口的地址，gic寄存器配置，以及其它拓展参数。
+
+**表 2**  启动参数列表
+
+<a name="table31859499130"></a>
+<table><thead align="left"><tr id="row3185174941311"><th class="cellrowborder" valign="top" width="20.31%" id="mcps1.2.4.1.1"><p id="p9186154916134"><a name="p9186154916134"></a><a name="p9186154916134"></a>参数</p>
+</th>
+<th class="cellrowborder" valign="top" width="28.64%" id="mcps1.2.4.1.2"><p id="p16186104911131"><a name="p16186104911131"></a><a name="p16186104911131"></a>含义</p>
+</th>
+<th class="cellrowborder" valign="top" width="51.05%" id="mcps1.2.4.1.3"><p id="p12200103644211"><a name="p12200103644211"></a><a name="p12200103644211"></a>备注</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row20186849151316"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p5186194911131"><a name="p5186194911131"></a><a name="p5186194911131"></a>plat_cfg_size</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p618617496136"><a name="p618617496136"></a><a name="p618617496136"></a>启动参数大小，包含extend_paras部分</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p1520073664218"><a name="p1520073664218"></a><a name="p1520073664218"></a>整个启动参数的buffer大小，值为sizeof（struct platform_info） + extend _length。</p>
+</td>
+</tr>
+<tr id="row1618618496132"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p292mcpsimp"><a name="p292mcpsimp"></a><a name="p292mcpsimp"></a>phys_region_size</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p294mcpsimp"><a name="p294mcpsimp"></a><a name="p294mcpsimp"></a>TEE OS内存大小</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p320093615420"><a name="p320093615420"></a><a name="p320093615420"></a>2MB的整数倍。</p>
+</td>
+</tr>
+<tr id="row01861049151317"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p297mcpsimp"><a name="p297mcpsimp"></a><a name="p297mcpsimp"></a>phys_region_start</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p299mcpsimp"><a name="p299mcpsimp"></a><a name="p299mcpsimp"></a>TEE OS内存起始物理地址</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p1020063614220"><a name="p1020063614220"></a><a name="p1020063614220"></a>2MB的整数倍。</p>
+</td>
+</tr>
+<tr id="row18186649111319"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p302mcpsimp"><a name="p302mcpsimp"></a><a name="p302mcpsimp"></a>uart_addr</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p304mcpsimp"><a name="p304mcpsimp"></a><a name="p304mcpsimp"></a>串口寄存器的基地址</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p1920015362427"><a name="p1920015362427"></a><a name="p1920015362427"></a>-</p>
+</td>
+</tr>
+<tr id="row59731131174610"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p9973113119460"><a name="p9973113119460"></a><a name="p9973113119460"></a>struct gic_config_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p11973103114611"><a name="p11973103114611"></a><a name="p11973103114611"></a>gic寄存器参数</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p797319312466"><a name="p797319312466"></a><a name="p797319312466"></a>-</p>
+</td>
+</tr>
+<tr id="row1188221104618"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p19884213469"><a name="p19884213469"></a><a name="p19884213469"></a>extend_datas</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p98811215461"><a name="p98811215461"></a><a name="p98811215461"></a>其它参数</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p18872120461"><a name="p18872120461"></a><a name="p18872120461"></a>格式需要和TEE OS核对。</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 #### 开发实例<a name="section3748141455319"></a>
 
-- 使用 TEE Loader，在芯片使能TEE时，配置启动参数的开发实例。详细示例代码位于 `base/tee/tee_os_framework/sample/teeloader` 目录。
+- 下面展示了在芯片使能TEE时，使用 TEE Loader配置启动参数的开发实例。详细示例代码位于 `base/tee/tee_os_framework/sample/teeloader` 目录。
 
 ```C
 #define TEEOS_TEXT_OFFSET (0x8000)
@@ -306,37 +331,24 @@ uint64_t get_teeos_size(void)
 }
 ```
 
-- 不使用 TEE Loader（如 ATF 闭源等原因），需要在 TEE OS 中配置平台相关参数，以 RK3568 平台为例（详见 `base/tee/tee_os_kernel/kernel/arch/aarch64/plat/rk3568/machine.c`）。
-
-- 若需要使能新平台，需要在 `base/tee/tee_os_kernel/kernel/arch/aarch64/plat` 目录下添加新平台的适配代码，并且在 `base/tee/tee_os_kernel/config.mk` 中更新 CHCORE_PLAT 配置
+- 第二步，需要在 `base/tee/tee_os_kernel/kernel/arch/aarch64/plat` 目录下添加新平台的适配代码，可以参考`plat/rk3399`里的适配。同时，需要在 `base/tee/tee_os_kernel/config.mk` 中更新 CHCORE_PLAT 配置
 
   ```makefile
   CHCORE_PLAT=new_plat
   ```
+>![](public_sys-resources/icon-caution.gif) **注意：** 
+启动参数的适配方法可以按照产品的习惯要求采用不同的方法，例如结构体中直接填写相应的参数，或者增加配置文件的方法。启动参数也可以直接配置在TEE OS 中，以 RK3568 平台为例（详见 `base/tee/tee_os_kernel/kernel/arch/aarch64/plat/rk3568/machine.c`）。
 
+### TEE ATF适配指导
 
-## TEE ATF适配指导
+- ARM从v6架构开始就引入了TrustZone技术，将AMR核的工作状态分为安全态和非安全态两种，在芯片级别对硬件资源提供保护和隔离。在实现了BL32（即安全OS）的平台，需要在ATF中添加SPD模块来实现安全世界和非安全世界的切换，对于teeos，我们提供了teed模块，位于 `base/tee/tee_os_framework/sample/teed`。**按照ATF的编译框架，在ATF根目录下的Makefile里面添加如下选项可以使能teed**。
+```makefile
+    SPD := teed
+```
+- 同时，TEE OS 需要适配 ATF 中的 teed，适配代码位于`base/tee/tee_os_kernel/kernel/arch/aarch64/trustzone/spd/teed`目录中，此代码开发者适配新平台时无需修改。
+- 另外，SMC在TEEOS中负责CA和TA的交互、ATF和TEE的交互，TEE OS的适配需要关注SMC通信参数。下表进行了具体介绍。
 
-### 概述
-
-#### 功能简介
-
-ATF提供了安全世界的参考实现软件\[ARMv8-A\],包括执行的\[Secure Monitor\] \[TEE-SMC\]异常级别 3\(EL3\)。它实现了各种 ARM 接口标准,如电源状态协调接口\(\[PSCI\]\),可信板启动要求\(TBBR,ARM DEN0006C-1\)和\[SMC 呼叫公约\] \[SMCCC\]。
-
-#### 约束与限制
-
--   芯片架构为ARMv7/ARMv8架构。
--   CPU需支持安全内存和非安全内存的划分，安全和非安全外设的划分。
-
-### 开发指导
-
-#### 场景介绍
-
-芯片使能TEE时，需要对ATF进行适配，以下将相关内容做介绍。
-
-#### 接口说明
-
-**表 4**  teed smc id管理列表
+**表 3**  teed smc id管理列表
 
 <a name="table7787117252"></a>
 
@@ -420,12 +432,51 @@ ATF提供了安全世界的参考实现软件\[ARMv8-A\],包括执行的\[Secure
 </tbody>
 </table>
 
-#### 开发实例<a name="section3748141455319"></a>
-
-- 在芯片使能TEE ATF时，需要修改teed，适配示例代码位于 `base/tee/tee_os_framework/sample/teed`
-- TEE OS 需要适配 ATF 中的 TEED，目前 TEE OS 支持 teed 和 opteed 两种，分别位于 `base/tee/tee_os_kernel/kernel/arch/aarch64/trustzone/spd` 下的 teed 和 opteed 两个目录中。
-- 若需要使能新的 TEED，需要在该目录下添加相应 TEED 的适配代码，并且在 `base/tee/tee_os_kernel/tee_tee_os_kernel/config.mk` 中更新 CHCORE_SPD 配置
+#### 兼容opteed
+对于无法修改ATF的单板，TEE OS提供了兼容opteed的方案，具体适配代码位于 `base/tee/tee_os_kernel/kernel/arch/aarch64/trustzone/spd/opteed` 目录中。
+另外，若需要使能新的 TEED，可以在`spd`目录下添加相应 TEED 的适配代码，并且在 `base/tee/tee_os_kernel/config.mk` 中更新 CHCORE_SPD 配置.
 
   ```makefile
   CHCORE_SPD=new_teed
   ```
+
+## TEE OS镜像的构建指导
+
+以RK3568芯片为例，TEEOS的二进制文件（bl32.bin）被打包在uboot.img中，以下是构建TEEOS镜像的指导。
+
+### 编译TEEOS
+
+TEEOS内核代码位置：`base/tee/tee_os_kernel`
+
+TEEOS框架代码位置：`base/tee/tee_os_framework`
+
+切换目录至OpenHarmony源码根目录, 输入以下指令编译TEEOS镜像
+
+```Bash
+./build.sh --product-name rk3568 --build-target tee --ccache
+```
+构建产物为TEEOS镜像，路径如下：`base/tee/tee_os_kernel/kernel/bl32.bin`
+
+### 编译uboot.img
+根据以下步骤编译uboot.img
+-  克隆`https://github.com/rockchip-linux/rkbin`，其中包含bl31.elf
+-  克隆`https://github.com/rockchip-linux/u-boot`，其中包含u-boot
+-  将rkbin和u-boot放在同一目录下, 修改rkbin/RKTRUST/RK3568TRUST.ini中BL32_OPTION下的PATH指向bl32.bin
+-    其中，u-boot/make.sh中有以下内容，搜索RK3568TRUST.ini中包含_bl32_的文件名，如果BL32的文件名是bl32.bin的话，需要修改以下匹配规则
+```Bash
+BL32_BIN=`sed -n '/_bl32_/s/PATH=//p' ${INI} | tr -d '\r'`
+```
+-  修改u-boot/configs/rk3568_defconfig，关闭OPTEE驱动，增大镜像大小到6M。
+```Bash
+- CONFIG_OPTEE_CLIENT=y
++ CONFIG_SPL_FIT_IMAGE_KB=6144
++ CONFIG_SPL_FIT_IMAGE_MULTIPLE=1
+```
+>![](public_sys-resources/icon-caution.gif) **注意：** 
+>烧录的时候需要修改分区表parameter.txt，和uboot.img的镜像大小一致
+-  修改make.sh中编译工具链路径，使其指向正确的路径（可以使用openharmony工程prebuilts目录下的工具链）
+```Bash
+-CROSS_COMPILE_ARM32=../prebuilts/gcc/linux-x86/arm/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+-CROSS_COMPILE_ARM64=../prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+```
+-  在u-boot目录下执行./make.sh rk3568，最终会在u-boot目录中生成uboot.img
