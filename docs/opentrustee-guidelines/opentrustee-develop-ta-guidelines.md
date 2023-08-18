@@ -10,7 +10,7 @@ TA安装包不需要跟OpenTrustee镜像打包到一起，可以把TA安装包�
 
 TA安装包放在OpenHarmony文件系统下，路径有两种选择。
 
-1、将TA安装包命名为uuid.sec，放在/vendor/bin目录或者/system/bin目录，TEE client会在TA被访问时，自动查找该TA对应的uuid.sec，发送到OpenTrustee系统中加载运行。
+1、将TA安装包命名为uuid.sec(uuid需要替换为TA的真实uuid)，放在/vendor/bin目录或者/system/bin目录，TEE client会在TA被访问时，自动查找该TA对应的uuid.sec，发送到OpenTrustee系统中加载运行。
 
 2、TA安装包可以任意命名并自定义路径，在CA调用TEEC_OpenSession时，通过TEEC_Context的ta_path指定该TA安装包的路径，如xxx/xxx.sec，TEE client会在指定路径查找该安装包，并发送到OpenTrustee系统中加载运行。
 
@@ -32,7 +32,7 @@ TA签名：由于TA安装包放在非安全侧文件系统中，需要对TA安�
 
 TA验签：在TA安装包加载到OpenTrustee操作系统中时，由OpenTrustee TA管理框架对TA安装包做签名验证，验证通过之后才允许该TA加载运行。需要在OpenTrustee操作系统中预置TA验签的公钥。
 
-![](D:\code\openharmony\tee_tee_dev_kit\docs\opentrustee-guidelines\public_sys-resources\icon-warning.gif)为了方便社区开发者调试，社区的OpenTrustee SDK开发套件已经预置了TA签名私钥，OpenTrustee操作系统中预置了验签的公钥。开发者在OpenTrustee商用版本中应自行替换该签名私钥和验签公钥。
+![](public_sys-resources/icon-warning.gif)为了方便社区开发者调试，社区的OpenTrustee SDK开发套件已经预置了TA签名私钥，OpenTrustee操作系统中预置了验签的公钥。开发者在OpenTrustee商用版本中应自行替换该签名私钥和验签公钥。
 
 ### SDK开发套件
 
@@ -113,15 +113,14 @@ OpenTrustee支持CA访问TA，也支持TA访问TA。TA采用命令响应机制�
 
 ![](figures/ca-ta.png)
 
-文字描述如下：
 
-1. 客户端（可以是CA或者TA）调用TEEC_InitializeContext初始化TEE Client上下文，这个过程并不会访问TA。
+1. 客户端调用TEEC_InitializeContext初始化TEE Client上下文，这个过程并不会访问TA。
 2. 客户端调用TEEC_OpenSession建立与TA的会话。OpenTrustee系统会把TA加载运行，并顺序调用TA的TA_CreateEntryPoint和TA_OpenSessionEntryPoint接口。客户端可以跟TA建立多个会话，每个会话都会执行TA_OpenSessionEntryPoint接口，但只有第一个会话会执行TA_CreateEntryPoint。
 3. 客户端调用TEEC_InvokeCommand向TA发送命令，OpenTrustee系统会调用TA的TA_InvokeCommandEntryPoint接口处理该命令并返回结果。
 4. 客户端调用TEEC_CloseSession关闭与TA的会话。OpenTrustee系统会调用TA的TA_CloseSessionEntryPoint接口清理资源。在TA最后一个会话被关闭时，OpenTrustee系统会调用TA的TA_DestroyEntryPoint接口清理全局资源。
 5. 客户端调用TEEC_FinalizeContext，清理上下文。
 
-![](D:\code\openharmony\tee_tee_dev_kit\docs\opentrustee-guidelines\public_sys-resources\icon-note.gif)OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
+![](public_sys-resources/icon-note.gif)OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
 
 ##### TA代码编写
 
