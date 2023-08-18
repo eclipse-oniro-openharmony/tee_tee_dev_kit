@@ -1,16 +1,16 @@
-## 开发TA
+## TA开发指导
 
 ### TA安装包
 
-TA安装包不需要跟OpenTrustee镜像打包到一起，可以把TA安装包文件放到非安全侧文件系统下。在TA被访问时，由TEE Client将TA安装包发送到OpenTrustee系统中加载运行。
+TA安装包不需要跟OpenTrustee镜像打包到一起，可以把TA安装包文件放到OpenHarmony文件系统下。在TA被访问时，由TEE Client将TA安装包发送到OpenTrustee系统中加载运行。
 
-由于TA安装包放在非安全侧文件系统中，需要对TA安装包做签名，保证安装包的完整性。
+由于TA安装包放在OpenHarmony文件系统中，需要对TA安装包做签名，保证安装包的完整性。
 
 #### TA安装包路径
 
-TA安装包放在非安全侧文件系统下，路径有两种选择。
+TA安装包放在OpenHarmony文件系统下，路径有两种选择。
 
-1、将TA安装包命名为UUID.sec，放在/vendor/bin目录或者/system/bin目录，TEE client会在TA被访问时，自动查找该TA对应的UUID.sec，发送到OpenTrustee系统中加载运行。
+1、将TA安装包命名为uuid.sec，放在/vendor/bin目录或者/system/bin目录，TEE client会在TA被访问时，自动查找该TA对应的uuid.sec，发送到OpenTrustee系统中加载运行。
 
 2、TA安装包可以任意命名并自定义路径，在CA调用TEEC_OpenSession时，通过TEEC_Context的ta_path指定该TA安装包的路径，如xxx/xxx.sec，TEE client会在指定路径查找该安装包，并发送到OpenTrustee系统中加载运行。
 
@@ -69,8 +69,10 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 
 ##### 配置编译工具链
 
-OpenTrustee使用的编译工具链为llvm，与OpenHarmony一致。开发者需要先下载OpenHarmony编译工具链，并声明该编译工具链的路径。可通过如下命令声明编译工具链路径：
-export PATH=/home/code/openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
+OpenTrustee使用的编译工具链为llvm，与OpenHarmony一致。开发者需要先下载OpenHarmony编译工具链，并在编译环境中声明该编译工具链的路径。可通过如下命令声明编译工具链路径：
+export PATH=openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
+
+此处仅是示例，开发者需要指定正确的编译工具链路径。
 
 ##### 导入第三方头文件
 
