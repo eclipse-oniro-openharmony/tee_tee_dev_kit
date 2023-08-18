@@ -100,7 +100,7 @@ pip install pycryptodome
 
 pip install defusedxml
 
-如果在编译过程中提示缺少其他python库，需要一并安装
+如果在编译过程中提示缺少其他python库，需要一并安装。
 
 ### TA开发步骤
 
@@ -108,7 +108,17 @@ pip install defusedxml
 
 OpenTrustee支持CA访问TA，也支持TA访问TA。TA采用命令响应机制，交互流程如下：
 
+![](D:\work\TA交互.drawio.png)
 
+文字描述如下：
+
+1. 客户端（可以是CA或者TA）调用TEEC_InitializeContext初始化TEE Client上下文，这个过程并不会访问TA。
+2. 客户端调用TEEC_OpenSession建立与TA的会话。OpenTrustee系统会把TA加载运行，并顺序调用TA的TA_CreateEntryPoint和TA_OpenSessionEntryPoint接口。客户端可以跟TA建立多个会话，每个会话都会执行TA_OpenSessionEntryPoint接口，但只有第一个会话会执行TA_CreateEntryPoint。
+3. 客户端调用TEEC_InvokeCommand向TA发送命令，OpenTrustee系统会调用TA的TA_InvokeCommandEntryPoint接口处理该命令并返回结果。
+4. 客户端调用TEEC_CloseSession关闭与TA的会话。OpenTrustee系统会调用TA的TA_CloseSessionEntryPoint接口清理资源。在TA最后一个会话被关闭时，OpenTrustee系统会调用TA的TA_DestroyEntryPoint接口清理全局资源。
+5. 客户端调用TEEC_FinalizeContext，清理上下文。
+
+OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
 
 ##### TA代码编写
 
@@ -126,12 +136,55 @@ TA入口函数如下：
 
 TA必须定义这几个入口函数，在客户端访问TA时，OpenTrustee系统会主动调用TA的这些入口函数。详细的参数接口定义请参考TA API章节。
 
-##### TA makefile编写
+##### TA Makefile编写
 
+TA需要自行编写Makefile文件，可参考SDK中示例代码。有如下要点：
 
+- TA编译生成的目标文件名固定为libcombine.so。
+- 对于64位的TA，需要在Makefile头部增加“TARGET_IS_ARM64 = y”标记；对于32位TA，Makefile中不应包含此标记。
 
 ##### TA属性配置
 
+TA源码目录下需要包含configs.xml，定义TA的属性信息。
 
+| 属性名              | 数据类型 | 属性描述                                                     | 系统默认值 |
+| ------------------- | -------- | ------------------------------------------------------------ | ---------- |
+| service_name        | String   | TA名称，字符串长度不超过64字符，仅支持数字、字母，'_'和'-'   | 无         |
+| uuid                | UUID     | TA唯一标识                                                   | 无         |
+| instance_keep_alive | Bool     | 如果为true，表示即使TA所有会话被关闭，TA实例也不会被销毁，全局数据仍然存在，直到TEE运行结束。如果为false，表示若TA所有会话关闭，TA实例会被销毁。 | false      |
+| stack_size          | Integer  | TA每个会话的栈空间大小，需要根据TA实际情况评估               | 8192       |
+| heap_size           | Integer  | TA实例占用的堆空间大小，需要根据TA实际情况评估               | 0          |
+| multi_session       | Bool     | TA是否支持同时建立多个会话                                   | false      |
+| single_instance     | Bool     | TA的多个会话是否归属同一个实例(当前只支持singleInstance为true) | true       |
+
+示例如下：
+
+```
+<ConfigInfo>
+  <TA_Basic_Info>
+    <service_name>demo-ta</service_name>
+    <uuid>e3d37f4a-f24c-48d0-8884-3bdd6c44e988</uuid>
+  </TA_Basic_Info>
+  <TA_Manifest_Info>
+    <instance_keep_alive>false</instance_keep_alive>
+    <stack_size>8192</stack_size>
+    <heap_size>81920</heap_size>
+    <multi_session>false</multi_session>
+    <single_instance>true</single_instance>
+  </TA_Manifest_Info>
+</ConfigInfo>
+```
+
+##### TA编译和签名
+
+OpenTrustee SDK中提供了TA一键编译脚本，将tee_dev_kit/sdk/build/build_ta.sh拷贝到TA源码目录执行，即完成TA编译、属性配置文件解析、签名等操作，在当前目录生成uuid.sec命名的TA安装包文件。
+
+##### TA规格约束
+
+由于OpenTrustee内存资源有限，因此对TA的资源占用需严格约束。
+
+- TA安装包文件大小，应小于8M，否则会被拒绝加载
+- 单个TA最大会话数量上限为8
+- TA应优化自己的内存占用，避免占用过多内存，导致OpenTrustee系统内存耗尽
 
 ### TA API
