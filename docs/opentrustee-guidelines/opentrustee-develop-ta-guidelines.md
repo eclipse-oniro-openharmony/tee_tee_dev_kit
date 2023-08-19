@@ -94,15 +94,7 @@ export PATH=openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
 ##### 导入第三方头文件
 
 OpenTrustee集成了musl库和安全函数库，TA可以使用这些库。OpenTrustee SDK并没有默认包含musl库和安全函数库的头文件，但是提供了导入的脚本。
-开发者需要先下载
-
-[musl库]: https://gitee.com/openharmony/third_party_musl
-
-和
-
-[安全函数库]: https://gitee.com/openharmony/third_party_bounds_checking_function
-
-源码仓：
+开发者需要先下载[musl库](https://gitee.com/openharmony/third_party_musl)和[安全函数库](https://gitee.com/openharmony/third_party_bounds_checking_function)源码仓：
 
 ```
 git clone git@gitee.com:openharmony/third_party_musl.git
