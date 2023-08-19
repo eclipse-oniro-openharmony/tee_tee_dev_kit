@@ -71,7 +71,7 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 
 OpenTrustee使用的编译工具链为llvm，与OpenHarmony一致，开发者需要先下载OpenHarmony编译工具链。
 
-关于如何下载OpenHarmony编译工具链，首选下载代码仓https://gitee.com/openharmony/build，
+首选下载OpenHarmony [build代码仓](https://gitee.com/openharmony/build)，
 
 ```
 git clone git@gitee.com:openharmony/build.git
