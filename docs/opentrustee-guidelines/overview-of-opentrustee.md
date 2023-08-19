@@ -1,5 +1,7 @@
 # OpenTrustee概述
 
+## 概述
+
 OpenTrustee是一个部署在可信执行环境（TEE）中的安全操作系统。ARM架构中的TrustZone技术通过CPU层面的硬件设计，支持创建安全的可信执行环境。基于ARM TrustZone技术，我们可以在设备上同时运行OpenHarmony和OpenTrustee两个系统，这两个系统彼此隔离。基于这种系统隔离带来的安全性，OpenTrustee可以为设备的机密数据提供保护。
 
 ## **安全能力**
@@ -23,7 +25,7 @@ OpenTrustee支持安全计算、安全存储、安全密钥、安全外设、安
 
 OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构如同所示：
 
-![](D:/work/openharmony/tee_tee_dev_kit/docs/opentrustee-guidelines/figures/overview-of-opentrustee.png)
+![](figures/overview-of-opentrustee.png)
 
 各部件基本功能介绍如下：
 
