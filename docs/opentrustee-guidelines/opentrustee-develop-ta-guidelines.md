@@ -1,4 +1,4 @@
-## 开发TA
+## TA开发指导
 
 ### TA安装包
 
@@ -8,11 +8,11 @@ TA安装包不需要跟OpenTrustee镜像打包到一起，可以把TA安装包�
 
 #### TA安装包路径
 
-TA安装包放在非安全侧文件系统下，路径有两种选择。
+TA安装包放在OpenHarmony文件系统下，路径有两种选择。
 
-1、将TA安装包命名为UUID.sec，放在/vendor/bin目录或者/system/bin目录，TEE client会在TA被访问时，自动查找该TA对应的UUID.sec，发送到OpenTrustee系统中加载运行。
+1、将TA安装包命名为uuid.sec(uuid需要替换为TA的真实uuid)，放在/vendor/bin目录或者/system/bin目录，OpenTrustee Client会在TA被访问时，自动查找该TA对应的uuid.sec，发送到OpenTrustee系统中加载运行。
 
-2、TA安装包可以任意命名并自定义路径，在CA调用TEEC_OpenSession时，通过TEEC_Context的ta_path指定该TA安装包的路径，如xxx/xxx.sec，TEE client会在指定路径查找该安装包，并发送到OpenTrustee系统中加载运行。
+2、TA安装包可以任意命名并自定义文件系统路径，在CA调用TEEC_OpenSession时，通过TEEC_Context的ta_path入参指定该TA安装包的路径，OpenTrustee Client会在指定路径查找该安装包，并发送到OpenTrustee系统中加载运行。
 
 #### TA安装包格式
 
@@ -32,7 +32,7 @@ TA签名：由于TA安装包放在非安全侧文件系统中，需要对TA安�
 
 TA验签：在TA安装包加载到OpenTrustee操作系统中时，由OpenTrustee TA管理框架对TA安装包做签名验证，验证通过之后才允许该TA加载运行。需要在OpenTrustee操作系统中预置TA验签的公钥。
 
-**⚠**为了方便社区开发者调试，社区的OpenTrustee SDK开发套件已经预置了TA签名私钥，OpenTrustee操作系统中预置了验签的公钥。开发者在OpenTrustee商用版本中应自行替换该签名私钥和验签公钥。
+![](public_sys-resources/icon-warning.gif)为了方便社区开发者调试，社区的OpenTrustee SDK开发套件已经预置了TA签名私钥，OpenTrustee操作系统中预置了验签的公钥。开发者在OpenTrustee商用版本中应自行替换该签名私钥和验签公钥。
 
 ### SDK开发套件
 
@@ -69,19 +69,45 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 
 ##### 配置编译工具链
 
-OpenTrustee使用的编译工具链为llvm，与OpenHarmony一致。开发者需要先下载OpenHarmony编译工具链，并声明该编译工具链的路径。可通过如下命令声明编译工具链路径：
-export PATH=/home/code/openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
+OpenTrustee使用的编译工具链为llvm，与OpenHarmony一致，开发者需要先下载OpenHarmony编译工具链。
+
+首选下载OpenHarmony [build代码仓](https://gitee.com/openharmony/build)，
+
+```
+git clone git@gitee.com:openharmony/build.git
+```
+
+然后执行该仓中的下载脚本
+
+```
+./build/prebuilts_download.sh
+```
+
+下载完成后，需要在当前编译环境中声明llvm编译工具链的路径。可通过如下命令声明编译工具链路径：
+
+```
+export PATH=openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
+```
+
+该命令仅是示例，开发者需要指定正确的编译工具链路径。
 
 ##### 导入第三方头文件
 
 OpenTrustee集成了musl库和安全函数库，TA可以使用这些库。OpenTrustee SDK并没有默认包含musl库和安全函数库的头文件，但是提供了导入的脚本。
-开发者需要先下载musl库和安全函数库：
+开发者需要先下载[musl库](https://gitee.com/openharmony/third_party_musl)和[安全函数库](https://gitee.com/openharmony/third_party_bounds_checking_function)源码仓：
 
-https://gitee.com/openharmony/third_party_musl
+```
+git clone git@gitee.com:openharmony/third_party_musl.git
+git clone git@gitee.com:openharmony/third_party_bounds_checking_function.git
+```
 
-https://gitee.com/openharmony/third_party_bounds_checking_function
+然后执行
 
-然后执行tee_dev_kit/sdk/thirdparty/open_source/import_open_source_header.sh，将musl头文件和安全函数库头文件从源码目录导入到OpenTrustee SDK中。
+```
+./tee_dev_kit/sdk/thirdparty/open_source/import_open_source_header.sh
+```
+
+将musl头文件和安全函数库头文件从源码仓导入到OpenTrustee SDK中。
 
 ##### 替换TA签名和验签密钥
 OpenTrustee SDK中预置了对TA文件进行签名的私钥，该预置私钥只能用来调试，在商用版本中，开发者需要自行替换该私钥。该私钥路径：tee_dev_kit/sdk/build/signkey/ta_sign_priv_key.pem。同时提供了tee_dev_kit/sdk/build/signkey/ta_sign_algo_config.ini脚本，可以用来对签名算法进行配置。默认的签名算法是RSA，密钥长度4096bit。
@@ -96,11 +122,13 @@ OpenTrustee SDK中用到了python脚本来完成TA的属性配置文件解析、
 
 2、安装python相关的库，如：
 
+```
 pip install pycryptodome
 
 pip install defusedxml
+```
 
-如果在编译过程中提示缺少其他python库，需要一并安装
+如果在编译过程中提示缺少其他python库，需要一并安装。
 
 ### TA开发步骤
 
@@ -108,13 +136,22 @@ pip install defusedxml
 
 OpenTrustee支持CA访问TA，也支持TA访问TA。TA采用命令响应机制，交互流程如下：
 
+![](figures/ca-ta.png)
 
+
+1. 客户端调用TEEC_InitializeContext初始化TEE Client上下文，这个过程并不会访问TA。
+2. 客户端调用TEEC_OpenSession建立与TA的会话。OpenTrustee系统会把TA加载运行，创建TA实例并调用TA的TA_CreateEntryPoint。然后再创建TA会话并调用TA的TA_OpenSessionEntryPoint接口。客户端可以跟TA建立多个会话，每个会话发起时OpenTrustee都会调用TA_OpenSessionEntryPoint接口。
+3. 客户端调用TEEC_InvokeCommand向TA发送命令，OpenTrustee系统会调用TA的TA_InvokeCommandEntryPoint接口处理该命令并返回结果。
+4. 客户端调用TEEC_CloseSession关闭与TA的会话。OpenTrustee系统会调用TA的TA_CloseSessionEntryPoint接口清理资源。在TA最后一个会话被关闭时，OpenTrustee系统会调用TA的TA_DestroyEntryPoint接口清理全局资源。
+5. 客户端调用TEEC_FinalizeContext，清理上下文。
+
+![](public_sys-resources/icon-note.gif)OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
 
 ##### TA代码编写
 
 开发一个新的TA时，需要在tee_dev_kit/sdk/src/TA目录下创建新的TA源码目录。
 
-TA入口函数如下：
+TA必须实现如下GP TEE标准规定的入口函数：
 
 | TA入口函数名称             | 函数描述                                              |
 | -------------------------- | ----------------------------------------------------- |
@@ -124,14 +161,57 @@ TA入口函数如下：
 | TA_CloseSessionEntryPoint  | 客户端请求关闭与TA的会话                              |
 | TA_DestroyEntryPoint       | TA示例的析构函数，OpenTrustee在销毁TA实例时调用此函数 |
 
-TA必须定义这几个入口函数，在客户端访问TA时，OpenTrustee系统会主动调用TA的这些入口函数。详细的参数接口定义请参考TA API章节。
+在客户端访问TA时，OpenTrustee系统会主动调用TA的这些入口函数。详细的参数接口定义请参考TA API章节。
 
-##### TA makefile编写
+##### TA Makefile编写
 
+TA需要自行编写Makefile文件，可参考SDK中示例代码。有如下要点：
 
+- TA编译生成的目标文件名固定为libcombine.so。
+- 对于64位的TA，需要在Makefile头部增加“TARGET_IS_ARM64 = y”标记；对于32位TA，Makefile中不应包含此标记。
 
 ##### TA属性配置
 
+TA源码目录下需要包含configs.xml，定义TA的属性信息。
 
+| 属性名              | 数据类型 | 属性描述                                                     | 系统默认值 |
+| ------------------- | -------- | ------------------------------------------------------------ | ---------- |
+| service_name        | String   | TA名称，字符串长度不超过64字符，仅支持数字、字母，'_'和'-'   | 无         |
+| uuid                | UUID     | TA唯一标识                                                   | 无         |
+| instance_keep_alive | Bool     | 如果为true，表示即使TA所有会话被关闭，TA实例也不会被销毁，全局数据仍然存在，直到TEE运行结束。如果为false，表示若TA所有会话关闭，TA实例会被销毁。 | false      |
+| stack_size          | Integer  | TA每个会话的栈空间大小，需要根据TA实际情况评估               | 8192       |
+| heap_size           | Integer  | TA实例占用的堆空间大小，需要根据TA实际情况评估               | 0          |
+| multi_session       | Bool     | TA是否支持同时建立多个会话                                   | false      |
+| single_instance     | Bool     | TA的多个会话是否归属同一个实例(当前只支持singleInstance为true) | true       |
+
+示例如下：
+
+```
+<ConfigInfo>
+  <TA_Basic_Info>
+    <service_name>demo-ta</service_name>
+    <uuid>e3d37f4a-f24c-48d0-8884-3bdd6c44e988</uuid>
+  </TA_Basic_Info>
+  <TA_Manifest_Info>
+    <instance_keep_alive>false</instance_keep_alive>
+    <stack_size>8192</stack_size>
+    <heap_size>81920</heap_size>
+    <multi_session>false</multi_session>
+    <single_instance>true</single_instance>
+  </TA_Manifest_Info>
+</ConfigInfo>
+```
+
+##### TA编译和签名
+
+OpenTrustee SDK中提供了TA一键编译和签名脚本，将tee_dev_kit/sdk/build/build_ta.sh拷贝到TA源码目录执行，即完成TA编译、属性配置文件解析、签名等操作，在当前目录生成uuid.sec命名的TA安装包文件。
+
+##### TA规格约束
+
+由于OpenTrustee内存资源有限，因此对TA的资源占用需严格约束。
+
+- TA安装包文件大小，应小于8M，否则会被拒绝加载
+- 单个TA最大会话数量上限为8
+- TA应优化自己的内存占用，避免占用过多内存，导致OpenTrustee系统内存耗尽
 
 ### TA API

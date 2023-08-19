@@ -346,8 +346,8 @@ def parser_api_level(mk_compile_cfg, cmake_compile_cfg):
     default_api_level = 2
     compile_cfg_file = ''
 
-    # The config.mk file is first searched.
-    # The config.cmake file is searched only when the config.mk file does
+    # The mk file is first searched.
+    # The cmake file is searched only when the mk file does
     # not exist. If the API_LEVEL macro is not defined in either of the
     # two files, the default value LEVEL 2 is used.
     if os.path.exists(mk_compile_cfg):
@@ -468,8 +468,8 @@ def gen_sec_image(in_path, out_path, cfg):
     # mandentory input files
     manifest_path = os.path.join(in_path, "manifest.txt")
     elf_file_path = os.path.join(in_path, "libcombine.so")
-    mk_cfg_path = os.path.join(in_path, "config.mk")
-    cmake_cfg_path = os.path.join(in_path, "config.cmake")
+    mk_cfg_path = os.path.join(in_path, "Makefile")
+    cmake_cfg_path = os.path.join(in_path, "CMakeLists.txt")
     dyn_conf_xml_file_path = os.path.join(in_path, "dyn_perm.xml")
     tag_parse_dict_file_path = os.path.join(os.getcwd(), "tag_parse_dict.csv")
     xml_config_path = os.path.join(in_path, "configs.xml")
