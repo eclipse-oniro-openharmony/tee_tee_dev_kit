@@ -4,22 +4,21 @@
 
 OpenTrustee是一个部署在可信执行环境（TEE）中的安全操作系统。ARM架构中的TrustZone技术通过CPU层面的硬件设计，支持创建安全的可信执行环境。基于ARM TrustZone技术，我们可以在设备上同时运行OpenHarmony和OpenTrustee两个系统，这两个系统彼此隔离。基于这种系统隔离带来的安全性，OpenTrustee可以为设备的机密数据提供保护。
 
-## **安全能力**
-
-OpenTrustee支持安全计算、安全存储、安全密钥、安全外设、安全时钟等安全能力。
-
 ## **应用场景**
 
 在终端设备越来越智能化的今天，人们正在把越来越多的个人应用和数据放到设备上，安全性成为一个很重要的命题。可信执行环境（TEE）已逐渐成为终端设备必备的安全技术。OpenTrustee具备丰富的安全特性，可以支持开发者灵活部署安全应用，应用场景也非常广泛，例如：移动支付、生物认证、版权保护等，也可以为系统安全提供保护，如安全启动、系统完整性检测等。
 
 ## **术语**
 
-| 缩略语     | 说明                                                         | 备注 |
+| 缩略语     | 英文                                     | 中文 |
 | ------------ | ------------------------------------------------------------ | --- |
-| TEE     | Trusted Execution Environment | 可信执行环境，也称作安全世界，运行在此环境中的代码受到安全保护 |
-| REE     | Rich Execution Environment | 丰富执行环境，也称作非安全世界 |
-| TA       | Trusted Application       | 安全服务或可信应用（运行在TEE中）|
-| CA     | Client Application   | 客户端应用（运行在REE中），此部分区分Linux内核态CA和用户态CA |
+| TEE     | Trusted Execution Environment | 可信执行环境，也称作安全世界 |
+| REE     | Rich Execution Environment | 富执行环境，也称作非安全世界 |
+| TA       | Trusted Application       | 可信应用 |
+| CA     | Client Application   | 客户端应用 |
+| SDK | Software Development Kit | 软件开发包 |
+| GP | GlobalPlatform | 国际标准组织 |
+| ATF | ARM Trusted Firmware | ARM可信固件 |
 
 ## 系统架构
 

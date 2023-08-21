@@ -1,3 +1,36 @@
+
+
+## CA/TA访问机制
+
+OpenTrustee应用分为CA（客户端应用）和TA（可信应用）。OpenTrustee支持CA访问TA，也支持TA访问TA。TA采用命令响应机制，交互流程如下：
+
+![](figures/ca-ta.png)
+
+
+1. CA调用TEEC_InitializeContext初始化客户端上下文，这个过程并不会访问TA。
+2. CA调用TEEC_OpenSession建立与TA的会话。OpenTrustee系统会把TA加载运行，创建TA实例并调用TA的TA_CreateEntryPoint。然后再创建TA会话并调用TA的TA_OpenSessionEntryPoint接口。客户端可以跟TA建立多个会话，每个会话发起时OpenTrustee都会调用TA_OpenSessionEntryPoint接口。
+3. CA调用TEEC_InvokeCommand向TA发送命令，OpenTrustee系统会调用TA的TA_InvokeCommandEntryPoint接口处理该命令并返回结果。
+4. CA调用TEEC_CloseSession关闭与TA的会话。OpenTrustee系统会调用TA的TA_CloseSessionEntryPoint接口清理资源。在TA最后一个会话被关闭时，OpenTrustee系统会调用TA的TA_DestroyEntryPoint接口清理全局资源。
+5. CA调用TEEC_FinalizeContext，清理上下文。
+
+![](public_sys-resources/icon-note.gif)OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
+
+## CA开发指导
+
+CA即OpenHarmony系统侧应用，可以是用户态native程序或SA服务，也可以是内核态驱动，暂不支持HAP应用。
+
+### 用户态CA
+
+对于用户态CA，OpenTrustee TEE client模块为CA提供了访问TEE的接口库和API。
+
+
+
+### 内核态CA
+
+对于内核态CA，OpenTrustee Tzdriver模块为CA提供了访问TEE的内核API。
+
+### CA API
+
 ## TA开发指导
 
 ### TA安装包
@@ -131,21 +164,6 @@ pip install defusedxml
 如果在编译过程中提示缺少其他python库，需要一并安装。
 
 ### TA开发步骤
-
-##### TA工作机制
-
-OpenTrustee支持CA访问TA，也支持TA访问TA。TA采用命令响应机制，交互流程如下：
-
-![](figures/ca-ta.png)
-
-
-1. 客户端调用TEEC_InitializeContext初始化TEE Client上下文，这个过程并不会访问TA。
-2. 客户端调用TEEC_OpenSession建立与TA的会话。OpenTrustee系统会把TA加载运行，创建TA实例并调用TA的TA_CreateEntryPoint。然后再创建TA会话并调用TA的TA_OpenSessionEntryPoint接口。客户端可以跟TA建立多个会话，每个会话发起时OpenTrustee都会调用TA_OpenSessionEntryPoint接口。
-3. 客户端调用TEEC_InvokeCommand向TA发送命令，OpenTrustee系统会调用TA的TA_InvokeCommandEntryPoint接口处理该命令并返回结果。
-4. 客户端调用TEEC_CloseSession关闭与TA的会话。OpenTrustee系统会调用TA的TA_CloseSessionEntryPoint接口清理资源。在TA最后一个会话被关闭时，OpenTrustee系统会调用TA的TA_DestroyEntryPoint接口清理全局资源。
-5. 客户端调用TEEC_FinalizeContext，清理上下文。
-
-![](public_sys-resources/icon-note.gif)OpenTrustee的实现遵循GP TEE标准的规定，上述流程可参考GP TEE标准。
 
 ##### TA代码编写
 
