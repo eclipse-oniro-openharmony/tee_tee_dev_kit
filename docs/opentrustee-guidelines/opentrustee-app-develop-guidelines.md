@@ -17,19 +17,54 @@ OpenTrustee应用分为CA（客户端应用）和TA（可信应用）。OpenTrus
 
 ## CA开发指导
 
-CA即OpenHarmony系统侧应用，可以是用户态native程序或SA服务，也可以是内核态驱动，暂不支持HAP应用。
+CA即OpenHarmony系统侧应用，可以是native程序或SA服务，暂不支持HAP应用。
 
-### 用户态CA
+### CA接口库
 
 对于用户态CA，OpenTrustee TEE client模块为CA提供了访问TEE的接口库和API。
 
+对于system/bin侧的CA，引用TEE头文件和接口库的方式为，在CA的BUILD.gn文件中增加如下引用：
 
+```
+include_dirs = [
+        "//base/tee/tee_client/interfaces/libteec"
+]
+deps = [
+        "//base/tee/tee_client/frameworks/build/standard:libteec"
+]
+```
 
-### 内核态CA
+对于vendor/bin侧的CA，引用TEE头文件和接口库的方式为，在CA的BUILD.gn文件中增加如下引用：
 
-对于内核态CA，OpenTrustee Tzdriver模块为CA提供了访问TEE的内核API。
+```
+include_dirs = [
+        "//base/tee/tee_client/interfaces/libteec"
+]
+deps = [
+        "//base/tee/tee_client/frameworks/build/standard:libteec_vendor"
+]
+```
 
 ### CA API
+
+OpenTrustee提供的CA API基本是符合GP TEE标准规定的，可参考《[TEE Client API Specification v1.0 (GPD_SPE_007)](https://globalplatform.org/specs-library/?filter-committee=tee)》。少量实现与GP TEE规范有差异，差异点如下：
+
+1. TEEC_OpenSession接口的TEEC_Context结构体成员 ta_path支持指定TA的加载路径（限制在/data目录）
+
+   举例如下：
+
+   ```
+   TEEC_Context context;
+   context.ta_path = (uint8_t *)"/data/58dbb3b9-4a0c-42d2-a84d-7c7ab17539fc.sec"
+   ```
+
+2. TEEC_OpenSession接口入参connectionMethod只支持TEEC_LOGIN_IDENTIFY
+
+   对于TEEC_OpenSession函数中第四个入参connectionMethod，GP规范定义了六种Login Method，OpenTrustee拓展了TEEC_LOGIN_IDENTIFY的类型，且只支持该种connectionMethod。
+
+3. 调用TEEC_OpenSession时，TEEC_Operation参数有限制
+
+   在调用TEEC_OpenSession接口时，TEEC_Operation中params[2]和params[3]是预留给系统的，不允许CA使用，CA仅可以使用params[0]和params[1]。
 
 ## TA开发指导
 
@@ -45,7 +80,7 @@ TA安装包放在OpenHarmony文件系统下，路径有两种选择。
 
 1、将TA安装包命名为uuid.sec(uuid需要替换为TA的真实uuid)，放在/vendor/bin目录或者/system/bin目录，OpenTrustee Client会在TA被访问时，自动查找该TA对应的uuid.sec，发送到OpenTrustee系统中加载运行。
 
-2、TA安装包可以任意命名并自定义文件系统路径，在CA调用TEEC_OpenSession时，通过TEEC_Context的ta_path入参指定该TA安装包的路径，OpenTrustee Client会在指定路径查找该安装包，并发送到OpenTrustee系统中加载运行。
+2、TA安装包可以自定义文件系统路径，在CA调用TEEC_OpenSession时，通过TEEC_Context的ta_path入参指定该TA安装包的路径，OpenTrustee Client会在指定路径查找该安装包，并发送到OpenTrustee系统中加载运行。
 
 #### TA安装包格式
 
