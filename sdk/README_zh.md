@@ -1,66 +1,106 @@
 
-# sdk能力介绍<a name="ZH-CN_TOPIC_0000001078026808"></a>
+# TEE SDK开发套件<a name="ZH-CN_TOPIC_0000001078026808"></a>
 
 -   [简介](#section11660541593)
 -   [目录](#section161941989596)
--   [软件安装](#section11914418405)
--   [相关依赖仓](#section1371113476307)
+-   [使用说明](#section161941989597)
+-   [工具依赖](#section11914418405)
+-   [使用约束](#section1371113476307)
 
 ## 简介<a name="section11660541593"></a>
 
-SDK能力包含：TA编译依赖的脚本、头文件，TA颁发证书并签发perm_config签名的能力，以及TA符号检查、sec文件签名。
+TEE SDK开发套件支持独立开发TA（安全应用），包含了TA依赖的头文件、编译框架、签名脚本等。
 
 ## 目录<a name="section161941989596"></a>
 
-仓目录结构如下：
+TEE SDK目录结构如下：
 
 ```
 ├── build
-│   ├── cmake                             # cmake编译框架能力
-│   ├── config_tee_private_sample.ini     # sec签名和perm_config签名的python的ini配置文件
-│   ├── keytools                          # ta证书颁发、以及release类型perm_config签名和不互通的sec文件签名能力
-│   ├── mk                                # make编译框架能力
-│   ├── pack-Config                       # 签名打包perm_config能力
-│   ├── pack-TA                           # sec签名能力的shell脚本
-│   ├── signtools                         # sec签名能力的python脚本、TA未定义符号检查
-│   └── tools                             # sec文件链接的ld文件（32位和64位）、sec文件二进制检查shell脚本        
-├── CHANGELOG                             # sdk版本的变更记录。
+│   ├── ld                                # 生成TA ELF文件的链接脚本
+│   ├── mk                                # TA make编译框架
+│   ├── signkey                           # TA签名用的私钥
+│   └── tools                             # 生成TA安装包并对TA签名的脚本
 ├── include
-│   ├── CA                                # CA编译依赖的头文件
-│   └── TA                                # TA编译依赖的头文件
-├── README.md                             # sdk包的英文说明文件
-├── README_zh.md                          # sdk包的中文说明文件
+│   └── TA                                # 给TA提供的TEE头文件
 ├── src
-│   └── TA                                # TA编译依赖的ta_magic.c，32位TA包含此定义时，可以控制TA走tarunner加载器加载，否则32位TA走taloader加载器；64位TA不涉及，64位TA都走tarunner加载器
-├── test
-│   ├── CA
-│   │   ├── aes_demo                      # 对应TA-aes_demo的CA样例 
-│   │   ├── helloworld                    # 对应TA-helloworld的CA样例
-│   │   ├── mac_demo                      # 对应TA-mac_demo的CA样例
-│   │   ├── rsa_demo                      # 对应TA-rsa_demo的CA样例
-│   │   └── secstorage_demo               # 对应TA-secstorage_demo的CA样例
-│   └── TA
-│       ├── aes_demo                      # TA使用AES-CBC和AES-GCM算法加解密demo
-│       ├── helloworld                    # 简单的CA2TA的通信demo
-│       ├── mac_demo                      # TA使用AES-CBC-MAC和AES-CMAC算法来进行消息摘要计算demo
-│       ├── rsa_demo                      # TA使用RSA算法加解密和签名验签demo
-│       └── secstorage_demo               # TA用安全存储能力存储文件demo
+│   └── TA                                # 放置TA源码
+        └── sample                        # TA示例代码
 ├── thirdparty
-│   └── open_source
-│       ├── libboundscheck                # TA编译依赖的安全函数库头文件归档路径
-│       └── musl                          # TA编译依赖的libc头文件归档路径
-└── VERSION                               # SDK包软件版本号
+│   └── open_source
+│       └── import_open_source_header.sh  # 导入TA编译依赖的musl头文件和安全函数库头文件
+└── CHANGELOG                             # SDK包版本发布记录
 ```
 
-## 软件安装<a name="section11914418405"></a>
+## 使用说明<a name="section161941989597"></a>
 
-注意，此kit只能在linux服务器上使用，windows侧无法使用。且依赖如下软件：
-1.安装python3软件；
-2.安装python3的pycryptodomex库
-3.导出musl和bounds_checking_function头文件，按照thirdparty\open_source\bounds_checking_function和thirdparty\open_source\musl下的md说明文档操作即可。
+开发者在使用TEE SDK开发套件开发TA之前，需要进行一些准备工作。
 
-## 相关依赖仓<a name="section1371113476307"></a>
+###  配置编译工具链
 
-[third_party/bounds_checking_function](https://gitee.com/openharmony/third_party_bounds_checking_function)
+TEE使用的编译工具链为llvm，与OpenHarmony一致，开发者需要先下载OpenHarmony编译工具链。
 
-[third_party/musl](https://gitee.com/openharmony/third_party_musl)
+首选下载OpenHarmony [build代码仓](https://gitee.com/openharmony/build)
+
+```
+git clone git@gitee.com:openharmony/build.git
+```
+
+然后执行该仓中的下载脚本
+
+```
+./build/prebuilts_download.sh
+```
+
+下载完成后，需要在当前编译环境中声明llvm编译工具链的路径。可通过如下命令声明编译工具链路径：
+
+```
+export PATH=openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
+```
+
+该命令仅是示例，开发者需要指定正确的编译工具链路径。
+
+###  导入第三方头文件
+
+TEE集成了musl库和安全函数库，TA可以使用这些库。TEE SDK并没有默认包含musl库和安全函数库的头文件，但是提供了导入的脚本。 开发者需要先下载[musl库](https://gitee.com/openharmony/third_party_musl)和[安全函数库](https://gitee.com/openharmony/third_party_bounds_checking_function)源码仓：
+
+```
+git clone git@gitee.com:openharmony/third_party_musl.git
+git clone git@gitee.com:openharmony/third_party_bounds_checking_function.git
+```
+
+然后执行
+
+```
+./tee_dev_kit/sdk/thirdparty/open_source/import_open_source_header.sh
+```
+
+将musl头文件和安全函数库头文件从源码仓导入到TEE SDK中。
+
+### 替换TA签名和验签密钥
+
+TEE SDK中预置了对TA文件进行签名的私钥，该预置私钥只能用来调试，在商用版本中，开发者需要自行替换该私钥。该私钥路径：tee_dev_kit/sdk/build/signkey/ta_sign_priv_key.pem。同时提供了tee_dev_kit/sdk/build/signkey/ta_sign_algo_config.ini脚本，可以用来对签名算法进行配置。默认的签名算法是RSA，密钥长度4096bit。
+
+如果开发者替换了TEE SDK中的签名私钥，需要对应替换OpenTrustee操作系统中的验签公钥，验签公钥的路径：/base/tee/tee_os_framework/lib/syslib/libelf_verify_key/src/common/ta_verify_key.c。
+
+## 工具依赖<a name="section11914418405"></a>
+
+TEE SDK中用到了python脚本来完成TA的属性配置文件解析、对TA文件进行签名等操作，因此需要在开发环境上安装python工具。
+
+1、安装python3及以上版本
+
+2、安装python相关的库，如：
+
+```
+pip install pycryptodome
+
+pip install defusedxml
+```
+
+如果在编译过程中提示缺少其他python库，需要一并安装。
+
+## 使用约束<a name="section1371113476307"></a>
+
+- 支持开发语言：C语言
+- SDK运行环境：linux操作系统
+- 未提供代码编辑器
