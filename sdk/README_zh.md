@@ -1,6 +1,7 @@
 
 # TEE SDK开发套件<a name="ZH-CN_TOPIC_0000001078026808"></a>
 
+-   [术语](#section11660541592)
 -   [简介](#section11660541593)
 -   [目录](#section161941989596)
 -   [使用说明](#section161941989597)
@@ -8,9 +9,17 @@
 -   [使用约束](#section1371113476307)
 -   [相关依赖仓](#section1371113476308)
 
+## 术语<a name="section11660541592"></a>
+
+| 缩略语 | 英文                          | 中文         |
+| ------ | ----------------------------- | ------------ |
+| TEE    | Trusted Execution Environment | 可信执行环境 |
+| TA     | Trusted Application           | 可信应用     |
+| SDK    | Software Development Kit      | 软件开发包   |
+
 ## 简介<a name="section11660541593"></a>
 
-TEE SDK开发套件支持独立开发TA（安全应用），包含了TA依赖的头文件、编译框架、签名脚本等。
+TEE SDK开发套件支持独立开发TA，包含了TA依赖的头文件、编译框架、签名脚本等。
 
 ## 目录<a name="section161941989596"></a>
 
