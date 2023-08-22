@@ -6,6 +6,7 @@
 -   [使用说明](#section161941989597)
 -   [工具依赖](#section11914418405)
 -   [使用约束](#section1371113476307)
+-   [相关依赖仓](#section1371113476308)
 
 ## 简介<a name="section11660541593"></a>
 
@@ -104,3 +105,11 @@ pip install defusedxml
 - 支持开发语言：C语言
 - SDK运行环境：linux操作系统
 - 未提供代码编辑器
+
+## 相关依赖仓<a name="section1371113476308"></a>
+
+ [OpenHarmony/build](https://gitee.com/openharmony/build)
+
+[OpenHarmony/third_party/musl](https://gitee.com/openharmony/third_party_musl)
+
+[OpenHarmony/third_party/bounds_checking_function](https://gitee.com/openharmony/third_party_bounds_checking_function)
