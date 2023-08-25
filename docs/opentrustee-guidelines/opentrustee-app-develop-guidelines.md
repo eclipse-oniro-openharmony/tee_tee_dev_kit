@@ -271,7 +271,7 @@ OpenTrustee SDK中提供了TA一键编译和签名脚本，将tee_dev_kit/sdk/bu
 
 ### TEE标准C库支持<a name="ZH-CN_TOPIC_0000001241900905"></a>
 
-支持大多数的POSIX接口，具体支持情况请参考：POSIX:[https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf)
+支持大多数的POSIX接口，具体支持情况请参考：POSIX: [https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf](https://mirror.math.princeton.edu/pub/oldlinux/download/c953.pdf)
 
 支持绝大多数的libc接口。使用musl/libc库，接口支持请参考下表。
 
@@ -289,7 +289,7 @@ OpenTrustee SDK中提供了TA一键编译和签名脚本，将tee_dev_kit/sdk/bu
 </th>
 </tr>
 </thead>
-<tbody><tr id="row6340121710262"><td class="cellrowborder" rowspan="42" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p18534845102711"><a name="p18534845102711"></a><a name="p18534845102711"></a>pthread</p>
+<tbody><tr id="row6340121710262"><td class="cellrowborder" rowspan="40" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p18534845102711"><a name="p18534845102711"></a><a name="p18534845102711"></a>pthread</p>
 </td>
 <td class="cellrowborder" valign="top" width="52.12%" headers="mcps1.2.3.1.2 "><p id="p553444592710"><a name="p553444592710"></a><a name="p553444592710"></a>sem_getvalue</p>
 </td>
@@ -327,13 +327,7 @@ OpenTrustee SDK中提供了TA一键编译和签名脚本，将tee_dev_kit/sdk/bu
 <tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_setprotocol</p>
 </td>
 </tr>
-<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_setpshared</p>
-</td>
-</tr>
 <tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_settype</p>
-</td>
-</tr>
-<tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_mutexattr_setrobust</p>
 </td>
 </tr>
 <tr id="row18341101714263"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12534184522712"><a name="p12534184522712"></a><a name="p12534184522712"></a>pthread_spin_destroy</p>
@@ -489,9 +483,12 @@ OpenTrustee SDK中提供了TA一键编译和签名脚本，将tee_dev_kit/sdk/bu
 <td class="cellrowborder" valign="top" width="52.12%" headers="mcps1.2.3.1.2 "><p id="p8535124519274"><a name="p8535124519274"></a><a name="p8535124519274"></a>abort</p>
 </td>
 </tr>
-<tr id="row11342117182611"><td class="cellrowborder" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p85358458277"><a name="p85358458277"></a><a name="p85358458277"></a>unistd</p>
+<tr id="row11342117182611"><td class="cellrowborder" rowspan="2" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p85358458277"><a name="p85358458277"></a><a name="p85358458277"></a>unistd</p>
 </td>
 <td class="cellrowborder" valign="top" width="52.12%" headers="mcps1.2.3.1.2 "><p id="p1753517452273"><a name="p1753517452273"></a><a name="p1753517452273"></a>getpid</p>
+</td>
+</tr>
+<td class="cellrowborder" valign="top" width="52.12%" headers="mcps1.2.3.1.2 "><p id="p1753517452273"><a name="p1753517452273"></a><a name="p1753517452273"></a>gettid</p>
 </td>
 </tr>
 <tr id="row1034281772615"><td class="cellrowborder" rowspan="4" valign="top" width="47.88%" headers="mcps1.2.3.1.1 "><p id="p1553514592714"><a name="p1553514592714"></a><a name="p1553514592714"></a>locale</p>
