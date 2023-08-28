@@ -73,3 +73,11 @@ OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构
 ## license
 
 遵循Mulan PSL V2协议;
+
+## 版本号
+
+OpenTrustee版本号管理规则遵循[Semantic Versioning 2.0.0](https://semver.org/)
+
+OpenTrustee当前版本号记录在VERSION文件中
+
+OpenTrustee版本号变更记录在CHANGELOG.md文件中

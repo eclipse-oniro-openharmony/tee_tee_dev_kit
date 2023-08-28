@@ -92,10 +92,6 @@ TA安装包是以“.sec”为后缀名的包文件，文件格式如下：包�
 
 ![](figures/storage-format-of-ta.png)
 
-
-
-
-
 ### TA签名机制
 
 TA签名：由于TA安装包放在非安全侧文件系统中，需要对TA安装包做签名，确保加载到OpenTrutee中的TA安装包没有被篡改。OpenTrustee提供的SDK开发套件中，包含了TA的签名工具，支持对TA安装包一键签名。需要在OpenTrustee SDK开发套件中预置TA签名的私钥。
@@ -119,8 +115,9 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 ├── include
 │   └── TA                                # 给TA提供的TEE头文件
 ├── src
-│   └── TA                                # 放置TA源码
-        └── sample                        # TA示例代码
+│   └── TA                                # 放置TA源码和示例
+        └── helloworld_demo               # TA helloworld示例
+        └── secstorage_demo               # 安全存储示例
 ├── thirdparty
 │   └── open_source
 │       └── import_open_source_header.sh  # 导入TA编译依赖的musl头文件和安全函数库头文件
@@ -130,8 +127,9 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 ```
 
 - 开发语言：C语言
-- 开发环境：linux操作系统
-- OpenTrustee SDK套件下载地址：https://gitee.com/openharmony-sig/tee_tee_dev_kit
+- 代码编辑器：未提供特定编辑器，任意支持C语言开发的编辑器均可
+- SDK执行环境：linux操作系统
+- SDK套件下载地址：https://gitee.com/openharmony-sig/tee_tee_dev_kit
 
 #### 开发套件准备
 
@@ -184,29 +182,59 @@ OpenTrustee SDK中预置了对TA文件进行签名的私钥，该预置私钥只
 
 如果开发者替换了OpenTrustee SDK中的签名私钥，需要对应替换OpenTrustee操作系统中的验签公钥，验签公钥的路径：tee_os_framework/lib/syslib/libelf_verify_key/src/common/ta_verify_key.c。
 
-##### 安装python工具
+##### 工具安装
 
-OpenTrustee SDK中用到了python脚本来完成TA的属性配置文件解析、对TA文件进行签名等操作，因此需要在开发环境上安装python工具。
+###### 安装python工具
 
-1、安装python3及以上版本
+OpenTrustee SDK中用到了python脚本来完成TA的属性配置文件解析、对TA文件进行签名等操作，因此需要在开发环境上安装python工具。以Ubuntu系统为例，安装命令如下：
+
+1、安装python3
+
+```
+sudo apt-get update
+sudo apt-get install python3 python3-pip
+```
 
 2、安装python相关的库，如：
 
 ```
 pip install pycryptodome
-
 pip install defusedxml
 ```
 
 如果在编译过程中提示缺少其他python库，需要一并安装。
 
+###### 安装openssl工具
+
+OpenTrustee SDK使用openssl工具的签名算法来对TA文件进行签名，需要在开发环境上安装openssl工具。
+
+```
+sudo apt-get install openssl
+```
+
+###### 安装make工具
+
+需要在开发环境上安装make工具来对TA源码进行编译。
+
+```
+sudo apt-get install make
+```
+
 ### TA开发步骤
+
+开发一个新的TA时，需要在tee_dev_kit/sdk/src/TA目录下创建新的TA源码目录，目录结构可以参考该目录下demo示例代码。以helloworld_demo为例，目录结构如下：
+
+```
+├── helloworld_demo
+    ├── ta_demo.c                  # TA源码文件
+    ├── configs.xml                # TA属性配置文件
+    ├── Makefile                   # TA编译Makefile
+    ├── build_ta.sh                # TA一键生成脚本
+```
 
 ##### TA代码编写
 
-开发一个新的TA时，需要在tee_dev_kit/sdk/src/TA目录下创建新的TA源码目录。
-
-TA必须实现如下GP TEE标准规定的入口函数：
+TA代码必须实现如下GP TEE标准规定的入口函数：
 
 | TA入口函数名称             | 函数描述                                              |
 | -------------------------- | ----------------------------------------------------- |
@@ -227,7 +255,7 @@ TA需要自行编写Makefile文件，可参考SDK中示例代码。有如下要�
 
 ##### TA属性配置
 
-TA源码目录下需要包含configs.xml，定义TA的属性信息。
+每个TA源码目录下需要包含configs.xml，定义该TA的属性信息。
 
 | 属性名              | 数据类型 | 属性描述                                                     | 系统默认值 |
 | ------------------- | -------- | ------------------------------------------------------------ | ---------- |
@@ -259,7 +287,7 @@ TA源码目录下需要包含configs.xml，定义TA的属性信息。
 
 ##### TA编译和签名
 
-OpenTrustee SDK中提供了TA一键编译和签名脚本，将tee_dev_kit/sdk/build/build_ta.sh拷贝到TA源码目录执行，即完成TA编译、属性配置文件解析、签名等操作，在当前目录生成uuid.sec命名的TA安装包文件。
+OpenTrustee SDK中提供了TA一键生成脚本，将tee_dev_kit/sdk/build/build_ta.sh拷贝到TA源码目录执行，即完成TA编译、属性配置文件解析、签名等操作，在当前目录生成uuid.sec命名的TA安装包文件。
 
 ##### TA规格约束
 
