@@ -1,4 +1,4 @@
-# OpenTrustee 使能新平台的指南
+# OpenTrustee 新平台适配指南
 本章节介绍如何针对一款芯片适配OpenTrustee，包含TEE CLient、TEE Tzdriver、TEE Loader、TEE ATF的适配。
 ## Tee Client的适配
 
@@ -120,7 +120,7 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
     CONFIG_TEELOG=y
     CONFIG_PAGES_MEM=y
     CONFIG_THIRDPARTY_COMPATIBLE=y
-
+    
     ```
 
     各选项其含义如下表所示：
