@@ -1,1 +1,1 @@
-../../../../build/build_ta.sh
+../../../build/build_ta.sh
