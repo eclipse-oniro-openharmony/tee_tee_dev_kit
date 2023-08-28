@@ -1,4 +1,4 @@
-## OpenTrustee的验证测试套件说明
+# OpenTrustee兼容性测试
 OpenTrustee提供了acts兼容性测试套件，CA的具体目录在`test/xts/acts/tee`下，TA以签名后的二进制存放在`https://gitee.com/openharmony-sig/compatibility/tree/master/test_suite/resource/tee`资源目录下。
 | 测试CA     | 测试TA                                                         | 说明 |
 | ------------ | ------------------------------------------------------------ | --- |

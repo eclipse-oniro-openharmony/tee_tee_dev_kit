@@ -15,7 +15,7 @@ set -e
 
 export SOURCE_PATH=$(dirname $0)
 export ABS_SOURCE_PATH=$(cd ${SOURCE_PATH};pwd)
-export TEE_BUILD_PATH=${ABS_SOURCE_PATH}/../../../../
+export TEE_BUILD_PATH=${ABS_SOURCE_PATH}/../../../
 SIGNTOOL_DIR=${TEE_BUILD_PATH}/build/tools
 CUR_DIR=$(pwd)
 

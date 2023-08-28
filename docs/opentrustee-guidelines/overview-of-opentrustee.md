@@ -2,7 +2,7 @@
 
 ## 概述
 
-OpenTrustee是一个部署在可信执行环境（TEE）中的安全操作系统。ARM架构中的TrustZone技术通过CPU层面的硬件设计，支持创建安全的可信执行环境。基于ARM TrustZone技术，我们可以在设备上同时运行OpenHarmony和OpenTrustee两个系统，这两个系统彼此隔离。基于这种系统隔离带来的安全性，OpenTrustee可以为设备的机密数据提供保护。
+OpenTrustee提供了一个可信执行环境（TEE），运行在受硬件隔离的安全区域中，与常规操作系统如OpenHarmony同时运行但互相隔离，OpenTrustee比常规操作系统拥有更高的安全性，可以为设备上的机密数据提供保护。
 
 ## **应用场景**
 
@@ -37,28 +37,28 @@ OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构
 
 - 部署在REE侧内核中的驱动，支持REE和TEE进行通信。
 
-#### 操作系统框架
+#### OpenTrustee 操作系统框架
 
 - 为TA提供符合GP TEE标准的TEE Internal API；
 - 提供TA运行管理、驱动运行管理等框架基础服务；
 - 提供安全存储、加解密等安全能力。
 
-#### 操作系统内核
+#### OpenTrustee 操作系统内核
 
 - ChCore微内核，提供IPC/进程管理/内存管理/调度/中断管理/REE和TEE切换等基础内核功能。
 
-#### 开发套件
+#### OpenTrustee 开发套件
 
-- 包括TA开发套件和驱动开发套件两部分，提供API头文件、编译框架、签名脚本、demo样例等，支持高效开发TA和驱动。
+- 提供了TA开发套件，包含TA API头文件、编译框架、签名脚本、demo样例等，支持高效开发TA。
 
-#### Dispatcher
+#### OpenTrustee Dispatcher
 
-- 部署在ATF中，在REE和TEE之间交互时完成两个世界上下文的切换。
+- 在REE和TEE之间交互时完成两个世界上下文的切换。
 
 ## 约束
 
 - 支持的系统类型：支持OpenHarmony定义的标准系统，暂不支持轻量系统和小型系统；
-- 对硬件的要求：CPU需要支持ARM TrustZone机制，安全内存至少需要28M；
+- 对硬件的要求：目前只支持具备ARM TrustZone机制的CPU，安全内存至少需要28M；
 
 ## 编码规范
 
@@ -73,3 +73,11 @@ OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构
 ## license
 
 遵循Mulan PSL V2协议;
+
+## 版本号
+
+OpenTrustee版本号管理规则遵循[Semantic Versioning 2.0.0](https://semver.org/)
+
+OpenTrustee当前版本号记录在VERSION文件中
+
+OpenTrustee版本号变更记录在CHANGELOG.md文件中

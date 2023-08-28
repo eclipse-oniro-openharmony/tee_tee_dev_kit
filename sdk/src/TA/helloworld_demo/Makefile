@@ -17,7 +17,7 @@ TARGET_IS_ARM64 = y
 # If no API_LEVEL is specified, API of GP 1.1.1 will be taken
 CFLAGS += -DAPI_LEVEL=2
 
-include ../../../../build/mk/common.mk
+include ../../../build/mk/common.mk
 
 SRC += $(wildcard ./*.c)
 

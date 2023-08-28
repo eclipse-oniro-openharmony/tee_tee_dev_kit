@@ -1,4 +1,4 @@
-# OpenTrustee调试机制介绍
+# OpenTrustee调试机制
 
 ## TEE侧日志查看
 
