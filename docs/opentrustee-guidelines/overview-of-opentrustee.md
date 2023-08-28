@@ -78,6 +78,6 @@ OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构
 
 OpenTrustee版本号管理规则遵循[Semantic Versioning 2.0.0](https://semver.org/)
 
-OpenTrustee当前版本号记录在VERSION文件中
+OpenTrustee当前版本号记录在[VERSION](https://gitee.com/openharmony-sig/tee_tee_dev_kit/blob/master/VERSION)文件中
 
-OpenTrustee版本号变更记录在CHANGELOG.md文件中
+OpenTrustee版本号变更记录在[CHANGELOG.md](https://gitee.com/openharmony-sig/tee_tee_dev_kit/blob/master/CHANGELOG.md)文件中
