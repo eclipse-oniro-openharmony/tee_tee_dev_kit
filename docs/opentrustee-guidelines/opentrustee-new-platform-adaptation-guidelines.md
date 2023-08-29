@@ -41,7 +41,7 @@ hdc file send tlogcat /system/bin/
 
 ## Tzdriver的适配和构建
 
-tzdriver是TEE的内核驱动，主要功能是在整个TEE子系统中起连接作用，是使用TEE OS服务的桥梁，tzdriver处理来自于tee\_client的ioctl命令，并通过smc指令从REE切换到TEE。
+tzdriver是TEE的内核驱动，主要功能是在整个TEE子系统中起连接作用，是使用TEEOS服务的桥梁，tzdriver处理来自于tee\_client的ioctl命令，并通过smc指令从REE切换到TEE。
 
 ### 适配指导以及适配实例
 
@@ -112,7 +112,7 @@ tzdriver有一些特性或者选项，可以选择配置，控制这些选项的
 
     ```
     #
-    # TEE OS
+    # TEEOS
     #
     CONFIG_TZDRIVER=y
     CONFIG_CPU_AFF_NR=1
@@ -177,7 +177,7 @@ tzdriver部件跟随kernel一起编译，以rk3568为例，可以重编boot_linu
 芯片使能TEE时，需要对Loader和ATF进行适配。
 
 ### TEE Loader的适配
-TEE Loader主要负责加载安全镜像并将启动参数传递给TEE OS的功能。启动参数包含TEE OS用到的安全内存地址和大小，串口的地址，gic寄存器配置，以及其它拓展参数。
+TEE Loader主要负责加载安全镜像并将启动参数传递给TEEOS的功能。启动参数包含TEEOS用到的安全内存地址和大小，串口的地址，gic寄存器配置，以及其它拓展参数。
 
 **表 2**  启动参数列表
 
@@ -199,14 +199,14 @@ TEE Loader主要负责加载安全镜像并将启动参数传递给TEE OS的功�
 </tr>
 <tr id="row1618618496132"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p292mcpsimp"><a name="p292mcpsimp"></a><a name="p292mcpsimp"></a>phys_region_size</p>
 </td>
-<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p294mcpsimp"><a name="p294mcpsimp"></a><a name="p294mcpsimp"></a>TEE OS内存大小</p>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p294mcpsimp"><a name="p294mcpsimp"></a><a name="p294mcpsimp"></a>TEEOS内存大小</p>
 </td>
 <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p320093615420"><a name="p320093615420"></a><a name="p320093615420"></a>2MB的整数倍。</p>
 </td>
 </tr>
 <tr id="row01861049151317"><td class="cellrowborder" valign="top" width="20.31%" headers="mcps1.2.4.1.1 "><p id="p297mcpsimp"><a name="p297mcpsimp"></a><a name="p297mcpsimp"></a>phys_region_start</p>
 </td>
-<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p299mcpsimp"><a name="p299mcpsimp"></a><a name="p299mcpsimp"></a>TEE OS内存起始物理地址</p>
+<td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p299mcpsimp"><a name="p299mcpsimp"></a><a name="p299mcpsimp"></a>TEEOS内存起始物理地址</p>
 </td>
 <td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p1020063614220"><a name="p1020063614220"></a><a name="p1020063614220"></a>2MB的整数倍。</p>
 </td>
@@ -229,13 +229,13 @@ TEE Loader主要负责加载安全镜像并将启动参数传递给TEE OS的功�
 </td>
 <td class="cellrowborder" valign="top" width="28.64%" headers="mcps1.2.4.1.2 "><p id="p98811215461"><a name="p98811215461"></a><a name="p98811215461"></a>其它参数</p>
 </td>
-<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p18872120461"><a name="p18872120461"></a><a name="p18872120461"></a>格式需要和TEE OS核对。</p>
+<td class="cellrowborder" valign="top" width="51.05%" headers="mcps1.2.4.1.3 "><p id="p18872120461"><a name="p18872120461"></a><a name="p18872120461"></a>格式需要和TEEOS核对。</p>
 </td>
 </tr>
 </tbody>
 </table>
 
-#### 开发实例<a name="section3748141455319"></a>
+#### 开发实例
 
 - 下面展示了在芯片使能TEE时，使用 TEE Loader配置启动参数的开发实例。详细示例代码位于 `base/tee/tee_os_framework/sample/teeloader` 目录。
 
@@ -257,7 +257,7 @@ static struct platform_info g_teeos_cfg;
 
 static uintptr_t g_teeos_base_addr = 0;
 
-/* 设置TEE OS的起始地址size的大小 */
+/* 设置TEEOS的起始地址size的大小 */
 int32_t set_teeos_mem(uintptr_t teeos_base_addr, uint64_t size)
 {
     g_teeos_base_addr = teeos_base_addr;
@@ -270,7 +270,7 @@ int32_t set_teeos_mem(uintptr_t teeos_base_addr, uint64_t size)
     return 0;
 }
 
-/* 设置TEE OS的串口地址和类型 */
+/* 设置TEEOS的串口地址和类型 */
 void set_teeos_uart(uint64_t uart_addr)
 {
     g_teeos_cfg.uart_addr = uart_addr;
@@ -299,7 +299,7 @@ bool copy_extend_datas(void *extend_datas, uint64_t extend_length)
     return true;
 }
 
-/* 拷贝启动参数到目标位置，配置TEE OS属性后调用此接口 */
+/* 拷贝启动参数到目标位置，配置TEEOS属性后调用此接口 */
 bool copy_teeos_cfg(void)
 {
     if (g_teeos_cfg.phys_region_start == 0)
@@ -337,16 +337,16 @@ uint64_t get_teeos_size(void)
   CHCORE_PLAT=new_plat
   ```
 >![](public_sys-resources/icon-caution.gif) **注意：** 
-启动参数的适配方法可以按照产品的习惯要求采用不同的方法，例如结构体中直接填写相应的参数，或者增加配置文件的方法。启动参数也可以直接配置在TEE OS 中，以 RK3568 平台为例（详见 `base/tee/tee_os_kernel/kernel/arch/aarch64/plat/rk3568/machine.c`）。
+启动参数的适配方法可以按照产品的习惯要求采用不同的方法，例如结构体中直接填写相应的参数，或者增加配置文件的方法。启动参数也可以直接配置在TEEOS 中，以 RK3568 平台为例（详见 `base/tee/tee_os_kernel/kernel/arch/aarch64/plat/rk3568/machine.c`）。
 
 ### TEE ATF适配指导
 
-- ARM从v6架构开始就引入了TrustZone技术，将AMR核的工作状态分为安全态和非安全态两种，在芯片级别对硬件资源提供保护和隔离。在实现了BL32（即安全OS）的平台，需要在ATF中添加SPD模块来实现安全世界和非安全世界的切换，对于teeos，我们提供了teed模块，位于 `base/tee/tee_os_framework/sample/teed`。**按照ATF的编译框架，在ATF根目录下的Makefile里面添加如下选项可以使能teed**。
+- ARM从v6架构开始就引入了TrustZone技术，将AMR核的工作状态分为安全态和非安全态两种，在芯片级别对硬件资源提供保护和隔离。在实现了BL32（即安全OS）的平台，需要在ATF中添加SPD模块来实现安全世界和非安全世界的切换，对于TEEOS，我们提供了teed模块，位于 `base/tee/tee_os_framework/sample/teed`。**按照ATF的编译框架，在ATF根目录下的Makefile里面添加如下选项可以使能teed**。
 ```makefile
     SPD := teed
 ```
-- 同时，TEE OS 需要适配 ATF 中的 teed，适配代码位于`base/tee/tee_os_kernel/kernel/arch/aarch64/trustzone/spd/teed`目录中，此代码开发者适配新平台时无需修改。
-- 另外，SMC在TEEOS中负责CA和TA的交互、ATF和TEE的交互，TEE OS的适配需要关注SMC通信参数。下表进行了具体介绍。
+- 同时，TEEOS 需要适配 ATF 中的 teed，适配代码位于`base/tee/tee_os_kernel/kernel/arch/aarch64/trustzone/spd/teed`目录中，此代码开发者适配新平台时无需修改。
+- 另外，SMC在TEEOS中负责CA和TA的交互、ATF和TEE的交互，TEEOS的适配需要关注SMC通信参数。下表进行了具体介绍。
 
 **表 3**  teed smc id管理列表
 
@@ -433,14 +433,14 @@ uint64_t get_teeos_size(void)
 </table>
 
 #### 兼容opteed
-对于无法修改ATF的单板，TEE OS提供了兼容opteed的方案，具体适配代码位于 `base/tee/tee_os_kernel/kernel/arch/aarch64/trustzone/spd/opteed` 目录中。
+对于无法修改ATF的单板，TEEOS提供了兼容opteed的方案，具体适配代码位于 `base/tee/tee_os_kernel/kernel/arch/aarch64/trustzone/spd/opteed` 目录中。
 另外，若需要使能新的 TEED，可以在`spd`目录下添加相应 TEED 的适配代码，并且在 `base/tee/tee_os_kernel/config.mk` 中更新 CHCORE_SPD 配置.
 
   ```makefile
   CHCORE_SPD=new_teed
   ```
 
-## TEE OS镜像的构建指导
+## TEEOS镜像的构建指导
 
 以RK3568芯片为例，TEEOS的二进制文件（bl32.bin）被打包在uboot.img中，以下是构建TEEOS镜像的指导。
 
