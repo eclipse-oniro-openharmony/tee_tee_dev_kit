@@ -121,9 +121,6 @@ OpenTrustee提供了SDK开发套件支持独立开发TA，该开发套件集成�
 ├── thirdparty
 │   └── open_source
 │       └── import_open_source_header.sh  # 导入TA编译依赖的musl头文件和安全函数库头文件
-└── CHANGELOG                             # SDK包版本发布记录
-├── README.md
-├── README_zh.md
 ```
 
 - 开发语言：C语言
