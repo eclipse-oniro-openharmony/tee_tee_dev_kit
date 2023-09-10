@@ -309,6 +309,117 @@ OpenTrustee SDK中提供了TA一键生成脚本，将tee_dev_kit/sdk/build/build
 - TA应优化自己的内存占用，避免占用过多内存，导致OpenTrustee系统内存耗尽
 
 ### TA API
+TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，详细介绍可参考《[TEE Client API Specification v1.0 (GPD_SPE_007)](https://globalplatform.org/specs-library/?filter-committee=tee)。
+
+- TA会话操作接口
+
+| 名称 | 描述 | 
+| -------- | -------- |
+| TEE_Panic (TEE_Result panicCode) | 在受信任的应用程序实例中引发死机 | 
+| TEE_OpenTASession (const TEE_UUID \*destination, uint32_t cancellationRequestTimeout, uint32_t paramTypes, TEE_Param paramsTEE_PARAMS_NUM, TEE_TASessionHandle \*session, uint32_t \*returnOrigin) | 使用受信任应用程序打开新会话 | 
+| TEE_CloseTASession (TEE_TASessionHandle session) | 关闭由TEE_OpenTASession打开的客户端会话 | 
+| TEE_InvokeTACommand (TEE_TASessionHandle session, uint32_t cancellationRequestTimeout, uint32_t commandID, uint32_t paramTypes, TEE_Param paramsTEE_PARAMS_NUM, uint32_t \*returnOrigin) | 在客户端受信任应用程序实例和目标受信任应用程序实例之间打开的会话中调用命令 |
+
+- TA安全存储接口
+
+| 名称 | 描述 | 
+| -------- | -------- |
+| TEE_GetObjectBufferAttribute (TEE_ObjectHandle object, uint32_t attributeID, void \*buffer, size_t \*size) | 在TEE_ObjectHandle指向的对象的TEE_Attribute结构中获取联合的缓冲区内容 | 
+| TEE_GetObjectValueAttribute (TEE_ObjectHandle object, uint32_t attributeID, uint32_t \*a, uint32_t \*b) | 在对象中的TEE_Attribute中获取联合的值 | 
+| TEE_CloseObject (TEE_ObjectHandle object) | 关闭打开的TEE_ObjectHandle对象 | 
+| TEE_AllocateTransientObject (uint32_t objectType, uint32_t maxObjectSize, TEE_ObjectHandle \*object) | 分配一个未初始化的对象来存储密钥或密钥对 | 
+| TEE_FreeTransientObject (TEE_ObjectHandle object) | 释放已分配的临时对象 | 
+| TEE_ResetTransientObject (TEE_ObjectHandle object) | 将瞬态对象重置为初始状态，即分配后的状态 | 
+| TEE_PopulateTransientObject (TEE_ObjectHandle object, TEE_Attribute \*attrs, uint32_t attrCount) | 将参数attrs中的属性分配给未初始化的瞬态对象 | 
+| TEE_InitRefAttribute (TEE_Attribute \*attr, uint32_t attributeID, void \*buffer, size_t length) | 初始化缓冲区类型TEE_Attribute | 
+| TEE_InitValueAttribute (TEE_Attribute \*attr, uint32_t attributeID, uint32_t a, uint32_t b) | 初始化TEE_Attribute | 
+| TEE_GenerateKey (TEE_ObjectHandle object, uint32_t keySize, TEE_Attribute \*params, uint32_t paramCount) | 此函数生成随机密钥或密钥对，并将其分配给临时对象 | 
+| TEE_GetObjectInfo1 (TEE_ObjectHandle object, TEE_ObjectInfo \*objectInfo) | 获取对象的TEE_ObjectInfo | 
+| TEE_CopyObjectAttributes1 (TEE_ObjectHandle destObject, TEE_ObjectHandle srcObject) | 使用初始化对象将TEE_Attribute赋值给未初始化的对象 | 
+| TEE_RestrictObjectUsage1 (TEE_ObjectHandle object, uint32_t objectUsage) | 限制对象的objectUse位 | 
+| TEE_CreatePersistentObject (uint32_t storageID, constvoid \*ojbectID, size_t objectIDLen, uint32_t flags, TEE_ObjectHandle attributes, constvoid \*initialData, size_t initialDataLen, TEE_ObjectHandle \*object) | 创建一个新的持久化对象 | 
+| TEE_OpenPersistentObject (uint32_t storageID, constvoid \*ojbectID, size_t objectIDLen, uint32_t flags, TEE_ObjectHandle \*object) | 打开现有的永久对象 | 
+| TEE_ReadObjectData (TEE_ObjectHandle ojbect, void \*buffer, size_t size, uint32_t \*count) | 从对象的数据流读取数据的大小字节到缓冲区 | 
+| TEE_WriteObjectData (TEE_ObjectHandle ojbect, constvoid \*buffer, size_t size) | 将数据从缓冲区写入对象的数据流的大小字节 | 
+| TEE_TruncateObjectData (TEE_ObjectHandle object, size_t size) | 更改数据流的大小 | 
+| TEE_SeekObjectData (TEE_ObjectHandle object, int32_t offset, TEE_Whence whence) | 设置TEE_ObjectHandle指向的数据流位置 | 
+| TEE_SyncPersistentObject (TEE_ObjectHandle object) | 同步打开的TEE_ObjectHandle并同步相应的安全属性文件到磁盘 | 
+| TEE_RenamePersistentObject (TEE_ObjectHandle object, void \*newObjectID, size_t newObjectIDLen) | 更改对象标识符 | 
+| TEE_AllocatePersistentObjectEnumerator (TEE_ObjectEnumHandle \*obj_enumerator) | 分配未初始化对象枚举器的句柄 | 
+| TEE_FreePersistentObjectEnumerator (TEE_ObjectEnumHandle obj_enumerator) | 释放已分配的对象枚举器句柄。 | 
+| TEE_ResetPersistentObjectEnumerator (TEE_ObjectEnumHandle obj_enumerator) | 将临时对象枚举器重置为其初始状态，即分配后的状态 | 
+| TEE_StartPersistentObjectEnumerator (TEE_ObjectEnumHandle obj_enumerator, uint32_t storage_id) | 开始枚举给定存储空间中的所有对象 | 
+| TEE_GetNextPersistentObject (TEE_ObjectEnumHandle obj_enumerator, TEE_ObjectInfo \*object_info, void \*object_id, size_t \*object_id_len) | 获取对象枚举器中的下一个对象 | 
+| TEE_CloseAndDeletePersistentObject1 (TEE_ObjectHandle object) | 关闭打开的TEE_ObjectHandle并删除对象 |
+
+- TA加解密接口
+
+| 名称 | 描述 | 
+| -------- | -------- |
+| TEE_AllocateOperation (TEE_OperationHandle \*operation, uint32_t algorithm, uint32_t mode, uint32_tmaxKeySize) | 申请操作句柄 | 
+| TEE_FreeOperation (TEE_OperationHandle operation) | 释放操作句柄 | 
+| TEE_GetOperationInfo (const TEE_OperationHandle operation, TEE_OperationInfo \*operationInfo) | 获取操作信息 | 
+| TEE_ResetOperation (TEE_OperationHandle operation) | 复位操作句柄 | 
+| TEE_SetOperationKey (TEE_OperationHandle operation, const TEE_ObjectHandle key) | 设置操作密钥 | 
+| TEE_SetOperationKey2 (TEE_OperationHandle operation, const TEE_ObjectHandle key1, const TEE_ObjectHandle key2) | 设置操作密钥2 | 
+| TEE_CopyOperation (TEE_OperationHandle dstOperation, const TEE_OperationHandle srcOperation) | 复制操作句柄 | 
+| TEE_CipherInit (TEE_OperationHandle operation, constvoid \*IV, size_t IVLen) | 初始化密码上下文 | 
+| TEE_CipherUpdate (TEE_OperationHandle operation, constvoid \*srcData, size_t srcLen, void \*destData, size_t \*destLen) | 执行密码更新 | 
+| TEE_CipherDoFinal (TEE_OperationHandle operation, constvoid \*srcData, size_t srcLen, void \*destData, size_t \*destLen) | 执行密码完成 | 
+| TEE_DigestUpdate (TEE_OperationHandle operation, constvoid \*chunk, size_t chunkSize) | 摘要更新 | 
+| TEE_DigestDoFinal (TEE_OperationHandle operation, constvoid \*chunk, size_t chunkLen, void \*hash, size_t \*hashLen) | 执行摘要结束 | 
+| TEE_MACInit (TEE_OperationHandle operation, void \*IV, size_t IVLen) | 执行mac初始化 | 
+| TEE_MACUpdate (TEE_OperationHandle operation, const void \*chunk, size_t chunkSize) | 执行mac更新 | 
+| TEE_MACComputeFinal (TEE_OperationHandle operation, const void \*message, size_t messageLen, void \*mac, size_t \*macLen) | mac计算完成 | 
+| TEE_MACCompareFinal (TEE_OperationHandle operation, const void \*message, size_t messageLen, const void \*mac, constsize_t macLen) | mac比较完成 | 
+| void TEE_DeriveKey (TEE_OperationHandle operation, const TEE_Attribute \*params, uint32_t paramCount, TEE_ObjectHandle derivedKey) | 派生密钥 | 
+| TEE_GenerateRandom (void \*randomBuffer, size_t randomBufferLen) | 生成随机数据 | 
+| TEE_AEInit (TEE_OperationHandle operation, void \*nonce, size_t nonceLen, uint32_t tagLen, size_t AADLen, size_t payloadLen) | ae初始化 | 
+| TEE_AEUpdateAAD (TEE_OperationHandle operation, const void \*AADdata, size_t AADdataLen) | 更新ae aad | 
+| TEE_AEUpdate (TEE_OperationHandle operation, void \*srcData, size_t srcLen, void \*destData, size_t \*destLen) | 更新ae | 
+| TEE_AEEncryptFinal (TEE_OperationHandle operation, void \*srcData, size_t srcLen, void \*destData, size_t \*destLen, void \*tag, size_t \*tagLen) | ae加密 | 
+| TEE_AEDecryptFinal (TEE_OperationHandle operation, void \*srcData, size_t srcLen, void \*destData, size_t \*destLen, void \*tag, size_t tagLen) | ae解密 | 
+| TEE_AsymmetricEncrypt (TEE_OperationHandle operation, const TEE_Attribute \*params, uint32_t paramCount, void \*srcData, size_t srcLen, void \*destData, size_t \*destLen) | 非对称加密 | 
+| TEE_AsymmetricDecrypt (TEE_OperationHandle operation, const TEE_Attribute \*params, uint32_t paramCount, void \*srcData, size_t srcLen, void \*destData, size_t \*destLen) | 非对称解密 | 
+| TEE_AsymmetricSignDigest (TEE_OperationHandle operation, const TEE_Attribute \*params, uint32_t paramCount, void \*digest, size_t digestLen, void \*signature, size_t \*signatureLen) | 非对称签名 | 
+| TEE_AsymmetricVerifyDigest (TEE_OperationHandle operation, const TEE_Attribute \*params, uint32_t paramCount, void \*digest, size_t digestLen, void \*signature, size_t signatureLen) | 非对称验证 | 
+| TEE_GetOperationInfoMultiple (TEE_OperationHandle operation, TEE_OperationInfoMultiple \*operationInfoMultiple, constsize_t \*operationSize) | 获取操作信息 | 
+| TEE_IsAlgorithmSupported (uint32_t algId, uint32_t element) | 检查算法是否被支持 | 
+| TEE_SetCryptoFlag (TEE_OperationHandle operation, uint32_t crypto) | 将加密和解密引擎设置为运行 | 
+| TEE_SetObjectFlag (TEE_ObjectHandle object, uint32_t crypto) | 设置加解密引擎为object |
+
+- TA内存操作接口
+
+| 名称 | 描述 | 
+| -------- | -------- |
+| TEE_MemFill (void \*buffer, uint32_t x, size_t size) | 用x填充缓冲区的第一个大小字节 | 
+| TEE_MemMove (void \*dest, constvoid \*src, size_t size) | 将大小字节从src复制到dest | 
+| TEE_Malloc (size_t size, uint32_t hint) | 使用提示值分配大小字节的内存返回的指针将兼容任何C基本数据类型 | 
+| TEE_Free (void \*buffer) | 释放TEE_Malloc分配的内存 | 
+| TEE_Realloc (void \*buffer, size_t new_size) | 重新分配内存 | 
+| TEE_MemCompare (constvoid \*buffer1, constvoid \*buffer2, size_t size) | 内存内容比较 | 
+| TEE_CheckMemoryAccessRights (uint32_t accessFlags, constvoid \*buffer, size_t size) | 检查缓冲区的访问权限 | 
+| TEE_SetInstanceData (void \*instanceData) | 用于在同一实例的不同会话中共享的全局变量 | 
+| TEE_GetInstanceData (void) | 获取TEE_SetInstanceData设置的指针 |
+
+- TA安全时间接口
+
+| 名称 | 描述 | 
+| -------- | -------- |
+| TEE_GetSystemTime (TEE_Time \*time) | 获取当前TEE系统时间 | 
+| TEE_Wait (uint32_t timeout) | 等待指定的毫秒数 | 
+| TEE_GetTAPersistentTime (TEE_Time \*time) | 检索受信任应用程序的持久时间 | 
+| TEE_SetTAPersistentTime (TEE_Time \*time) | 设置当前受信任应用程序的持久化时间 | 
+| TEE_GetREETime (TEE_Time \*time) | 获取当前REE系统时间 | 
+
+- TA扩展接口
+
+| 名称 | 描述 | 
+| -------- | -------- |
+| AddCaller_CA_exec (constchar \*ca_name, uint32_t ca_uid) | TA可以调用此API添加调用者信息，允许调用此TA。此API用于CA，以二进制可执行文件的形式 | 
+| TEE_GetSessionType (void) | 获取当前会话类型 | 
+| TEE_EXT_GetDeviceUniqueId (uint8_t \*device_unique_id, uint32_t \*length) | 在TEE中获取设备唯一ID | 
+
 
 ### TEE标准C库支持<a name="ZH-CN_TOPIC_0000001241900905"></a>
 
