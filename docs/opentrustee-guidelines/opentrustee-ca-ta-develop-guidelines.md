@@ -68,6 +68,20 @@ OpenTrustee提供的CA API基本是符合GP TEE标准规定的，可参考《[TE
 
    在调用TEEC_OpenSession接口时，TEEC_Operation中params[2]和params[3]是预留给系统的，不允许CA使用，CA仅可以使用params[0]和params[1]。
 
+- CA API的简要说明如下：
+
+| 名称 | 描述 | 
+| -------- | -------- |
+| TEEC_InitializeContext (const char \*name, TEEC_Context \*context) | 初始化TEE环境。 | 
+| TEEC_FinalizeContext (TEEC_Context \*context) | 关闭TEE环境。 | 
+| TEEC_OpenSession (TEEC_Context \*context, TEEC_Session \*session, const TEEC_UUID \*destination, uint32_t connectionMethod, const void \*connectionData, TEEC_Operation \*operation, uint32_t \*returnOrigin) | 打开会话。 | 
+| TEEC_CloseSession (TEEC_Session \*session) | 关闭会话。 | 
+| TEEC_InvokeCommand (TEEC_Session \*session, uint32_t commandID, TEEC_Operation \*operation, uint32_t \*returnOrigin) | 发送命令。 | 
+| TEEC_RegisterSharedMemory (TEEC_Context \*context, TEEC_SharedMemory \*sharedMem) | 注册共享内存。 | 
+| TEEC_AllocateSharedMemory (TEEC_Context \*context, TEEC_SharedMemory \*sharedMem) | 申请共享内存。 | 
+| TEEC_ReleaseSharedMemory (TEEC_SharedMemory \*sharedMem) | 释放共享内存。 | 
+| TEEC_RequestCancellation (TEEC_Operation \*operation) | 取消正在运行的操作。 | 
+
 ## TA开发指导
 
 ### TA安装包
