@@ -17,11 +17,9 @@ cd test/xts/acts
 
 ## TA用例
 
-源码路径：
+源码路径：base/tee/tee_os_framework/test/xts/ta
 
-TA用例编译：
-
-编译产物：TA以签名后的二进制存放在[《兼容性测试套件标准系统资源目录》](https://gitee.com/openharmony-sig/compatibility/tree/master/test_suite/resource/master/standard%20system/acts/resource)的tee路径下。文件名：534d4152-542d-4353-b919-d3016a171fc5.sec。
+TA编译产物：TA以签名后的二进制存放在[《兼容性测试套件标准系统资源目录》](https://gitee.com/openharmony-sig/compatibility/tree/master/test_suite/resource/master/standard%20system/acts/resource)的tee路径下。文件名：534d4152-542d-4353-b919-d3016a171fc5.sec。
 
 ## 用例执行
 
