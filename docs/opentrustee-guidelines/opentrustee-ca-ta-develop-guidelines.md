@@ -309,9 +309,9 @@ OpenTrustee SDK中提供了TA一键生成脚本，将tee_dev_kit/sdk/build/build
 - TA应优化自己的内存占用，避免占用过多内存，导致OpenTrustee系统内存耗尽
 
 ### TA API
-TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，详细介绍可参考《[TEE Client API Specification v1.0 (GPD_SPE_007)](https://globalplatform.org/specs-library/?filter-committee=tee)。
+TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，详细介绍请参考相关头文件里的描述。
 
-- TA会话操作接口
+- TA会话操作接口（tee_core_api.h）
 
 | 名称 | 描述 | 
 | -------- | -------- |
@@ -320,7 +320,7 @@ TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，�
 | TEE_CloseTASession (TEE_TASessionHandle session) | 关闭由TEE_OpenTASession打开的客户端会话 | 
 | TEE_InvokeTACommand (TEE_TASessionHandle session, uint32_t cancellationRequestTimeout, uint32_t commandID, uint32_t paramTypes, TEE_Param paramsTEE_PARAMS_NUM, uint32_t \*returnOrigin) | 在客户端受信任应用程序实例和目标受信任应用程序实例之间打开的会话中调用命令 |
 
-- TA安全存储接口
+- TA安全存储接口（tee_object_api.h、tee_trusted_storage_api.h）
 
 | 名称 | 描述 | 
 | -------- | -------- |
@@ -352,7 +352,7 @@ TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，�
 | TEE_GetNextPersistentObject (TEE_ObjectEnumHandle obj_enumerator, TEE_ObjectInfo \*object_info, void \*object_id, size_t \*object_id_len) | 获取对象枚举器中的下一个对象 | 
 | TEE_CloseAndDeletePersistentObject1 (TEE_ObjectHandle object) | 关闭打开的TEE_ObjectHandle并删除对象 |
 
-- TA加解密接口
+- TA加解密接口（tee_core_api.h、tee_crypto_hal.h）
 
 | 名称 | 描述 | 
 | -------- | -------- |
@@ -388,7 +388,7 @@ TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，�
 | TEE_SetCryptoFlag (TEE_OperationHandle operation, uint32_t crypto) | 将加密和解密引擎设置为运行 | 
 | TEE_SetObjectFlag (TEE_ObjectHandle object, uint32_t crypto) | 设置加解密引擎为object |
 
-- TA内存操作接口
+- TA内存操作接口（tee_mem_mgmt_api.h）
 
 | 名称 | 描述 | 
 | -------- | -------- |
@@ -402,7 +402,7 @@ TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，�
 | TEE_SetInstanceData (void \*instanceData) | 用于在同一实例的不同会话中共享的全局变量 | 
 | TEE_GetInstanceData (void) | 获取TEE_SetInstanceData设置的指针 |
 
-- TA安全时间接口
+- TA安全时间接口（tee_time_api.h）
 
 | 名称 | 描述 | 
 | -------- | -------- |
@@ -412,14 +412,12 @@ TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，�
 | TEE_SetTAPersistentTime (TEE_Time \*time) | 设置当前受信任应用程序的持久化时间 | 
 | TEE_GetREETime (TEE_Time \*time) | 获取当前REE系统时间 | 
 
-- TA扩展接口
+- TA扩展接口（tee_ext_api.h）
 
 | 名称 | 描述 | 
 | -------- | -------- |
 | AddCaller_CA_exec (constchar \*ca_name, uint32_t ca_uid) | TA可以调用此API添加调用者信息，允许调用此TA。此API用于CA，以二进制可执行文件的形式 | 
 | TEE_GetSessionType (void) | 获取当前会话类型 | 
-| TEE_EXT_GetDeviceUniqueId (uint8_t \*device_unique_id, uint32_t \*length) | 在TEE中获取设备唯一ID | 
-
 
 ### TEE标准C库支持<a name="ZH-CN_TOPIC_0000001241900905"></a>
 
