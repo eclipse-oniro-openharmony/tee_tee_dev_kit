@@ -2,9 +2,9 @@
 本章节介绍如何在新设备上使能OpenTrustee，目前OpenTrustee只支持运行在ARM TrustZone机制的芯片上，在新设备上使能OpenTrustee包含TEE CLient、Tzdriver、TEE Loader、ATF等部件的适配。
 ## Tee Client适配
 
-### Tee Client使能实例
+### Tee Client使能
 
-适配TEE Client，在相应配置json文件中增加tee_client部件即可。
+在一个新单板使能TEE Client，需要修改单板配置文件，增加TEE Client部件。
 
 以RK3568芯片为例，在vendor/hihope/rk3568/config.json中增加以下内容：
 
@@ -24,13 +24,16 @@
 
 Tee Client代码位置：`base/tee/tee_client`
 
-本模块支持单独编译，以RK3568芯片为例，运行以下命令编译TEE Client部件，产物路径：out/rk3568/tee/tee_client
+本模块支持单独编译调试，以RK3568芯片为例，运行以下命令编译TEE Client部件：
 
 ```shell
 ./build.sh --product-name rk3568 --ccache --build-target tee_client
 ```
 
-单独编译的产物需要自行推入设备中。
+编译产物路径：out/rk3568/tee/tee_client
+
+可将编译产物自行推入设备中进行调试：
+
 ```shell
 hdc file send cadaemon.json /system/profile/
 hdc file send cadaemon.cfg /system/etc/init/
@@ -41,134 +44,104 @@ hdc file send tlogcat /system/bin/
 
 ## Tzdriver适配
 
-tzdriver是TEE的内核驱动，主要功能是在整个TEE子系统中起连接作用，是使用TEEOS服务的桥梁，tzdriver处理来自于tee\_client的ioctl命令，并通过smc指令从REE切换到TEE。
+Tzdriver是部署在REE侧的内核驱动，支持REE和TEE之间通信。Tzdriver处理来自于Tee Client的命令，并发送smc指令从REE切换到TEE。
 
-### 适配指导以及适配实例
+Linux内核tzdriver代码位置：`base/tee/tee_tzdriver/linux`
 
-本章节中会讲述如何针对一款芯片适配tzdriver，此章节中以RK3568芯片为例。
+### Tzdriver使能
 
-Linux内核tzdriver代码位置：base/tee/tee\_tee\_tzdriver/linux。
+1、修改linux内核代码仓中设备的defconfig文件，增加tzdriver的配置选项：
 
-tzdriver是内核中的一个字符设备驱动。tzdriver初始化时会创建一个字符设备文件，一般为/dev/tc\_ns\_client，用户态进程可以打开此节点，以及通过ioctl接口调用tzdriver相关功能。
+```
+#
+# TEEOS
+#
+CONFIG_TZDRIVER=y
+CONFIG_CPU_AFF_NR=1
+CONFIG_KERNEL_CLIENT=y
+CONFIG_TEELOG=y
+CONFIG_PAGES_MEM=y
+CONFIG_THIRDPARTY_COMPATIBLE=y
+```
 
-#### 工程编译适配
+各选项其含义如下表所示：
 
-tzdriver需要被编译到内核中作为内核驱动。
+**表 1**  配置选项说明
 
--   Linux内核tzdriver编译适配
+<table><thead align="left"><tr id="row1860844162318"><th class="cellrowborder" valign="top" width="44.2%" id="mcps1.2.3.1.1"><p id="p106081345231"><a name="p106081345231"></a><a name="p106081345231"></a>参数</p>
+</th>
+<th class="cellrowborder" valign="top" width="55.800000000000004%" id="mcps1.2.3.1.2"><p id="p560812472313"><a name="p560812472313"></a><a name="p560812472313"></a>说明</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row186081645232"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1160813419237"><a name="p1160813419237"></a><a name="p1160813419237"></a>CONFIG_TZDRIVER</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p7608447236"><a name="p7608447236"></a><a name="p7608447236"></a>模块开关，使能tzdriver必须打开</p>
+</td>
+</tr>
+<tr id="row560920412318"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1460916482311"><a name="p1460916482311"></a><a name="p1460916482311"></a>CONFIG_CPU_AFF_NR</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1960913482311"><a name="p1960913482311"></a><a name="p1960913482311"></a>CA绑核功能，非零值代表限制仅cpuid小于CONFIG_CPU_AFF_NR的CPU可以进入TEE，0代表无限制，当前只支持在0核运行，所以值为1</p>
+</td>
+</tr>
+<tr id="row10656158102412"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p4656168192410"><a name="p4656168192410"></a><a name="p4656168192410"></a>CONFIG_KERNEL_CLIENT</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1565616817245"><a name="p1565616817245"></a><a name="p1565616817245"></a>内核CA支持，默认建议开启</p>
+</td>
+</tr>
+<tr id="row1051612110244"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p351620118241"><a name="p351620118241"></a><a name="p351620118241"></a>CONFIG_TEELOG</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p15516161182413"><a name="p15516161182413"></a><a name="p15516161182413"></a>TEE日志开关，默认建议开启</p>
+</td>
+</tr>
+<tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_PAGES_MEM</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>tlogger使用的内存类型，默认需要开启</p>
+</td>
+</tr>
+<tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_THIRDPARTY_COMPATIBLE</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>兼容第三方opteed的适配，例如适配RK3568芯片需要开启此选项</p>
+</td> 
+</tr>
+</tbody>
+</table>
 
-    在Linux内核可以通过defconfig文件中的CONFIG\_TZDRIVER选项控制tzdriver的编译使能。
+2、其他内核相关修改在kernel/linux/patches仓，以补丁方式提供。
 
-    1.  defconfig文件修改
+RK3568芯片的patch在kernel/linux/patches/linux-5.10/rk3568_patch/kernel.patch，其他芯片平台也可以参考这个patch，每个芯片应该创建自己的patch文件。此patch补丁中应当包含以下内容：
 
-        defconfig文件在kernel/linux/config仓，每个芯片应当创建自己的defconfig文件，后面会介绍tzdriver中的所有defconfig配置项。
+- 对于内核的根Makefile的修改（在其中引用tzdriver仓的子Makefile，其中tzdriver path需要修改为实际的相对路径，注意Linux kernel的编译是会将kernel仓代码拷贝到out目录打patch，因此这个相对路径是相对于out下的临时kernel仓的路径）。
 
-    2.  kernel补丁
+  ```
+  obj-y += {tzdriver path}
+  ```
 
-        其他内核相关修改在kernel/linux/patches仓，以补丁方式提供。
+- 对于内核的根Kconfig的需改（在其中引用tzdriver仓的子Kconfig，其中tzdriver path需要修改为实际的相对路径，同上需要注意这个相对路径应当是在out目录下的临时kernel仓路径）。
 
-        RK3568芯片的patch在kernel/linux/patches/linux-5.10/rk3568_patch/kernel.patch，其他芯片平台也可以参考这个patch，每个芯片应该创建自己的patch文件。此patch补丁中应当包含以下内容：
+  ```
+  source "{tzdriver path}/Kconfig"
+  ```
 
-        -   对于内核的根Makefile的修改（在其中引用tzdriver仓的子Makefile，其中tzdriver path需要修改为实际的相对路径，注意Linux kernel的编译是会将kernel仓代码拷贝到out目录打patch，因此这个相对路径是相对于out下的临时kernel仓的路径）。
+- dtsi的修改：需要在相应芯片的disi文件中包含trusted\_core节点，对于RK3568芯片，需要修改patch中的/arch/arm64/boot/dts/rockchip/rk3568-toybrick-x0.dtsi文件，新增以下内容
 
-            ```
-            obj-y += {tzdriver path}
-            ```
+  ```
+  /{
+      trusted_core {
+          compatible = "trusted_core";
+          interrupts = <0 73 4>;
+      };
+  };
+  ```
 
-        -   对于内核的根Kconfig的需改（在其中引用tzdriver仓的子Kconfig，其中tzdriver path需要修改为实际的相对路径，同上需要注意这个相对路径应当是在out目录下的临时kernel仓路径）。
+  其中，Linux内核中tzdriver支持中断号的动态配置，上面的73为spi中断号
 
-            ```
-            source "{tzdriver path}/Kconfig"
-            ```
+>![](public_sys-resources/icon-caution.gif) **注意：** 
+>注意dtsi里面的spi中断号应该比实际的中断号小32，且需要保证不与其他组件的中断号冲突。
 
-        -   dtsi的修改：需要在相应芯片的disi文件中包含trusted\_core节点，对于RK3568芯片，需要修改patch中的/arch/arm64/boot/dts/rockchip/rk3568-toybrick-x0.dtsi文件，新增以下内容
+### Tzdriver编译命令
 
-            ```
-            /{
-                trusted_core {
-                    compatible = "trusted_core";
-                    interrupts = <0 73 4>;
-                };
-            };
-            ```
-        其中，Linux内核中tzdriver支持中断号的动态配置，上面的73为spi中断号
-        >![](public_sys-resources/icon-caution.gif) **注意：** 
-        >注意dtsi里面的spi中断号应该比实际的中断号小32，且需要保证不与其他组件的中断号冲突。
-
-
-#### 驱动初始化
-
--   Linux内核中tzdriver驱动初始化方式
-
-    自动初始化，无需适配修改。
-
-#### 配置选项
-
-tzdriver有一些特性或者选项，可以选择配置，控制这些选项的地方如下：
-
--   Linux内核tzdriver配置选项
-
-    tzdriver选项应该写在kernel/linux/config仓，修改芯片的defconfig文件：
-
-    ```
-    #
-    # TEEOS
-    #
-    CONFIG_TZDRIVER=y
-    CONFIG_CPU_AFF_NR=1
-    CONFIG_KERNEL_CLIENT=y
-    CONFIG_TEELOG=y
-    CONFIG_PAGES_MEM=y
-    CONFIG_THIRDPARTY_COMPATIBLE=y
-    
-    ```
-
-    各选项其含义如下表所示：
-
-    **表 1**  配置选项说明
-
-    <a name="table17608341239"></a>
-    <table><thead align="left"><tr id="row1860844162318"><th class="cellrowborder" valign="top" width="44.2%" id="mcps1.2.3.1.1"><p id="p106081345231"><a name="p106081345231"></a><a name="p106081345231"></a>参数</p>
-    </th>
-    <th class="cellrowborder" valign="top" width="55.800000000000004%" id="mcps1.2.3.1.2"><p id="p560812472313"><a name="p560812472313"></a><a name="p560812472313"></a>说明</p>
-    </th>
-    </tr>
-    </thead>
-    <tbody><tr id="row186081645232"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1160813419237"><a name="p1160813419237"></a><a name="p1160813419237"></a>CONFIG_TZDRIVER</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p7608447236"><a name="p7608447236"></a><a name="p7608447236"></a>模块开关，使能tzdriver必须打开</p>
-    </td>
-    </tr>
-    <tr id="row560920412318"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p1460916482311"><a name="p1460916482311"></a><a name="p1460916482311"></a>CONFIG_CPU_AFF_NR</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1960913482311"><a name="p1960913482311"></a><a name="p1960913482311"></a>CA绑核功能，非零值代表限制仅cpuid小于CONFIG_CPU_AFF_NR的CPU可以进入TEE，0代表无限制，当前只支持在0核运行，所以值为1</p>
-    </td>
-    </tr>
-    <tr id="row10656158102412"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p4656168192410"><a name="p4656168192410"></a><a name="p4656168192410"></a>CONFIG_KERNEL_CLIENT</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p1565616817245"><a name="p1565616817245"></a><a name="p1565616817245"></a>内核CA支持，默认建议开启</p>
-    </td>
-    </tr>
-    <tr id="row1051612110244"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p351620118241"><a name="p351620118241"></a><a name="p351620118241"></a>CONFIG_TEELOG</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p15516161182413"><a name="p15516161182413"></a><a name="p15516161182413"></a>TEE日志开关，默认建议开启</p>
-    </td>
-    </tr>
-    <tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_PAGES_MEM</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>tlogger使用的内存类型，默认需要开启</p>
-    </td>
-    </tr>
-    <tr id="row9724616192417"><td class="cellrowborder" valign="top" width="44.2%" headers="mcps1.2.3.1.1 "><p id="p3725516102418"><a name="p3725516102418"></a><a name="p3725516102418"></a>CONFIG_THIRDPARTY_COMPATIBLE</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="55.800000000000004%" headers="mcps1.2.3.1.2 "><p id="p382054615243"><a name="p382054615243"></a><a name="p382054615243"></a>兼容第三方opteed的适配，例如适配RK3568芯片需要开启此选项</p>
-    </td> 
-    </tr>
-    </tbody>
-    </table>
-
-### TEE Tzdriver编译命令
-tzdriver部件跟随kernel一起编译，以rk3568为例，可以重编boot_linux.img，编译命令如下
+Tzdriver部件跟随kernel一起编译，以rk3568为例，可以单独编译boot_linux.img，编译命令如下
 ```Bash
 ./build.sh --product-name rk3568 --ccache --build-target kernel --gn-args linux_kernel_version=\"linux-5.10\"
 ```
@@ -338,7 +311,7 @@ uint64_t get_teeos_size(void)
 
 ## ATF适配
 
-- ARM从v6架构开始就引入了TrustZone技术，将AMR核的工作状态分为安全态和非安全态两种，在芯片级别对硬件资源提供保护和隔离。在实现了BL32（即安全OS）的平台，需要在ATF中添加SPD模块来实现安全世界和非安全世界的切换，我们提供了teed模块示例代码，位于 `base/tee/tee_os_framework/sample/teed`。**按照ATF的编译框架，在ATF根目录下的Makefile里面添加如下选项可以使能teed**。
+- ARM从v6架构开始就引入了TrustZone技术，将AMR核的工作状态分为安全态和非安全态两种，在芯片级别对硬件资源提供保护和隔离。在实现了BL32（即安全OS）的平台，需要在ATF中添加SPD模块来实现安全世界和非安全世界的切换，我们提供了teed模块示例代码，位于 `base/tee/tee_os_framework/sample/teed`。按照ATF的编译框架，在ATF根目录下的Makefile里面添加如下选项可以使能teed。
 ```makefile
     SPD := teed
 ```
@@ -437,7 +410,7 @@ uint64_t get_teeos_size(void)
   CHCORE_SPD=new_teed
   ```
 
-## TEEOS镜像的构建指导
+## TEEOS镜像构建指导
 
 以RK3568芯片为例，TEEOS的二进制文件（bl32.bin）被打包在uboot.img中，以下是构建TEEOS镜像的指导。
 
