@@ -19,7 +19,7 @@ OpenTrustee应用分为CA（客户端应用）和TA（可信应用）。OpenTrus
 
 ## CA开发指导
 
-CA即OpenHarmony系统侧应用，可以是native程序或SA服务，暂不支持HAP应用。
+CA即OpenHarmony系统侧应用，比如native程序、SA服务、或HAP应用。
 
 ### CA接口库
 
@@ -68,7 +68,7 @@ OpenTrustee提供的CA API基本是符合GP TEE标准规定的，可参考《[TE
 
    在调用TEEC_OpenSession接口时，TEEC_Operation中params[2]和params[3]是预留给系统的，不允许CA使用，CA仅可以使用params[0]和params[1]。
 
-- CA API的简要说明如下：
+- 支持的CA API列表如下：
 
 | 名称 | 描述 | 
 | -------- | -------- |
@@ -309,15 +309,14 @@ OpenTrustee SDK中提供了TA一键生成脚本，将tee_dev_kit/sdk/build/build
 - TA应优化自己的内存占用，避免占用过多内存，导致OpenTrustee系统内存耗尽
 
 ### TA API
-TA的API接口在SDK中include/TA目录下，以下是TA API的简要描述，详细介绍请参考相关头文件里的描述。
+TA的API头文件在SDK中include/TA目录下，以下是TA API的支持列表，详细介绍请参考[GP TEE标准文档](https://globalplatform.org/specs-library/?filter-committee=tee)。
 
 - TA会话操作接口（tee_core_api.h）
 
-| 名称 | 描述 | 
+| 名称 | 描述 |
 | -------- | -------- |
-| TEE_Panic (TEE_Result panicCode) | 在受信任的应用程序实例中引发死机 | 
-| TEE_OpenTASession (const TEE_UUID \*destination, uint32_t cancellationRequestTimeout, uint32_t paramTypes, TEE_Param paramsTEE_PARAMS_NUM, TEE_TASessionHandle \*session, uint32_t \*returnOrigin) | 使用受信任应用程序打开新会话 | 
-| TEE_CloseTASession (TEE_TASessionHandle session) | 关闭由TEE_OpenTASession打开的客户端会话 | 
+| TEE_OpenTASession (const TEE_UUID \*destination, uint32_t cancellationRequestTimeout, uint32_t paramTypes, TEE_Param paramsTEE_PARAMS_NUM, TEE_TASessionHandle \*session, uint32_t \*returnOrigin) | 使用受信任应用程序打开新会话 |
+| TEE_CloseTASession (TEE_TASessionHandle session) | 关闭由TEE_OpenTASession打开的客户端会话 |
 | TEE_InvokeTACommand (TEE_TASessionHandle session, uint32_t cancellationRequestTimeout, uint32_t commandID, uint32_t paramTypes, TEE_Param paramsTEE_PARAMS_NUM, uint32_t \*returnOrigin) | 在客户端受信任应用程序实例和目标受信任应用程序实例之间打开的会话中调用命令 |
 
 - TA安全存储接口（tee_object_api.h、tee_trusted_storage_api.h）
