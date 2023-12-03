@@ -371,7 +371,7 @@ static struct platform_info g_teeos_cfg;
 
 static uintptr_t g_teeos_base_addr = 0;
 
-/* 设置TEE OS的其实地址size的大小，OS需要，必选*/
+/* 设置TEE OS的起始地址，size的大小，OS需要，必选*/
 int32_t set_teeos_mem(uintptr_t teeos_base_addr, uint64_t size)
 {
     g_teeos_base_addr = teeos_base_addr;
@@ -425,7 +425,7 @@ void set_gic(struct gic_config_t gic_config)
     g_teeos_cfg.gic_config = gic_config;
 }
 
-/* 配置spi类型的终端号，OS需要，必选*/
+/* 配置spi类型的中断号，OS需要，必选*/
 void set_spi_num(uint32_t spi_num)
 {
     g_teeos_cfg.spi_num_for_notify = spi_num;
