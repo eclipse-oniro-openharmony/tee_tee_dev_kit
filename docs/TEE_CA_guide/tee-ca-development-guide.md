@@ -111,7 +111,7 @@ TEE实现的接口与GP规范相同，但是结构体及使用限制与GP规范�
 
 1.  TEEC\_Context定义支持指定TA路径加载功能
 
-    TEEC\_Context中定义了ta文件路径，在调用TEEC\_OpenSession前，将TEEC\_Context中ta\_path赋值到具体TA路径（限制/data目录下），可将该路径的TA加载到TEEOS中，如果不指定TA路径，会从默认路径（系统组件：system/bin，芯片组件：vendor/bin）下根据UUID查找对应UUID.sec文件加载到TEEOS中。
+    TEEC\_Context中定义了ta文件路径，在调用TEEC\_OpenSession前，将TEEC\_Context中ta\_path赋值到具体TA路径（限制/data目录下），可将该路径的TA加载到TEEOS中，如果不指定TA路径，会从默认路径（系统组件：system/bin或vendor/bin，芯片组件：vendor/bin）下根据UUID查找对应UUID.sec文件加载到TEEOS中。
 
     ```
     context.ta_path = (uint8_t *)"/data/58dbb3b9-4a0c-42d2-a84d-7c7ab17539fc.sec";
