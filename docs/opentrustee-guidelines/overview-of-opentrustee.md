@@ -22,7 +22,7 @@ OpenTrustee提供了一个可信执行环境（TEE），运行在受硬件隔离
 
 ## 系统架构
 
-OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构如同所示：
+OpenTrustee是一套完整的TEE解决方案，包含多个部件，系统架构如图所示：
 
 ![](figures/overview-of-opentrustee.png)
 
