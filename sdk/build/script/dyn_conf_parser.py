@@ -36,6 +36,8 @@ type_trans = {"TYPE_NONE": "-1",
 # the length len in tlv
 DYN_CONF_LEN_LEN = 4
 
+MAP_REGIONS_NUM = 0
+
 tag_dict = {}
 type_dict = {}
 trans_dict = {}
@@ -224,6 +226,12 @@ def get_length(value):
     return ans
 
 
+def check_map_regions(length):
+    if int(length, 16) > 1279:
+        logging.error("regions string is too long\n")
+        raise RuntimeError("regions has invalid length", int(length, 16))
+
+
 def do_parser_dyn_conf(old_item, ele, in_path):
 
     attrs = ""
@@ -240,6 +248,10 @@ def do_parser_dyn_conf(old_item, ele, in_path):
                              ele.attrib, in_path)
             length = get_length(value)
             attrs = attrs + tag + dyn_type + length + value
+            if tag == "037" and dyn_type == "3":
+                check_map_regions(length)
+                global MAP_REGIONS_NUM
+                MAP_REGIONS_NUM += 1
     else:
         for child in ele:
             tmp_attrs = do_parser_dyn_conf(old_item + child.tag + "/",
@@ -247,11 +259,6 @@ def do_parser_dyn_conf(old_item, ele, in_path):
             if tmp_attrs == "":
                 continue
             attrs = attrs + tmp_attrs
-
-    if os.path.exists("../../../internal/tools/sign_internal.py"):
-        sys.path.append("../../../internal/tools")
-        from config_checker import check_ta_config_internal
-        check_ta_config_internal(old_item, ele.text)
 
     # handle inner context
     if check_ta_config(old_item, ele.text) is True and \
@@ -285,6 +292,9 @@ def parser_dyn_conf(dyn_conf_xml_file_path, manifest_ext_path,
 
     ans = do_parser_dyn_conf(root.tag + "/", root, in_path)
     dyn_conf_clean()
+    if MAP_REGIONS_NUM > 1:
+        raise RuntimeError("regions has invalid num", MAP_REGIONS_NUM)
+
     if ans == "":
         ans = "00000"
 

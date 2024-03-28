@@ -9,15 +9,13 @@
 # NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-TARGET_IS_ARM64 = y
-
 # API_LEVEL which indicates the GP API version of TA
 # API_LEVEL=2 indicates GP 1.1.1 which is the current version of the partner
 # API_LEVEL=3 indicates GP 1.2 which is the version we both going to support
 # If no API_LEVEL is specified, API of GP 1.1.1 will be taken
 CFLAGS += -DAPI_LEVEL=2
 
-include ../../../build/mk/common.mk
+include ${TEE_OH_BUILD_PATH}/mk/common.mk
 
 SRC += $(wildcard ./*.c)
 
@@ -38,4 +36,4 @@ src/%.o: ./src/%.c
 	$(CC) $(CFLAGS)  $(INCLUDEDIR) -c $< -o $@
 
 clean:
-	rm -f $(COBJS) *.so *.sec
+	rm -f $(COBJS) *.o *.so *.sec

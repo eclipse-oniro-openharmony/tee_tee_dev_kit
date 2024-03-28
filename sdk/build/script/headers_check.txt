@@ -1,0 +1,3 @@
+../../../sysroot/usr/include/tee/
+../../../thirdparty/open_source/bounds_checking_function
+../../../thirdparty/open_source/musl

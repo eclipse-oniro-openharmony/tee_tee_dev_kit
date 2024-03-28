@@ -19,7 +19,9 @@ import stat
 import sys
 import subprocess
 import logging
+import getpass
 from generate_hash import gen_hash
+logging.basicConfig(level=logging.INFO)
 
 HASH256 = 0
 HASH512 = 1
@@ -30,6 +32,61 @@ def run_cmd(command):
     if ret.returncode != 0:
         logging.error("run command failed.")
         sys.exit(1)
+
+
+def gen_identity():
+    env = os.environ
+    user_id = env.get("ONLINE_USERNAME")
+    password = env.get("ONLINE_PASSWD")
+    if user_id == "" or user_id is None:
+        logging.critical("Error: Please do like this, or set ONLINE_USERNAME in .bashrc.")
+        user_id = input("Please input your account:")
+    
+    if password == "" or password is None:
+        logging.critical("Error: Please do like this, or set ONLINE_PASSWD in .bashrc.")
+        password = getpass.getpass("Please input your password:")
+
+    return (user_id, password)
+
+
+def gen_jar_path():
+    env = os.environ
+    jar_path = env.get("NATIVE_CA_SIGN_JAR_PATH")
+    if jar_path == "" or jar_path is None:
+        logging.critical("Set jar tool path:like /home/tools/signcenter/NativeCASign.jar")
+        jar_path = input("Please input NativeCASign.jar path:")
+    return jar_path
+
+
+def signed_by_jar_tool(cfg, raw_data, hash_file_path, uuid_str, raw_data_path, out_file_path):
+    """ signed by sign server using sign.jar tool """
+    (user_id, password) = gen_identity()
+    jar_path = gen_jar_path()
+    cmd = ""
+    if cfg.sign_key_len == "2048":
+        gen_hash(cfg.hash_type, raw_data, hash_file_path)
+        cmd = 'java -jar %s %s %s %s %s %s %s' \
+                % (jar_path, cfg.server_ip, user_id, password, \
+                cfg.sign_key, hash_file_path, out_file_path)
+    elif cfg.sign_key_len == "4096":
+        if cfg.hash_type == '0': #sha256
+            cmd = 'java -jar %s -uuid %s \
+                    -signAlg SHA256withRSA/PSS %s %s %s %s %s %s' \
+                    % (jar_path, uuid_str, cfg.server_ip, user_id, password, \
+                    cfg.sign_key, raw_data_path, out_file_path)
+        else: #sha512
+            cmd = 'java -jar %s -uuid %s \
+                    -signAlg SHA512withRSA/PSS %s %s %s %s %s %s' \
+                    % (jar_path, uuid_str, cfg.server_ip, user_id, password, \
+                    cfg.sign_key, raw_data_path, out_file_path)
+    logging.info("sign key len : %s ", cfg.sign_key_len)
+    try:
+        logging.info("signing...")
+        subprocess.check_output(cmd.split(), shell=False)
+    except subprocess.CalledProcessError as exception:
+        logging.error("sign operation failed %s", exception.output)
+        logging.error("native ca sign jar path %s", jar_path)
+        exit(0)
 
 
 def gen_ta_signature(cfg, uuid_str, raw_data, raw_data_path, hash_file_path, \
@@ -56,7 +113,7 @@ def gen_ta_signature(cfg, uuid_str, raw_data, raw_data_path, hash_file_path, \
                 cmd = ["openssl", "dgst", "-sha512", "-sign", cfg.sign_key, \
                     "-out", out_file_path, raw_data_path]
             run_cmd(cmd)
-            logging.critical("Sign sec Success")
+            logging.info("Sign sec Success")
         else: # rsa
             if cfg.padding_type == '1': # pss
                 if cfg.hash_type == '0': # sha256
@@ -68,18 +125,12 @@ def gen_ta_signature(cfg, uuid_str, raw_data, raw_data_path, hash_file_path, \
                         rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
                         -out {} {}".format(cfg.sign_key, out_file_path, raw_data_path)
                 run_cmd(cmd.split())
-                logging.critical("pss sign sec Success")
+                logging.info("pss sign sec Success")
             else:
                 logging.error("padding type %s is not support!", cfg.padding_type)
                 exit(0)
     elif cfg.sign_type == '2': # signed by sign server 
-        if os.path.exists("../../../internal/tools/sign_internal.py"):
-            sys.path.append("../../../internal/tools")
-            from sign_internal import signed_by_jar_tool
-            signed_by_jar_tool(cfg, raw_data, hash_file_path, uuid_str, raw_data_path, out_file_path)
-        else:
-            logging.error("unhandled signtype %s", cfg.sign_type)
-            exit(0)
+        signed_by_jar_tool(cfg, raw_data, hash_file_path, uuid_str, raw_data_path, out_file_path)
     else:
         logging.error("unhandled signtype %s", cfg.sign_type)
 
