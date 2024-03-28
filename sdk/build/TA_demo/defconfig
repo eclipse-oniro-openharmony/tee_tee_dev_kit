@@ -10,7 +10,13 @@
 # See the Mulan PSL v2 for more details.
 
 #set CONFIG_BUILD_TOOL (cmake / make)
-CONFIG_BUILD_TOOL=make
+CONFIG_BUILD_TOOL=cmake
+
+#set CONFIG_GCC (y / n)
+CONFIG_GCC=n
 
 #set TARGET_IS_ARM64 (y / n)
-TARGET_IS_ARM64=n
+TARGET_IS_ARM64=y
+
+#set SIGNATURE_VER (V3 / V3_1 )
+SIGNATURE_VER=V3

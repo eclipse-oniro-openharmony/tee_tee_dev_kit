@@ -1,0 +1,87 @@
+# Copyright (C) 2024 Huawei Technologies Co., Ltd.
+# Licensed under the Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan
+# PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+#     http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+# KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+# NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+import("//build/ohos.gni")
+
+copy("tee_ndk_make") {
+  sources = [
+    "./mk/common.mk",
+    "./mk/common_flags.mk",
+    "./mk/common_llvm.mk",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/mk/{{source_file_part}}" ] 
+}
+
+copy("tee_ndk_cmake") {
+  sources = [
+    "./cmake/aarch64_toolchain.cmake",
+    "./cmake/arm_toolchain.cmake",
+    "./cmake/common.cmake",
+    "./cmake/common_flags.cmake",
+    "./cmake/llvm_toolchain.cmake",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/cmake/{{source_file_part}}" ]
+}
+
+copy("tee_ndk_config") {
+  sources = [
+    "config/configs.xml",
+    "config/config_ta_public.ini",
+    "config/ta_sign_algo_config.ini",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/config/{{source_file_part}}" ]
+}
+
+copy("tee_ndk_script") {
+  sources = [
+    "./script/dyn_conf_checker.py",
+    "./script/dyn_conf_parser.py",
+    "./script/generate_hash.py",
+    "./script/generate_signature.py",
+    "./script/headers_check.txt",
+    "./script/manifest.py",
+    "./script/manifest_tag_parse_dict.csv",
+    "./script/signtool_sec.py",
+    "./script/tag_parse_dict.csv",
+    "./script/ta_check_undefined_symbol.py",
+    "./script/xml_trans_manifest.py",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/script/{{source_file_part}}" ]
+}
+
+copy("tee_ndk_ld") {
+  sources = [
+    "./ld/ta_link.ld",
+    "./ld/ta_link_64.ld",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/ld/{{source_file_part}}" ]
+}
+
+copy("tee_ndk_src") {
+  sources = [
+    "./TA_demo/build_ta.sh",
+    "./TA_demo/CMakeLists.txt",
+    "./TA_demo/configs.xml",
+    "./TA_demo/defconfig",
+    "./TA_demo/Makefile",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/TA_demo/{{source_file_part}}" ]
+}
+
+group("tee_ndk_ta_linux_compile") {
+    deps = [
+        ":tee_ndk_make",
+        ":tee_ndk_cmake",
+        ":tee_ndk_config",
+        ":tee_ndk_script",
+        ":tee_ndk_ld",
+        ":tee_ndk_src",
+    ]
+}
