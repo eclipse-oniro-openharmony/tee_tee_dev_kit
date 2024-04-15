@@ -11,9 +11,9 @@
 
 # set gcc compiler
 ifneq ($(TARGET_IS_ARM64), y)
-    CC = arm-eabi-gcc
-    LD = arm-eabi-ld
-    READELF = arm-eabi-readelf
+    CC = arm-linux-gnueabi-gcc
+    LD = arm-linux-gnueabi-ld
+    READELF = arm-linux-gnueabi-readelf
 else
     CC = aarch64-linux-gnu-gcc
     LD = aarch64-linux-gnu-ld

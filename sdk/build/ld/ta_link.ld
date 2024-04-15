@@ -110,6 +110,8 @@ SECTIONS
   .gnu_extab   : ONLY_IF_RO { *(.gnu_extab*) }
   .exception_ranges   : ONLY_IF_RO { *(.exception_ranges
   .exception_ranges*) }
+  /* Make sure the address of text segment is aligned in 4k for xom */
+  . = ALIGN(0x1000);
   . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE));
   .eh_frame       : ONLY_IF_RW { KEEP (*(.eh_frame)) *(.eh_frame.*) }
   .gnu_extab      : ONLY_IF_RW { *(.gnu_extab) }

@@ -32,7 +32,6 @@ copy("tee_ndk_cmake") {
 
 copy("tee_ndk_config") {
   sources = [
-    "config/configs.xml",
     "config/config_ta_public.ini",
     "config/ta_sign_algo_config.ini",
   ]
@@ -75,6 +74,14 @@ copy("tee_ndk_src") {
   outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/TA_demo/{{source_file_part}}" ]
 }
 
+copy("tee_ndk_tools") {
+  sources = [
+    "./tools/calc_ca_caller_hash.py",
+    "./tools/ca_caller_info.xml",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/tools/{{source_file_part}}" ]
+}
+
 group("tee_ndk_ta_linux_compile") {
     deps = [
         ":tee_ndk_make",
@@ -83,5 +90,6 @@ group("tee_ndk_ta_linux_compile") {
         ":tee_ndk_script",
         ":tee_ndk_ld",
         ":tee_ndk_src",
+        ":tee_ndk_tools",
     ]
 }

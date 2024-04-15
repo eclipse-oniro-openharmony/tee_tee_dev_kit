@@ -562,6 +562,7 @@ def get_key_info_data(cfg, raw_file_path, key_data_path, raw_data_path):
         key_data, iv_data, key_info_data = gen_aes_key_info(cfg)
         encrypt_aes_key(cfg.public_key, key_info_data, key_data_path)
         aes_encrypt(key_data, iv_data, raw_file_path, raw_data_path)
+        key_data = 0
     else:
         gen_sign_alg_info(cfg, key_data_path)
         with open(key_data_path, 'rb') as key_info_fp:
@@ -626,7 +627,7 @@ def prepare_data(cfg, temp_path):
     raw_file_path = os.path.join(temp_path, "rawData")
     key_data_path, raw_data_path = get_data_path(cfg, temp_path)
 
-    xml_config_path = os.path.join(cfg.in_path, "../config/configs.xml")
+    xml_config_path = os.path.join(cfg.in_path, "configs.xml")
 
     # 1. parser_manifest
     manifest_info = process_manifest_file(xml_config_path, \

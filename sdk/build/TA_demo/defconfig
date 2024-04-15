@@ -10,7 +10,7 @@
 # See the Mulan PSL v2 for more details.
 
 #set CONFIG_BUILD_TOOL (cmake / make)
-CONFIG_BUILD_TOOL=cmake
+CONFIG_BUILD_TOOL=make
 
 #set CONFIG_GCC (y / n)
 CONFIG_GCC=n

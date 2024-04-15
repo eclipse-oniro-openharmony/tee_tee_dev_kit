@@ -17,13 +17,13 @@ list(APPEND COMMON_LDFLAGS
     "SHELL:-z noexecstack"
     "-shared"
 )
-if ("${CONFIG_GCC}" STREQUAL "y")
+if ("${CONFIG_GCC}" STREQUAL "n")
     list(APPEND COMMON_LDFLAGS
         "SHELL:-z max-page-size=4096"
     )
-endif()
 if ("${TARGET_IS_ARM64}" STREQUAL "y")
     list(APPEND COMMON_LDFLAGS "-execute-only")
+endif()
 endif()
 set(COMMON_LDFLAGS ${COMMON_LDFLAGS} CACHE INTERNAL "")
 

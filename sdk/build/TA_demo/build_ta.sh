@@ -65,6 +65,7 @@ cmake_build()
           -DTARGET_IS_ARM64=${TARGET_IS_ARM64} \
           -DTEE_OH_PATH=${TEE_OH_PATH} \
           -DTEE_OH_BUILD_PATH=${TEE_OH_BUILD_PATH} \
+          -DCONFIG_GCC=${CONFIG_GCC} \
           ${TEE_SRC_PATH}
 
     cmake --build . -j8
@@ -74,6 +75,12 @@ mk_build()
 {
     echo "start make build ${CONFIG_GCC} ${TARGET_IS_ARM64} ${SIGNATURE_VER} target"
     build_clean
+    if [ "${CONFIG_GCC}" == "n" ];then
+        if [ "${TARGET_IS_ARM64}" == "n" ];then
+            echo "LLVM only support 64bit TA.";
+            exit -1
+        fi
+    fi
 
     export TARGET_IS_ARM64=${TARGET_IS_ARM64}
     export CONFIG_GCC=${CONFIG_GCC}
@@ -96,7 +103,7 @@ else
         *) echo "do make compile" && exit -1 ;;
     esac
 
-    python3 ${SIGNTOOL_DIR}/ta_check_undefined_symbol.py libcombine.so
+    python3 ${SIGNTOOL_DIR}/ta_check_undefined_symbol.py ${TEE_SRC_PATH}/libcombine.so
     if [ ${SIGNATURE_VER} == "V3" ];then
         python3 -B ${SIGNTOOL_DIR}/signtool_sec.py --in_path ${TEE_SRC_PATH} --out_path ${TEE_SRC_PATH} \
             --privateCfg ${TEE_OH_BUILD_PATH}/config/ta_sign_algo_config.ini
