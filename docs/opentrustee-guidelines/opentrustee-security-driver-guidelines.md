@@ -12,7 +12,7 @@
 
 ### 场景介绍<a name="section148731215195617"></a>
 
-目前TEEOS支持内置驱动的开发，驱动和TEEOS镜像共同编译打包，具体可以参考加解密驱动。路径：base/tee/tee_os_framework/drivers/crypto_mgr
+目前TEEOS支持内置驱动的开发，驱动和TEEOS镜像共同编译打包。具体开发指导请参考开发示例章节。
 
 ## 驱动开发框架<a name="section12432132218372"></a>
 
@@ -355,6 +355,43 @@ __attribute__((visibility("default"))) const struct tee_driver_module g_driver_#
 </table>
 
 ## 开发示例<a name="section198361520981"></a>
+### 编译文件配置
+- 进入base/tee/tee_os_framework/目录
+- 首先在drivers/目录新建一个目录，例如demo_driver
+- 在demo_driver目录新建src目录用于存放源代码文件，新建Makefile编译文件
+
+Makefile示例如下
+
+```
+DRIVER := demo_driver.elf
+
+include $(BUILD_CONFIG)/var.mk
+
+demo_driver_c_files += $(wildcard src/*.c) 
+
+#include
+inc-flags += -I./src
+
+# Libraries
+
+SVC_PARTITIAL_LINK = y
+include $(BUILD_SERVICE)/svc-common.mk
+```
+
+- 修改build/mk/common/operation/project.mk，增加drivers += demo_driver
+- 修改build/mk/pack/plat_config.mk, 增加以下内容
+
+```
+ifeq ($(CONFIG_ARCH_AARCH64),y)
+product_apps += $(OUTPUTDIR)/aarch64/drivers/demo_driver.elf
+check-a64-syms-y += $(OUTPUTDIR)/aarch64/drivers/demo_driver.elf
+else
+product_apps += $(OUTPUTDIR)/arm/drivers/demo_driver.elf
+check-syms-y += $(OUTPUTDIR)/arm/drivers/demo_driver.elf
+endif
+```
+
+### 驱动开发示例<a name="section198361520981"></a>
 
 驱动框架注册实例如下：
 
@@ -524,6 +561,170 @@ int32_t resume_s4_test(void)
 /* 驱动框架注册 */
 tee_driver_declare(drv_test_module, init_test, open_test, ioctl_test, close_test, \
                    suspend_test, resume_test, suspend_s4_test, resume_s4_test);
+```
+
+### 驱动访问者开发示例<a name="section198361520981"></a>
+```
+
+#include <securec.h>
+#include <stdlib.h>
+#include <string.h>
+#include <tee_drv_client.h>
+#include <tee_ext_api.h>
+#include <tee_log.h>
+#include <test_drv_cmdid.h>
+#include <mem_ops.h>
+
+#define CA_PKGN_VENDOR "/vendor/bin/tee_test_drv"
+#define CA_PKGN_SYSTEM "/system/bin/tee_test_drv"
+#define CA_UID 0
+
+#define DRV_UUID1                                          \
+    {                                                      \
+        0x11112222, 0x0000, 0x0000,                        \
+        {                                                  \
+            0x00, 0x00, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11 \
+        }                                                  \
+    }
+
+#define BUFFER_SIZE 1024
+struct share_buffer_arg {
+    uint64_t addr;
+    uint32_t len;
+    uint32_t share_token;
+};
+
+static TEE_Result TeeTestDrive(uint32_t cmd)
+{
+    int ret;
+    const char *drvName = "drv_test_module";
+    uint32_t args = (uint32_t)(&drvName);
+    const char drvcallerInput[] = "the param is drvcaller_input";
+    char drvOutput[] = "DRVMEM_OUTPUT";
+
+    uint32_t drvcallerInputLen = (uint32_t)strlen(drvcallerInput) + 1;
+    uint32_t drvOutputLen = (uint32_t)strlen(drvOutput) + 1;
+    TEE_UUID uuid = DRV_UUID1;
+
+    int64_t fd = tee_drv_open(drvName, &args, sizeof(args));
+    if (fd <= 0) {
+        tloge("open %s for get fd failed\n", drvName);
+        return TEE_ERROR_GENERIC;
+    }
+
+    char *tempBuffer = tee_alloc_sharemem_aux(&uuid, BUFFER_SIZE);
+    if (tempBuffer == NULL) {
+        tloge("alloc share mem failed\n");
+        return TEE_ERROR_GENERIC;
+    }
+    (void)memset_s(tempBuffer, BUFFER_SIZE, 0x0, BUFFER_SIZE);
+    ret = strcpy_s(tempBuffer, drvcallerInputLen, drvcallerInput);
+    if (ret != 0) {
+        tloge("strcpy_s failed,ret = 0x%x\n", ret);
+        return TEE_ERROR_GENERIC;
+    }
+
+    struct share_buffer_arg inputArg = { 0 };
+#ifndef __aarch64__
+    inputArg.addr = (uint64_t)(uint32_t)tempBuffer;
+#else
+    inputArg.addr = (uint64_t)tempBuffer;
+#endif
+
+    inputArg.len = BUFFER_SIZE;
+
+    tlogi("%s drv test ioctl begin args:0x%x fd:%d\n", drvName, inputArg, (int32_t)fd);
+
+    ret = (int)tee_drv_ioctl(fd, cmd, (const void *)(&inputArg), sizeof(inputArg));
+    if (ret != 0) {
+        tloge("%s drv test ioctl failed, fd:%d \n", drvName, (int32_t)fd);
+    }
+    if (cmd == DRVTEST_COMMAND_COPYTOCLIENT) {
+        if (strncmp(drvOutput, (char *)tempBuffer, drvOutputLen) != 0) {
+            tloge("%s drv copy_to_client test failed, fd:%d, heap_buffer is:%s \n", drvName, (int32_t)fd, tempBuffer);
+            free_sharemem(tempBuffer, BUFFER_SIZE);
+            return TEE_ERROR_GENERIC;
+        }
+    }
+
+    ret |= (int)tee_drv_close(fd);
+    if (ret != 0) {
+        tloge("drv test fail!\n");
+    }
+
+    if (free_sharemem(tempBuffer, BUFFER_SIZE) != 0) {
+        tloge("free sharemem failed\n");
+        ret = -1;
+    }
+    return (TEE_Result)ret;
+}
+
+TEE_Result TA_CreateEntryPoint(void)
+{
+    tlogi("---- TA_CreateEntryPoint ----------- \n");
+    TEE_Result ret;
+
+    ret = AddCaller_CA_exec(CA_PKGN_VENDOR, CA_UID);
+    if (ret != TEE_SUCCESS) {
+        tloge("add caller failed, ret: 0x%x", ret);
+        return ret;
+    }
+
+    ret = AddCaller_CA_exec(CA_PKGN_SYSTEM, CA_UID);
+    if (ret != TEE_SUCCESS) {
+        tloge("add caller failed, ret: 0x%x", ret);
+        return ret;
+    }
+
+    return TEE_SUCCESS;
+}
+
+TEE_Result TA_OpenSessionEntryPoint(uint32_t parmType, TEE_Param params[4], void **sessionContext)
+{
+    (void)parmType;
+    (void)sessionContext;
+    tlogi("---- TA_OpenSessionEntryPoint -------- \n");
+    if (params[0].value.b == 0xFFFFFFFE)
+        return TEE_ERROR_GENERIC;
+    else
+        return TEE_SUCCESS;
+}
+
+TEE_Result TA_InvokeCommandEntryPoint(void *sessionContext, uint32_t cmd, uint32_t parmType, TEE_Param params[4])
+{
+    TEE_Result ret = TEE_SUCCESS;
+    (void)sessionContext;
+    (void)parmType;
+    (void)params;
+    tlogi("---- TA invoke command ----------- command id: %u\n", cmd);
+
+    switch (cmd) {
+        case DRVTEST_COMMAND_DRVVIRTTOPHYS:
+        case DRVTEST_COMMAND_COPYFROMCLIENT:
+        case DRVTEST_COMMAND_COPYTOCLIENT:
+            ret = TeeTestDrive(cmd);
+            if (ret != TEE_SUCCESS)
+                tloge("invoke command for driver test failed! cmdId: %u, ret: 0x%x\n", cmd, ret);
+            break;
+        default:
+            tloge("not support this invoke command! cmdId: %u\n", cmd);
+            ret = TEE_ERROR_GENERIC;
+            break;
+    }
+
+    return ret;
+}
+
+void TA_CloseSessionEntryPoint(void *sessionContext)
+{
+    (void)sessionContext;
+    tlogi("---- TA_CloseSessionEntryPoint ----- \n");
+}
+
+void TA_DestroyEntryPoint(void)
+{
+    tlogi("---- TA_DestroyEntryPoint ---- \n");
+}
 ```
 
 ## 标准C库支持<a name="section14109139161012"></a>
