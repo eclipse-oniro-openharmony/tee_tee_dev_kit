@@ -9,8 +9,13 @@
 # NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-#set CONFIG_BUILD_TOOL (cmake / make)
-CONFIG_BUILD_TOOL=make
-
-#set TARGET_IS_ARM64 (y / n)
-TARGET_IS_ARM64=n
+# set gcc compiler
+ifneq ($(TARGET_IS_ARM64), y)
+    CC = arm-linux-gnueabi-gcc
+    LD = arm-linux-gnueabi-ld
+    READELF = arm-linux-gnueabi-readelf
+else
+    CC = aarch64-linux-gnu-gcc
+    LD = aarch64-linux-gnu-ld
+    READELF = aarch64-linux-gnu-readelf
+endif

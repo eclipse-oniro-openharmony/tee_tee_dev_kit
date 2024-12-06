@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<caller_info>
+    <!--
+    <cmdline_uid>
+        <item cmdline="/vendor/bin/teec_hello" uid="0" />
+    </cmdline_uid>
+    <cmdline_username>
+        <item cmdline="/vendor/bin/teec_hello" username="root" />
+    </cmdline_username>
+    <app>
+        <item pkg_name="com.example.myapplicationohdemo" modulue="6f85f3ad5fa01dfcddd4b2f23815f47fc03a68fbe99297be20bd0e114b7e8c54" exponent="650769812a97c80a3751f015e7b6069492c0fe8de375abe8cdf9188c9c0d3851" />
+    </app>
+    -->
+</caller_info>
