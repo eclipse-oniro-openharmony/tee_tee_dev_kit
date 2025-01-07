@@ -606,6 +606,7 @@ static TEE_Result TeeTestDrive(uint32_t cmd)
     uint32_t drvOutputLen = (uint32_t)strlen(drvOutput) + 1;
     TEE_UUID uuid = DRV_UUID1;
 
+    /* 调用驱动的open函数，返回与该驱动对应的唯一标记fd信息 */
     int64_t fd = tee_drv_open(drvName, &args, sizeof(args));
     if (fd <= 0) {
         tloge("open %s for get fd failed\n", drvName);
@@ -635,6 +636,7 @@ static TEE_Result TeeTestDrive(uint32_t cmd)
 
     tlogi("%s drv test ioctl begin args:0x%x fd:%d\n", drvName, inputArg, (int32_t)fd);
 
+    /* 访问fd对应的驱动模块，执行命令ID号为cmd_id对应的业务逻辑 */
     ret = (int)tee_drv_ioctl(fd, cmd, (const void *)(&inputArg), sizeof(inputArg));
     if (ret != 0) {
         tloge("%s drv test ioctl failed, fd:%d \n", drvName, (int32_t)fd);
@@ -647,6 +649,7 @@ static TEE_Result TeeTestDrive(uint32_t cmd)
         }
     }
 
+    /* 关闭fd对应驱动信息 */
     ret |= (int)tee_drv_close(fd);
     if (ret != 0) {
         tloge("drv test fail!\n");
