@@ -82,6 +82,8 @@ OpenTrustee提供的CA API基本是符合GP TEE标准规定的，可参考《[TE
 | TEEC_ReleaseSharedMemory (TEEC_SharedMemory \*sharedMem) | 释放共享内存。 | 
 | TEEC_RequestCancellation (TEEC_Operation \*operation) | 取消正在运行的操作。 | 
 
+**需注意，业务CA需自行添加selinux策略，否则会出现调用CA API失败。**
+
 ## TA开发指导
 
 ### TA安装包
@@ -296,19 +298,7 @@ static TEE_Result get_ta_version(char* buffer, size_t *buf_len)
  */
 TEE_Result TA_CreateEntryPoint(void)
 {
-    TEE_Result ret;
-
     tlogd("----- TA entry point ----- ");
-    tlogd("TA version: %s", TA_TEMPLATE_VERSION);
-
-    ret = AddCaller_CA_exec("/vendor/bin/teec_hello", 0);
-    if (ret == TEE_SUCCESS) {
-        tlogd("TA entry point: add ca whitelist success");
-    } else {
-        tloge("TA entry point: add ca whitelist failed");
-        return TEE_ERROR_GENERIC;
-    }
-
     return TEE_SUCCESS;
 }
 
@@ -542,22 +532,103 @@ TA的API头文件在SDK中include/TA目录下，以下是TA API的支持列表�
 | TEE_SetInstanceData (void \*instanceData) | 用于在同一实例的不同会话中共享的全局变量 | 
 | TEE_GetInstanceData (void) | 获取TEE_SetInstanceData设置的指针 |
 
-- TA安全时间接口（tee_time_api.h）
-
-| 名称 | 描述 | 
-| -------- | -------- |
-| TEE_GetSystemTime (TEE_Time \*time) | 获取当前TEE系统时间 | 
-| TEE_Wait (uint32_t timeout) | 等待指定的毫秒数 | 
-| TEE_GetTAPersistentTime (TEE_Time \*time) | 检索受信任应用程序的持久时间 | 
-| TEE_SetTAPersistentTime (TEE_Time \*time) | 设置当前受信任应用程序的持久化时间 | 
-| TEE_GetREETime (TEE_Time \*time) | 获取当前REE系统时间 | 
-
 - TA扩展接口（tee_ext_api.h）
 
 | 名称 | 描述 | 
 | -------- | -------- |
-| AddCaller_CA_exec (constchar \*ca_name, uint32_t ca_uid) | TA可以调用此API添加调用者信息，允许调用此TA。此API用于CA，以二进制可执行文件的形式 | 
-| TEE_GetSessionType (void) | 获取当前会话类型 | 
+| tee_ext_get_caller_info(caller_info *caller_info_data, uint32_t length) | 获取当前TA的调用者信息 | 
+| tee_get_session_type (void) | 获取当前会话类型 | 
+
+### CA/TA鉴权指导
+为了保证TEE会话一旦建立就是可靠的，OpenTrustee提供了鉴权机制。
+具体而言，先使用tee_get_session_type接口获取会话访问类型（CA访问TA 或者 TA访问TA），然后选择相应的验证策略。
+#### CA访问TA
+TA可以在TA_OpenSessionEntryPoint中通过入参params数组获取CA访问者的信息，根据此信息来判断是否创建会话。
+
+- params[2]: CA的uid以及uid size
+- params[3]: cmdline以及cmdline size
+
+举个例子，代码如下：
+```
+#include <tee_ext_api.h>
+
+TEE_Result TA_OpenSessionEntryPoint(uint32_t parm_type, TEE_Param params[PARAM_COUNT], void** session_context)
+{
+    (void)parm_type;
+    (void)session_context;
+    tlogd("---- TA open session -------- ");
+
+    /* 获取会话类型 */
+    uint32_t session_type = tee_get_session_type();
+
+    /* 只允许CA 访问 此TA，并校验CA信息 */
+    if (session_type == SESSION_FROM_CA) {
+        /* 获取uid */
+        uint32_t uid = *((uint32_t *)params[2].memref.buffer);
+        /* 获取 CA名称和cmdline长度 */
+        char *ca_name = (char *)params[3].memref.buffer;
+        size_t ca_name_size = params[3].memref.size;
+
+        /* 预期值 */
+        uint32_t expected_uid = 0;
+        const char *expected_ca_name = "/vendor/bin/tee_hello";
+
+        if (uid != expected_uid || strncmp(ca_name, expected_ca_name, ca_name_size) != 0) {
+            tloge("caller has no permission");
+            return TEE_ERROR_ACCESS_DENIED;
+        }
+    } else {
+        tloge("invalid session type, type = %d", session_type);
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    /* 初始化其他逻辑，如果需要 */
+
+    return TEE_SUCCESS;
+}
+```
+#### TA访问TA
+TA可以在TA_OpenSessionEntryPoint中通过tee_ext_get_caller_info来获取访问者TA的唯一身份信息uuid，并进行验证。示例代码如下：
+```
+#include <tee_ext_api.h>
+#include <tee_mem_mgmt_api.h>
+
+const TEE_UUID expected_caller_uuid = {
+    0x12345678, 0x1234, 0x1234, {0x12,0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78 }
+};
+
+TEE_Result TA_OpenSessionEntryPoint(uint32_t parm_type, TEE_Param params[PARAM_COUNT], void** session_context)
+{
+    (void)parm_type;
+    (void)params;
+    (void)session_context;
+    tlogd("---- TA open session -------- ");
+
+    /* 获取会话类型 */
+    uint32_t session_type = tee_get_session_type();
+
+    /* 只允许TA 访问 此TA，并校验TA信息 */
+    if (session_type == SESSION_FROM_TA) {
+        /* 获取调用者信息 */
+        caller_info caller_info_data = {0};
+        TEE_Result res = tee_ext_get_caller_info(&caller_info_data, sizeof(caller_info_data));
+        if (res != TEE_SUCCESS)
+            return res;
+
+        /* 校验调用者TA的uuid */
+        if (TEE_MemCompare(&caller_info_data.caller_identity.caller_uuid, &expected_caller_uuid, sizeof(TEE_UUID)) != 0) {
+            tloge("caller has no permission");
+            return TEE_ERROR_ACCESS_DENIED;
+        }
+    } else {
+        tloge("invalid session type, type = %d", session_type);
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    /* 初始化其他逻辑，如果需要 */
+    return TEE_SUCCESS;
+}
+```
 
 ### TEE标准C库支持<a name="ZH-CN_TOPIC_0000001241900905"></a>
 
