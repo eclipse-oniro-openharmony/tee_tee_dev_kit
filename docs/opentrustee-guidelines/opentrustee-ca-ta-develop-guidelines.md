@@ -448,9 +448,10 @@ TA可以在TA_OpenSessionEntryPoint中通过入参params数组获取CA访问者�
 对于native ca来说
 - params[2]: CA的uid以及uid size，可通过/proc/ca pid/status查询
 - params[3]: cmdline以及cmdline size，可通过/proc/ca pid/cmdline查询
+
 对于hap来说
 - params[2]: hap证书及证书size
-- params[3]: hap报名及报名size
+- params[3]: hap包名及包名size
 
 举个例子，代码如下：
 ```
