@@ -26,19 +26,28 @@
 #define DRV_RESERVED_NUM 8U
 
 struct drv_data {
-    int32_t fd; /* unique label which alloced by driver framework */
-    uint32_t taskid; /* caller taskid */
-    void *private_data; /* the private data associated with this fd */
-    struct tee_uuid uuid; /* caller uuid */
+    int32_t fd; /* fd信息，对应驱动的唯一标识 */
+    uint32_t taskid; /* 访问者的taskid */
+    void *private_data; /* 私有数据 */
+    struct tee_uuid uuid; /* 访问者的uuid */
 };
 
+/* 驱动加载时初始化函数 */
 typedef int32_t (*init_func)(void);
 
+/* 驱动在系统休眠时被调用的函数 */
 typedef int32_t (*suspned_func)(void);
+
+/* 驱动在系统唤醒时被调用的函数 */
 typedef int32_t (*resume_func)(void);
 
+/* 驱动被访问时命令分发函数 */
 typedef int64_t (*ioctl_func)(struct drv_data *drv, uint32_t cmd, unsigned long args, uint32_t args_len);
+
+/* 驱动被访问时初始化函数 */
 typedef int64_t (*open_func)(struct drv_data *drv, unsigned long args, uint32_t args_len);
+
+/* 驱动被访问结束时资源释放函数 */
 typedef int64_t (*close_func)(struct drv_data *drv);
 
 struct tee_driver_module {
@@ -413,6 +422,7 @@ int32_t init_test(void)
     return 0;
 }
 
+/* buffer校验的相关逻辑 */
 static int32_t buf_check(uint32_t *buf, uint32_t size, uint32_t args)
 {
     if (buf == NULL) {
@@ -473,6 +483,7 @@ int64_t ioctl_test(struct drv_data *drv, uint32_t cmd, unsigned long args, uint3
     return ret;
 }
 
+/* buffer 初始化 */
 static uint32_t *buf_init(uint32_t args)
 {
     uint32_t *buf = (uint32_t *)malloc(TOKEN_BUF_SIZE * sizeof(uint32_t));
@@ -488,6 +499,7 @@ static uint32_t *buf_init(uint32_t args)
     return buf;
 }
 
+/* 驱动被访问时初始化函数 */
 int64_t open_test(struct drv_data *drv, unsigned long args, uint32_t args_len)
 {
     if (drv == NULL) {
@@ -517,6 +529,7 @@ int64_t open_test(struct drv_data *drv, unsigned long args, uint32_t args_len)
     return 0;
 }
 
+/* 驱动业务逻辑访问结束后的资源清理操作 */
 int64_t close_test(struct drv_data *drv)
 {
     if (drv == NULL) {
@@ -534,24 +547,28 @@ int64_t close_test(struct drv_data *drv)
     return 0;
 }
 
+/* 在系统休眠时由驱动框架自行调用 */
 int32_t suspend_test(void)
 {
     tloge("suspend test begin\n");
     return 0;
 }
 
+/* 在系统唤醒时有驱动框架自行调用 */
 int32_t resume_test(void)
 {
     tloge("resume test begin\n");
     return 0;
 }
 
+/* 在系统s4休眠时被调用的函数 */
 int32_t suspend_s4_test(void)
 {
     tloge("suspend_s4 test begin\n");
     return 0;
 }
 
+/* 在系统s4唤醒时被调用的函数 */
 int32_t resume_s4_test(void)
 {
     tloge("resume_s4 test begin\n");
@@ -575,9 +592,6 @@ tee_driver_declare(drv_test_module, init_test, open_test, ioctl_test, close_test
 #include <test_drv_cmdid.h>
 #include <mem_ops.h>
 
-#define CA_PKGN_VENDOR "/vendor/bin/tee_test_drv"
-#define CA_PKGN_SYSTEM "/system/bin/tee_test_drv"
-#define CA_UID 0
 
 #define DRV_UUID1                                          \
     {                                                      \
@@ -594,6 +608,7 @@ struct share_buffer_arg {
     uint32_t share_token;
 };
 
+/* 访问驱动的各个流程，在TA的TA_InvokeCommandEntryPoint阶段被执行 */
 static TEE_Result TeeTestDrive(uint32_t cmd)
 {
     int ret;
@@ -662,26 +677,15 @@ static TEE_Result TeeTestDrive(uint32_t cmd)
     return (TEE_Result)ret;
 }
 
+/* TA实例的构造函数，每个TA实例的生命周期中只被调用一次 */
 TEE_Result TA_CreateEntryPoint(void)
 {
     tlogi("---- TA_CreateEntryPoint ----------- \n");
-    TEE_Result ret;
-
-    ret = AddCaller_CA_exec(CA_PKGN_VENDOR, CA_UID);
-    if (ret != TEE_SUCCESS) {
-        tloge("add caller failed, ret: 0x%x", ret);
-        return ret;
-    }
-
-    ret = AddCaller_CA_exec(CA_PKGN_SYSTEM, CA_UID);
-    if (ret != TEE_SUCCESS) {
-        tloge("add caller failed, ret: 0x%x", ret);
-        return ret;
-    }
 
     return TEE_SUCCESS;
 }
 
+/* 在CA请求创建一个与TA的会话时，TEE系统会调用此函数 */
 TEE_Result TA_OpenSessionEntryPoint(uint32_t parmType, TEE_Param params[4], void **sessionContext)
 {
     (void)parmType;
@@ -693,6 +697,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t parmType, TEE_Param params[4], void
         return TEE_SUCCESS;
 }
 
+/* 在CA发送指令给TA时，需要指定之前创建成功的会话，TEE系统收到请求后会调用此函数 */
 TEE_Result TA_InvokeCommandEntryPoint(void *sessionContext, uint32_t cmd, uint32_t parmType, TEE_Param params[4])
 {
     TEE_Result ret = TEE_SUCCESS;
@@ -718,12 +723,14 @@ TEE_Result TA_InvokeCommandEntryPoint(void *sessionContext, uint32_t cmd, uint32
     return ret;
 }
 
+/* 在CA发起关闭与TA的会话连接时，TEE系统会调用此函数 */
 void TA_CloseSessionEntryPoint(void *sessionContext)
 {
     (void)sessionContext;
     tlogi("---- TA_CloseSessionEntryPoint ----- \n");
 }
 
+/* TA实例的析构函数，TEE系统在销毁TA实例时调用此函数 */
 void TA_DestroyEntryPoint(void)
 {
     tlogi("---- TA_DestroyEntryPoint ---- \n");
