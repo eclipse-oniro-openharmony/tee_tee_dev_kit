@@ -110,7 +110,7 @@ TA安装包是以“.sec”为后缀名的包文件，文件格式如下：包�
 
 ### TA签名机制
 
-TA签名：由于TA安装包放在非安全侧文件系统中，需要对TA安装包做签名，确保加载到OpenTrutee中的TA安装包没有被篡改。OpenTrustee提供的SDK开发套件中，包含了TA的签名工具，支持对TA安装包一键签名。需要在OpenTrustee SDK开发套件中预置TA签名的私钥。
+TA签名：由于TA安装包放在非安全侧文件系统中，需要对TA安装包做签名，确保加载到OpenTrustee中的TA安装包没有被篡改。OpenTrustee提供的SDK开发套件中，包含了TA的签名工具，支持对TA安装包一键签名。需要在OpenTrustee SDK开发套件中预置TA签名的私钥。
 
 TA验签：在TA安装包加载到OpenTrustee操作系统中时，由OpenTrustee TA管理框架对TA安装包做签名验证，验证通过之后才允许该TA加载运行。需要在OpenTrustee操作系统中预置TA验签的公钥。
 
@@ -992,6 +992,8 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t parm_type, TEE_Param params[PARAM_C
 #### 安全函数库介绍<a name="section11575152912113"></a>
 
 遵循C11 Annex K \(Bounds-checking interfaces\)的标准，选取并实现了常见的内存/字符串操作类的函数，如memcpy\_s、strcpy\_s等函数。
+
+具体可以参考[安全函数库](https://gitee.com/openharmony-sig/tee_tee_dev_kit/blob/master/docs/opentrustee-guidelines/opentrustee-security-driver-guidelines.md#安全函数库)
 
 #### 函数清单<a name="section986312451913"></a>
 
