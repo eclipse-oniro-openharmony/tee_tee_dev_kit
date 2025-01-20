@@ -429,8 +429,8 @@ TEEOS框架代码位置：`base/tee/tee_os_framework`
 
 ### 编译uboot.img
 根据以下步骤编译uboot.img
--  克隆`https://gitee.com/suwanghw/device_rockchip_third_party_rkbin`，其中包含bl31.elf
--  克隆`https://gitee.com/suwanghw/device_rockchip_third_party_uboot`，其中包含u-boot
+-  克隆`https://gitee.com/hihope-rockchip/device_rockchip_third_party_rkbin`，其中包含bl31.elf
+-  克隆`https://gitee.com/hihope-rockchip/device_rockchip_third_party_uboot`，其中包含u-boot
 -  将rkbin和u-boot放在同一目录下, 修改rkbin/RKTRUST/RK3568TRUST.ini中BL32_OPTION下的PATH指向bl32.bin
 -    其中，u-boot/make.sh中有以下内容，搜索RK3568TRUST.ini中包含_bl32_的文件名，如果BL32的文件名是bl32.bin的话，需要修改以下匹配规则
 ```Bash
