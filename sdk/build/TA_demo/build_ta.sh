@@ -16,7 +16,8 @@ set -e
 export SOURCE_PATH=$(dirname $0)
 export ABS_SOURCE_PATH=$(cd ${SOURCE_PATH};pwd)
 export TEE_OH_PATH=${ABS_SOURCE_PATH}/../../../
-export TEE_OH_BUILD_PATH=${TEE_OH_PATH}/build/teekit/
+# export TEE_OH_BUILD_PATH=${TEE_OH_PATH}/build/teekit/
+export TEE_OH_BUILD_PATH=${ABS_SOURCE_PATH}/../
 export TEE_SRC_PATH=${TEE_OH_BUILD_PATH}/TA_demo/
 SIGNTOOL_DIR=${TEE_OH_BUILD_PATH}/script
 
