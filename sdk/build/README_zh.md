@@ -171,7 +171,7 @@ openssl rsa -in  ta_sign_priv_key.pem -pubout -out ta_verify_pub_key.pem
 openssl rsa -in ta_verify_pub_key.pem -pubin -text -noout
 ```
 如下示例为随机生成的rsa验签公钥Modulus信息：
-'''
+```
 RSA Public-Key: (4096 bit)
 Modulus:
     00:bf:b7:80:7f:89:6b:c4:2d:fa:d3:02:8f:f3:f4:
@@ -210,7 +210,7 @@ Modulus:
     4f:1e:73:2c:f3:1c:72:4e:28:9a:10:3a:45:53:b9:
     b1:87:a1
 Exponent: 65537 (0x10001)
-'''
+```
 
 ## Config证书签名指导说明
 
