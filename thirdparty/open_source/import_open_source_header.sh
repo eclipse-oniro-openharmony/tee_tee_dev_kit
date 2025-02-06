@@ -13,7 +13,7 @@
 
 set -e
 
-THIRD_PARTY_ORIGIN=$(pwd)/../../../../../../third_party
+THIRD_PARTY_ORIGIN=$(pwd)/../../../../../third_party
 
 MUSL_CODE=${THIRD_PARTY_ORIGIN}/musl
 EXPORT_MUSL_HEADER_PATH=$(pwd)/musl

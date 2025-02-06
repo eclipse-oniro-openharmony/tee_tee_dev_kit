@@ -20,6 +20,9 @@ set(COMMON_INCLUDES
     ${TEE_OH_PATH}/thirdparty/open_source/bounds_checking_function/include
 )
 
+list(APPEND COMMON_CFLAGS
+    -D__LITEOS__)
+
 if (NOT "${TARGET_IS_ARM64}" STREQUAL "y")
     list(APPEND COMMON_INCLUDES
         ${TEE_OH_PATH}/thirdparty/open_source/musl/libc_32

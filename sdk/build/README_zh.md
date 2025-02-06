@@ -157,6 +157,61 @@ configs.xml文本文件的编写需要参照示例的xml文件格式要求进行
 </ConfigInfo>
 ```
 
+## TA签名公私钥对生成与配置
+通过openssl生成TA对应签名私钥，并将生成的私钥文件ta_sign_priv_key.pem放置于TA_demo目录下用于TA签名：
+```
+openssl genrsa -out ta_sign_priv_key.pem 4096
+```
+并基于生成的私钥文件生成对于的签名公钥文件
+```
+openssl rsa -in  ta_sign_priv_key.pem -pubout -out ta_verify_pub_key.pem
+```
+通过以下命令查看验签公钥的详细信息，获取rsa公钥n值（去除Modulus信息中首位00），并替换base/tee/tee_os_frame_work仓下lib/syslib/libelf_verify_key/src/common/openharmony/ta_verify_key.c中全局结构体 g_ta_verify_pub_rsa_key中结构体中数组n的值：
+```
+openssl rsa -in ta_verify_pub_key.pem -pubin -text -noout
+```
+如下示例为随机生成的rsa验签公钥Modulus信息：
+'''
+RSA Public-Key: (4096 bit)
+Modulus:
+    00:bf:b7:80:7f:89:6b:c4:2d:fa:d3:02:8f:f3:f4:
+    54:6e:a2:51:a1:5c:9a:10:85:b2:37:f4:56:73:6f:
+    11:af:ff:b7:22:04:4b:44:55:47:f7:39:52:cf:e4:
+    0e:ab:19:91:9e:a2:31:65:60:67:39:df:bd:f1:a2:
+    57:aa:f7:0f:ff:d4:4e:11:95:9e:8d:88:f0:9b:70:
+    37:3a:74:d7:14:8e:85:bf:a4:60:74:54:b7:f3:7d:
+    b3:62:b6:bf:f8:6c:18:d3:7e:4e:7d:31:2b:b8:a4:
+    09:04:d8:68:a9:08:7e:34:57:47:b0:d7:c6:11:ee:
+    e0:23:0d:97:a9:1c:a2:ca:27:e6:cc:8e:aa:ea:5f:
+    d5:e2:a2:2e:c3:eb:10:4e:86:bf:ce:b2:c5:0a:39:
+    01:62:da:38:f3:8d:11:0e:b8:a2:f1:4d:97:56:d1:
+    f2:91:75:06:f4:e0:2b:c6:4f:a9:df:e5:1f:e2:19:
+    7a:df:79:6b:39:31:a7:fd:48:5e:72:95:91:23:80:
+    ca:fd:e4:2e:f6:87:8e:cb:d8:73:72:5f:7b:c1:5f:
+    4f:eb:a0:4e:38:08:ea:e0:5c:e7:ec:e5:21:5e:39:
+    11:4d:66:60:95:fc:83:1f:67:6a:46:32:bf:81:b1:
+    7f:ad:0d:ed:e7:1e:eb:1e:09:a0:65:da:e4:71:e7:
+    42:e7:5c:7f:c3:63:9d:5d:da:3b:59:1d:79:1a:d2:
+    f5:3c:c5:51:3a:8b:81:20:f2:33:69:95:0a:03:0b:
+    52:a8:85:1c:e6:5d:a2:39:05:9a:73:c7:d6:d9:5a:
+    42:19:82:60:a9:56:72:f5:88:f5:fa:f7:e5:14:24:
+    b3:9d:93:a4:40:ac:27:ac:6b:83:88:80:68:7e:24:
+    57:a4:a7:8d:41:01:3a:bc:a6:c6:cc:a6:8a:91:14:
+    d7:ca:bf:85:ea:ac:1a:1a:b5:cc:13:1d:82:20:33:
+    2b:55:2f:fd:ac:a5:e3:9e:db:81:af:58:c5:c5:f3:
+    07:b3:f6:b4:bf:26:57:a0:51:3e:60:31:88:70:3e:
+    af:16:fd:0b:6e:55:2b:d5:38:a7:9d:3a:d0:54:d0:
+    cc:30:51:49:c1:a5:05:03:f9:25:35:4d:1c:e1:e0:
+    63:2d:c8:47:0a:0c:78:9d:ce:35:bc:66:39:80:52:
+    04:6e:7c:47:44:2d:d5:4b:54:18:80:8a:a4:4e:d4:
+    69:4b:87:21:92:d1:9f:07:2c:be:02:c9:cf:0a:01:
+    35:c1:68:b5:fd:a5:e2:b1:67:bf:b7:4c:32:cf:1f:
+    ce:9c:d0:12:bd:00:5c:45:f0:ed:46:27:ca:7d:dd:
+    4f:1e:73:2c:f3:1c:72:4e:28:9a:10:3a:45:53:b9:
+    b1:87:a1
+Exponent: 65537 (0x10001)
+'''
+
 ## Config证书签名指导说明
 
 在./script/目录下创建新文件夹，目录结构如下：
