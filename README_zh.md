@@ -1,14 +1,6 @@
 
 # tee_tee_dev_kit仓库说明 <a name="ZH-CN_TOPIC_0000001078026808"></a>
 
--   [术语](#section11660541592)
--   [简介](#section11660541593)
--   [目录](#section161941989596)
--   [使用说明](#section161941989597)
--   [工具依赖](#section11914418405)
--   [使用约束](#section1371113476307)
--   [相关依赖仓](#section1371113476308)
-
 ## 术语<a name="section11660541592"></a>
 
 | 缩略语 | 英文                          | 中文         |
@@ -92,7 +84,7 @@ git clone git@gitee.com:openharmony/third_party_bounds_checking_function.git
 
 TEE SDK中预置了对TA文件进行签名的私钥，该预置私钥只能用来调试，在商用版本中，开发者需要自行替换该私钥。该私钥路径：tee_dev_kit/sdk/build/signkey/ta_sign_priv_key.pem。同时提供了tee_dev_kit/sdk/build/signkey/ta_sign_algo_config.ini脚本，可以用来对签名算法进行配置。默认的签名算法是RSA，密钥长度4096bit。
 
-如果开发者替换了TEE SDK中的签名私钥，需要对应替换OpenTrustee操作系统中的验签公钥，验签公钥的路径：/base/tee/tee_os_framework/lib/syslib/libelf_verify_key/src/common/ta_verify_key.c。
+如果开发者替换了TEE SDK中的签名私钥，需要对应替换OpenTrustee操作系统中的验签公钥，验签公钥的路径：base/tee/tee_os_framework/lib/syslib/libelf_verify_key/src/common/ta_verify_key.c。
 
 ## 工具依赖<a name="section11914418405"></a>
 
@@ -115,6 +107,74 @@ pip install defusedxml
 - 支持开发语言：C语言
 - SDK运行环境：linux操作系统
 - 未提供代码编辑器
+
+## TA开发步骤
+
+开发一个新的TA时，需要在tee_dev_kit/sdk/src/TA目录下创建新的TA源码目录，目录结构可以参考该目录下demo示例代码。以helloworld_demo为例，目录结构如下：
+
+```
+├── helloworld_demo
+    ├── ta_demo.c                  # TA源码文件
+    ├── configs.xml                # TA属性配置文件
+    ├── Makefile                   # TA编译Makefile
+    ├── build_ta.sh                # TA一键生成脚本
+```
+
+### TA代码编写
+
+TA代码必须实现如下GP TEE标准规定的入口函数，详细说明可以参考《[TEE Client API Specification v1.0 (GPD_SPE_007)](https://globalplatform.org/specs-library/?filter-committee=tee)》
+
+| TA入口函数名称             | 函数描述                                              |
+| -------------------------- | ----------------------------------------------------- |
+| TA_CreateEntryPoint        | TA实例的构造函数，每个TA实例的生命周期中只被调用一次  |
+| TA_OpenSessionEntryPoint   | 客户端请求创建一个与TA的会话                          |
+| TA_InvokeCommandEntryPoint | 客户端在创建会话成功后向TA发送指令                    |
+| TA_CloseSessionEntryPoint  | 客户端请求关闭与TA的会话                              |
+| TA_DestroyEntryPoint       | TA示例的析构函数，OpenTrustee在销毁TA实例时调用此函数 |
+
+### TA Makefile编写
+
+TA需要自行编写Makefile文件，可参考SDK中示例代码。有如下要点：
+
+- TA编译生成的目标文件名固定为libcombine.so。
+- 对于64位的TA，需要在Makefile头部增加“TARGET_IS_ARM64 = y”标记；对于32位TA，Makefile中不应包含此标记。
+
+### TA属性配置
+
+每个TA源码目录下需要包含configs.xml，定义该TA的属性信息。
+
+| 属性名              | 数据类型 | 属性描述                                                     | 系统默认值 |
+| ------------------- | -------- | ------------------------------------------------------------ | ---------- |
+| service_name        | String   | TA名称，字符串长度不超过64字符，仅支持数字、字母，'_'和'-'   | 无         |
+| uuid                | UUID     | TA唯一标识                                                   | 无         |
+| instance_keep_alive | Bool     | 如果为true，表示即使TA所有会话被关闭，TA实例也不会被销毁，全局数据仍然存在，直到TEE运行结束。如果为false，表示若TA所有会话关闭，TA实例会被销毁。 | false      |
+| stack_size          | Integer  | TA每个会话的栈空间大小，需要根据TA实际情况评估               | 8192       |
+| heap_size           | Integer  | TA实例占用的堆空间大小，需要根据TA实际情况评估               | 0          |
+| multi_session       | Bool     | TA是否支持同时建立多个会话                                   | false      |
+| single_instance     | Bool     | TA的多个会话是否归属同一个实例(当前只支持singleInstance为true) | true       |
+
+示例如下：
+
+```
+<ConfigInfo>
+  <TA_Basic_Info>
+    <service_name>demo-ta</service_name>
+    <uuid>e3d37f4a-f24c-48d0-8884-3bdd6c44e988</uuid>
+  </TA_Basic_Info>
+  <TA_Manifest_Info>
+    <instance_keep_alive>false</instance_keep_alive>
+    <stack_size>8192</stack_size>
+    <heap_size>81920</heap_size>
+    <multi_session>false</multi_session>
+    <single_instance>true</single_instance>
+  </TA_Manifest_Info>
+</ConfigInfo>
+```
+
+### TA编译和签名
+
+OpenTrustee SDK中提供了TA一键生成脚本，将tee_dev_kit/sdk/build/build_ta.sh拷贝到TA源码目录执行，即完成TA编译、属性配置文件解析、签名等操作，在当前目录生成uuid.sec命名的TA安装包文件。
+
 
 ## 相关依赖仓<a name="section1371113476308"></a>
 
