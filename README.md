@@ -1,15 +1,9 @@
 
 # tee_tee_dev_kit #
 
--[Terminology] (# section11660541592)
--[Introduction] (# section11660541593)
--[Table of Contents] (# section161941989596)
--[Instructions] (# section161941989597)
--[Tool Dependency] (# section11914418405)
--[Using Constraints] (# section1371113476307)
--[Related Dependency Warehouse] (# section1371113476308)
+## Introduction ##
 
-## Terminology ##
+The TEE SDK development kit supports independent development of TA, including TA dependent header files, compilation frameworks, signature scripts, etc.
 
 | Abbreviations | English | Chinese|
 | ------ | ----------------------------- | ------------ |
@@ -17,11 +11,7 @@
 | TA | Trusted Application | Trusted Application|
 | SDK | Software Development Kit | Software Development Kit|
 
-## Introduction ##
-
-The TEE SDK development kit supports independent development of TA, including TA dependent header files, compilation frameworks, signature scripts, etc.
-
-##Table of Contents<a name="section161941989596"></a>
+## Table of Contents<a name="section161941989596"></a>
 
 The directory structure of TEE SDK is as follows:
 
@@ -43,11 +33,11 @@ The directory structure of TEE SDK is as follows:
 └── CHANGELOG
 ```
 
-##Instructions for use<a name="section161941989597"></a>
+## Instructions for use<a name="section161941989597"></a>
 
 Developers need to do some preparation work before using the TEE SDK development kit to develop TA.
 
-###Configure the compilation toolchain
+### Configure the compilation toolchain
 
 The compilation toolchain used by TEE is LLVM, which is consistent with OpenHarmony. Developers need to download the OpenHarmony compilation toolchain first.
 
@@ -71,7 +61,7 @@ export PATH=openharmony/prebuilts/clang/ohos/linux-x86_64/15.0.4/llvm/bin:$PATH
 
 This command is only an example, developers need to specify the correct compilation toolchain path.
 
-###Import third-party header files
+### Import third-party header files
 
 TEE integrates the Musl library and security function library, which TA can use. The TEE SDK does not include header files for the musl library and security function library by default, but provides import scripts. Developers need to download the [musl library] first（ https://gitee.com/openharmony/third_party_musl ）And [Security Function Library]（ https://gitee.com/openharmony/third_party_bounds_checking_function ）Source code repository:
 
@@ -88,13 +78,13 @@ Then execute
 
 Import the musl header file and security function library header file from the source code repository into the TEE SDK.
 
-###Replace TA signature and verification key
+### Replace TA signature and verification key
 
 The TEE SDK has a preset private key for signing TA files, which can only be used for debugging. In the commercial version, developers need to replace this private key themselves. The private key path: tee_dev_kit/sdk/build/signkey/ta_sign_priv_key.pem。 At the same time, it provides the scripts tee_dev-kit/sdk/build/signkey/ta-sign_algonfig.ini, which can be used to configure the signature algorithm. The default signature algorithm is RSA, with a key length of 4096 bits.
 
 If the developer replaces the signature private key in the TEE SDK, they need to correspondingly replace the signature verification public key in the OpenTrustee operating system. The path of the signature verification public key is:/ base/tee/tee_os_framework/lib/syslib/libelf_verify_key/src/common/ta_verify_key.c。
 
-##Tool Dependency<a name="section11914418405"></a>
+## Tool Dependency<a name="section11914418405"></a>
 
 The TEE SDK uses Python scripts to parse TA's property configuration files, sign TA files, and perform other operations, so Python tools need to be installed in the development environment.
 
@@ -116,7 +106,7 @@ If there is a prompt during the compilation process that other Python libraries 
 -SDK runtime environment: Linux operating system
 -No code editor provided
 
-##TA development steps
+## TA development steps
 
 When developing a new TA, it is necessary to create a new TA source code directory in the tee_dev-kit/sdk/src/TA directory. The directory structure can refer to the demo example code in this directory. Taking helloworld_demo as an example, the directory structure is as follows:
 
@@ -128,7 +118,7 @@ When developing a new TA, it is necessary to create a new TA source code directo
 ∝ - build_ta. sh # TA One Click Script Generation
 ```
 
-###TA code writing
+### TA code writing
 
 The TA code must implement the following entry functions specified in the GP TEE standard:
 
@@ -183,7 +173,7 @@ The example is as follows:
 
 The OpenTrustee SDK provides a one click script for TA generation, which copies tee_dev_kit/sdk/build/build_ta.sh to the TA source code directory for execution. This completes TA compilation, property configuration file parsing, signing, and other operations, and generates a TA installation package file named uuid.sec in the current directory.
 
-##Related Dependency Warehouse<a name="section1371113476308"></a>
+## Related Dependency Warehouse<a name="section1371113476308"></a>
 
 [OpenHarmony/build]( https://gitee.com/openharmony/build )
 
