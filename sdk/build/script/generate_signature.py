@@ -53,7 +53,7 @@ def gen_jar_path():
     env = os.environ
     jar_path = env.get("NATIVE_CA_SIGN_JAR_PATH")
     if jar_path == "" or jar_path is None:
-        logging.critical("Set jar tool path:like /home/tools/signcenter/NativeCASign.jar")
+        logging.critical("Set jar tool path")
         jar_path = input("Please input NativeCASign.jar path:")
     return jar_path
 
