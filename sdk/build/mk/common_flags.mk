@@ -11,11 +11,15 @@
 
 # common compile parameters
 CFLAGS += -Wall -Werror
+CFLAGS += -Wdate-time -Wfloat-equal -Wshadow
 CFLAGS += -fno-short-enums
 CFLAGS += -fno-omit-frame-pointer
 CFLAGS += -Wextra -nostdinc
 CFLAGS += -march=armv8-a -fPIC
+CFLAGS += -pipe
 CFLAGS += -fno-common -fsigned-char
+CFLAGS += -ftrivial-auto-var-init=zero
+CFLAGS += -enable-trivial-auto-var-init-zero-knowing-it-will-be-removed-from-clang
 
 ifeq ($(CONFIG_GCC),y)
     CFLAGS += -W
@@ -27,7 +31,7 @@ else
     CFLAGS += -funwind-tables
     CFLAGS += -Oz
     CFLAGS += -munaligned-access -fmax-type-align=1
-    CFLAGS += -flto -fvisibility=default -fsanitize=cfi
+    CFLAGS += -flto -fvisibility=default -fsanitize=cfi -fno-sanitize-cfi-cross-dso
     CFLAGS += -fno-exceptions
     ifeq ($(TARGET_IS_ARM64),y)
         CFLAGS += --target=aarch64-linux-gnu

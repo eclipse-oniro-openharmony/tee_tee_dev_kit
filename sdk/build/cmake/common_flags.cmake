@@ -20,16 +20,17 @@ list(APPEND COMMON_LDFLAGS
 if ("${CONFIG_GCC}" STREQUAL "n")
     list(APPEND COMMON_LDFLAGS
         "SHELL:-z max-page-size=4096"
+        "--execute-only"
     )
-if ("${TARGET_IS_ARM64}" STREQUAL "y")
-    list(APPEND COMMON_LDFLAGS "-execute-only")
-endif()
 endif()
 set(COMMON_LDFLAGS ${COMMON_LDFLAGS} CACHE INTERNAL "")
 
 list(APPEND COMMON_CFLAGS
     -Wall
     -Werror
+    -Wdate-time
+    -Wfloat-equal
+    -Wshadow
     -fno-short-enums
     -fno-omit-frame-pointer
     -Wstack-protector
@@ -40,6 +41,8 @@ list(APPEND COMMON_CFLAGS
     -fPIC
     -fno-common
     -fsigned-char
+    -DCONFIG_AUTH_TERMINAL
+    -pipe
 )
 if ("${CONFIG_GCC}" STREQUAL "y")
     list(APPEND COMMON_CFLAGS
@@ -60,6 +63,8 @@ else()
         -fvisibility=default
         -fsanitize=cfi
         -fno-exceptions
+        -ftrivial-auto-var-init=zero
+        -enable-trivial-auto-var-init-zero-knowing-it-will-be-removed-from-clang
     )
     if ("${TARGET_IS_ARM64}" STREQUAL "n")
         list(APPEND COMMON_CFLAGS

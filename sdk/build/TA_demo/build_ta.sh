@@ -16,8 +16,7 @@ set -e
 export SOURCE_PATH=$(dirname $0)
 export ABS_SOURCE_PATH=$(cd ${SOURCE_PATH};pwd)
 export TEE_OH_PATH=${ABS_SOURCE_PATH}/../../../
-# export TEE_OH_BUILD_PATH=${TEE_OH_PATH}/build/teekit/
-export TEE_OH_BUILD_PATH=${ABS_SOURCE_PATH}/../
+export TEE_OH_BUILD_PATH=${TEE_OH_PATH}/build/teekit/
 export TEE_SRC_PATH=${TEE_OH_BUILD_PATH}/TA_demo/
 SIGNTOOL_DIR=${TEE_OH_BUILD_PATH}/script
 
@@ -105,10 +104,10 @@ else
     esac
 
     python3 ${SIGNTOOL_DIR}/ta_check_undefined_symbol.py ${TEE_SRC_PATH}/libcombine.so
-    if [ ${SIGNATURE_VER} == "V3" ];then
+    if [ "${SIGNATURE_VER}" == "V3" ];then
         python3 -B ${SIGNTOOL_DIR}/signtool_sec.py --in_path ${TEE_SRC_PATH} --out_path ${TEE_SRC_PATH} \
             --privateCfg ${TEE_OH_BUILD_PATH}/config/ta_sign_algo_config.ini
-    elif [ ${SIGNATURE_VER} == "V3_1" ];then
+    elif [ "${SIGNATURE_VER}" == "V3_1" ];then
         python3 -B ${SIGNTOOL_DIR}/signtool_sec.py --in_path ${TEE_SRC_PATH} --out_path ${TEE_SRC_PATH} \
             --privateCfg ${TEE_OH_BUILD_PATH}/config/ta_sign_algo_config.ini \
             --publicCfg ${TEE_OH_BUILD_PATH}/config/config_ta_public.ini

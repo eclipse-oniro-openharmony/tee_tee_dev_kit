@@ -359,13 +359,13 @@ def parser_manifest(manifest, manifest_data_path, mani_ext):
                 mani_ext_fp, target_info)
             if result is False:
                 mani_ext_fp.close()
-                return (False, 0, 0)
+                return (False, 0, 0, None)
         mani_ext_fp.close()
         #write the whole parsed manifest into sample.manifest file
     uuid_val = target_info.uuid_val
     ret, target_info.target_type = update_target_type(target_info)
     if ret is False:
-        return (False, 0, 0)
+        return (False, 0, 0, None)
 
     # get manifest string file len
     manifest_str_size = os.path.getsize(mani_ext)
@@ -392,9 +392,9 @@ def parser_manifest(manifest, manifest_data_path, mani_ext):
     out_manifest_fp.close()
     ret, product_name, uuid_str = gen_product_name(uuid_val, target_info)
     if ret is False:
-        return (False, 0, 0)
+        return (False, 0, 0, None)
 
-    return (True, product_name, uuid_str)
+    return (True, product_name, uuid_str, manifest_val)
 
 
 class ManifestInfo:
@@ -416,7 +416,7 @@ def process_manifest_file(xml_config_path, manifest_path, \
         from xml_trans_manifest import trans_xml_to_manifest
         trans_xml_to_manifest(xml_config_path, manifest_path)
 
-    ret, product_name, uuid_str = parser_manifest(manifest_path, \
+    ret, product_name, uuid_str, manifest_val = parser_manifest(manifest_path, \
         manifest_data_path, mani_ext)
     manifest_info = ManifestInfo(ret, product_name, uuid_str, manifest_txt_exist)
-    return manifest_info
+    return manifest_info, manifest_val

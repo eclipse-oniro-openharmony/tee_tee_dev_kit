@@ -49,7 +49,7 @@ def get_policy_version(config_file):
         if Configuration.check_cfg_format(cfg):
             sys.exit(1)
         if cfg.policy == "0":
-            base_policy_ver  = BASE_POLICY_VERSION_OH
+            base_policy_ver = BASE_POLICY_VERSION_OH
         else:
             base_policy_ver = BASE_POLICY_VERSION_TEE
     if os.path.isfile("./xml2tlv.jar"):
@@ -298,7 +298,7 @@ class Configuration:
         if whitelist_check(self.policy):
             logging.error("signConfigPrivateCfg is invalid")
             return 1
-
+        return 0
 
 def pack_signature(signature_path, signature_size):
     add_size = 72 - signature_size

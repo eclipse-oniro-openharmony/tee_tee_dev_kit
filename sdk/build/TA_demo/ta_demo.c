@@ -54,7 +54,14 @@ TEE_Result TA_CreateEntryPoint(void)
     tlogd("----- TA entry point ----- ");
     tlogd("TA version: %s", TA_TEMPLATE_VERSION);
 
-    ret = AddCaller_CA_exec("/vendor/bin/teec_hello", 0);
+    // cmdline: /vendor/bin/teec_hello, uid: 0
+    const uint8_t hash[] = {
+        0xca, 0x9f, 0x5e, 0xd7, 0x6d, 0x7, 0xd, 0x66,
+        0xe7, 0xb2, 0xab, 0xb3, 0x55, 0xfc, 0xb0, 0xbf,
+        0xc8, 0x16, 0x52, 0x37, 0x5f, 0xfe, 0x99, 0xfc,
+        0x34, 0x43, 0xf6, 0x5f, 0xc, 0x70, 0x44, 0x48,
+    };
+    ret = AddCaller_CA(hash, sizeof(hash));
     if (ret == TEE_SUCCESS) {
         tlogd("TA entry point: add ca whitelist success");
     } else {

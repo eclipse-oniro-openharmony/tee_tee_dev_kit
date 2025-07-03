@@ -16,7 +16,6 @@ INCLUDEDIR += -I$(TEE_OH_PATH)/sysroot/usr/include/tee \
     -I$(TEE_OH_PATH)/thirdparty/open_source/bounds_checking_function/include
 
 CFLAGS += -Wstack-protector --param ssp-buffer-size=4
-CFLAGS += -D__LITEOS__
 
 ifneq ($(TARGET_IS_ARM64), y)
     CFLAGS += -marm
