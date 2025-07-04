@@ -57,27 +57,35 @@ def gen_jar_path():
         jar_path = input("Please input NativeCASign.jar path:")
     return jar_path
 
+def get_add_opens_flag(cfg):
+    add_opens_flag = ""
+    if cfg.jdk_version == "11":
+        add_opens_flag = "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    return add_opens_flag
 
 def signed_by_jar_tool(cfg, raw_data, hash_file_path, uuid_str, raw_data_path, out_file_path):
     """ signed by sign server using sign.jar tool """
     (user_id, password) = gen_identity()
     jar_path = gen_jar_path()
     cmd = ""
+    add_opens_flag = get_add_opens_flag(cfg)
     if cfg.sign_key_len == "2048":
         gen_hash(cfg.hash_type, raw_data, hash_file_path)
-        cmd = 'java -jar %s %s %s %s %s %s %s' \
-                % (jar_path, cfg.server_ip, user_id, password, \
+        cmd = 'java %s -jar %s %s %s %s %s %s %s' \
+                % (add_opens_flag, jar_path, cfg.server_ip, user_id, password, \
                 cfg.sign_key, hash_file_path, out_file_path)
     elif cfg.sign_key_len == "4096":
-        if cfg.hash_type == '0': #sha256
-            cmd = 'java -jar %s -uuid %s \
+        if cfg.hash_type == '0': 
+            # sha256
+            cmd = 'java %s -jar %s -uuid %s \
                     -signAlg SHA256withRSA/PSS %s %s %s %s %s %s' \
-                    % (jar_path, uuid_str, cfg.server_ip, user_id, password, \
+                    % (add_opens_flag, jar_path, uuid_str, cfg.server_ip, user_id, password, \
                     cfg.sign_key, raw_data_path, out_file_path)
-        else: #sha512
-            cmd = 'java -jar %s -uuid %s \
+        else: 
+            # sha512
+            cmd = 'java %s -jar %s -uuid %s \
                     -signAlg SHA512withRSA/PSS %s %s %s %s %s %s' \
-                    % (jar_path, uuid_str, cfg.server_ip, user_id, password, \
+                    % (add_opens_flag, jar_path, uuid_str, cfg.server_ip, user_id, password, \
                     cfg.sign_key, raw_data_path, out_file_path)
     logging.info("sign key len : %s ", cfg.sign_key_len)
     try:

@@ -32,12 +32,14 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 
+from memctrl_checker import check_memory_baseline
+
 TYPE_PUBKEY = 0
 TYPE_CERT = 1
 TYPE_CERT_CHAIN = 2
 
 MAGIC1 = 0xA5A55A5A
-MAGIC2 = 0x55AA
+MAGIC2 = 0xAAAA
 
 # ELF Definitions
 ELF_TYPE = 32
@@ -61,6 +63,9 @@ ELF_INFO_CLASS_64 = 2
 ELF_INFO_VERSION_INDEX = 6
 ELF_INFO_VERSION_CURRENT = 1
 ELF_BLOCK_ALIGN = 0x1000
+
+DEFAULT_INI_NAME = "config_cbg_release.ini"
+DEFAULT_INI_PATH = "../../../../../../vendor/huawei/base/tee/tee_dev_kit_ext/config/"
 
 SEC_HEADER_BYTES = 16
 logging.basicConfig(level=logging.INFO)
@@ -137,7 +142,9 @@ class AllCfg:
     in_path = ""
     out_path = ""
     sign_ta_alg = "0"
-
+    ini_path = ""
+    memctrl_path = ""
+    disable_memctrl = "0"
 
 class PublicCfg:
     def __init__(self, file_name, all_cfg):
@@ -168,7 +175,8 @@ class PublicCfg:
             all_cfg.sign_key_type = parser.get(cfg_section, "secSignKeyType")
         if parser.has_option(cfg_section, "secTaCertChain"):
             all_cfg.ta_cert_chain = parser.get(cfg_section, "secTaCertChain")
-
+        if parser.has_option(cfg_section, "disableMemctrlCheck"):
+            all_cfg.disable_memctrl = parser.get(cfg_section, "disableMemctrlCheck")
 
 class PrivateCfg:
     def __init__(self, file_name, all_cfg):
@@ -197,7 +205,10 @@ class PrivateCfg:
             all_cfg.key_protect_v = parser.get(cfg_section, "secKeyProtectVersion")
         if parser.has_option(cfg_section, "secSignTaAlg"):
             all_cfg.sign_ta_alg = parser.get(cfg_section, "secSignTaAlg")
-
+        if parser.has_option(cfg_section, "jdkVersion"):
+            all_cfg.jdk_version = parser.get(cfg_section, "jdkVersion")
+        else:
+            all_cfg.jdk_version = "8"
 
 def check_key_info(cfg):
     ''' check ini key info '''
@@ -403,15 +414,19 @@ def aes_encrypt(key_data, iv_data, in_file_path, out_file_path):
     return
 
 
-def parser_api_level(mk_compile_cfg, cmake_compile_cfg):
+def parser_api_level(mk_compile_cfg, cmake_compile_cfg, mk_config_cfg, cmake_config_cfg):
     default_api_level = 2
     compile_cfg_file = ''
 
-    # The mk file is first searched.
-    # The cmake file is searched only when the mk file does
-    # not exist. If the API_LEVEL macro is not defined in either of the
-    # two files, the default value LEVEL 2 is used.
-    if os.path.exists(mk_compile_cfg):
+    # Search the config.mk, config.cmake, Makefile, and CMakeLists.txt files in the input directory
+    # for the API_LEVEL macro definition.
+    # If multiple files exist in the input directory, the API_LEVEL defined in the first file is preferred.
+    # If the API_LEVEL macro is not defined in either of the four files, the default value LEVEL 2 is used.
+    if os.path.exists(mk_config_cfg):
+        compile_cfg_file = mk_config_cfg
+    elif os.path.exists(cmake_config_cfg):
+        compile_cfg_file = cmake_config_cfg
+    elif os.path.exists(mk_compile_cfg):
         compile_cfg_file = mk_compile_cfg
     elif os.path.exists(cmake_compile_cfg):
         compile_cfg_file = cmake_compile_cfg
@@ -424,9 +439,6 @@ def parser_api_level(mk_compile_cfg, cmake_compile_cfg):
             if line.startswith("#") or "-DAPI_LEVEL" not in line:
                 continue
             key, value = line.strip().split("-DAPI_LEVEL=")
-            if int(value[0]) < default_api_level:
-                logging.info("Error API_LEVEL=%s, use default level", value[0])
-                return default_api_level
             return value[0]
 
     logging.error("Build Config file doesn't define API_LEVEL")
@@ -436,14 +448,16 @@ def parser_api_level(mk_compile_cfg, cmake_compile_cfg):
 def update_api_level(cfg, manifest):
     mk_compile_cfg = os.path.join(cfg.in_path, "Makefile")
     cmake_compile_cfg = os.path.join(cfg.in_path, "CMakeLists.txt")
+    mk_config_cfg = os.path.join(cfg.in_path, "config.mk")
+    cmake_config_cfg = os.path.join(cfg.in_path, "config.cmake")
     data = ''
     with open(manifest, 'r') as file_op:
         for line in file_op:
             if line.startswith("#") or "gpd.ta.api_level" not in line:
                 data += line
 
-    api_level = parser_api_level(mk_compile_cfg, cmake_compile_cfg)
-    line = "gpd.ta.api_level:{}\n".format(api_level)
+    api_level = parser_api_level(mk_compile_cfg, cmake_compile_cfg, mk_config_cfg, cmake_config_cfg)
+    line = "\ngpd.ta.api_level:{}\n".format(api_level)
     data += line
     fd_op = os.open(manifest, os.O_WRONLY | os.O_CREAT, \
         stat.S_IWUSR | stat.S_IRUSR)
@@ -630,7 +644,7 @@ def prepare_data(cfg, temp_path):
     xml_config_path = os.path.join(cfg.in_path, "configs.xml")
 
     # 1. parser_manifest
-    manifest_info = process_manifest_file(xml_config_path, \
+    manifest_info, manifest_val = process_manifest_file(xml_config_path, \
             manifest_path, manifest_data_path, manifest_ext_path)
     if manifest_info.ret is False:
         raise RuntimeError
@@ -661,7 +675,7 @@ def prepare_data(cfg, temp_path):
     if manifest_info.manifest_txt_exist is False and os.path.exists(manifest_path):
         os.remove(manifest_path)
     
-    return manifest_info, data_for_sign, key_info_data
+    return manifest_info, data_for_sign, key_info_data, manifest_val
 
 
 def update_content_len(cfg, key_data_path, raw_data_path, signature_path):
@@ -723,28 +737,37 @@ def gen_sec_image(temp_path, cfg):
     shutil.rmtree(temp_path, ignore_errors=True)
     os.mkdir(temp_path)
     os.chmod(temp_path, stat.S_IRWXU)
-    manifest_info, data_for_sign, key_info_data = prepare_data(cfg, temp_path)
+    manifest_info, data_for_sign, key_info_data, manifest_val = prepare_data(cfg, temp_path)
 
     uuid_str = manifest_info.uuid_str
     uuid_str = uuid_str[0:36]
     logging.info("uuid str %s", uuid_str)
+    if cfg.disable_memctrl != "1" and not check_memory_baseline(cfg, uuid_str, manifest_val):
+        logging.error("memory baseline checking failed, but sign will continue temporarily.")
     gen_signature(cfg, uuid_str, data_for_sign, key_info_data, temp_path)
 
     pack_sec_img(cfg, manifest_info, temp_path)
+    return True
 
 
-def check_inout_path(in_path, out_path):
+def check_path_invalid(in_path, out_path, ini_path):
     if not os.path.exists(in_path):
         logging.error("input_path does not exist.")
         return 1
     if not os.path.exists(out_path):
         logging.error("out_path does not exist.")
         return 1
+    if not os.path.exists(ini_path):
+        logging.error("ini_path does not exist, %s", ini_path)
+        return 1
     if whitelist_check(in_path):
         logging.error("input_path is incorrect.")
         return 1
     if whitelist_check(out_path):
         logging.error("out_path is incorrect.")
+        return 1
+    if whitelist_check(ini_path):
+        logging.error("ini_path is incorrect.")
         return 1
     return 0
 
@@ -759,16 +782,21 @@ def define_parser():
         help="sign cfg for ta developer", type=str)
     parser.add_argument("--privateCfg", \
         help="sign cfg for product developer", type=str)
+    parser.add_argument("--memctrl_path", \
+        help="path to memory baseline control cfgs", type=str, default="")
     return parser
 
 
 def init_cfg(args):
     cfg = AllCfg()
     if args.privateCfg:
+        private_cfg_name = os.path.basename(args.privateCfg)
+        if private_cfg_name != DEFAULT_INI_NAME:
+            logging.warning("The sec signature of a non-release version cannot be loaded on a commercial device.")
         PrivateCfg(args.privateCfg, cfg)
     else:
-        logging.error("please config private cfg file")
-        raise RuntimeError
+        args.privateCfg = os.path.join(DEFAULT_INI_PATH, DEFAULT_INI_NAME)
+        PrivateCfg(args.privateCfg, cfg)
 
     if args.publicCfg:
         PublicCfg(args.publicCfg, cfg)
@@ -780,8 +808,12 @@ def init_cfg(args):
         raise RuntimeError
     cfg.in_path = os.path.realpath(args.in_path)
     cfg.out_path = os.path.realpath(args.out_path)
-    if check_inout_path(cfg.in_path, cfg.out_path):
+    ini_path = os.path.dirname(args.privateCfg)
+    if check_path_invalid(cfg.in_path, cfg.out_path, ini_path):
         raise RuntimeError
+    cfg.ini_path = os.path.realpath(ini_path)
+    cfg.public_key = os.path.join(cfg.ini_path, cfg.public_key)
+    cfg.memctrl_path = args.memctrl_path if cfg.release_type != "0" else ""
     return cfg
 
 
@@ -793,11 +825,12 @@ def main():
     os.chdir(sign_tool_dir)
 
     temp_path = os.path.join(cfg.out_path, "temp")
-    gen_sec_image(temp_path, cfg)
+    ok = gen_sec_image(temp_path, cfg)
     #remove temp files
     shutil.rmtree(temp_path)
+    if not ok:
+        raise RuntimeError
 
 
 if __name__ == '__main__':
     main()
-

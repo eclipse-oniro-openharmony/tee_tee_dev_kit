@@ -67,6 +67,7 @@ SECTIONS
     {
       *(.rela.plt)
     }
+  . = ALIGN(0x1000);
   .init           :
   {
     KEEP (*(SORT_NONE(.init)))
@@ -90,6 +91,7 @@ SECTIONS
   PROVIDE (__etext = .);
   PROVIDE (_etext = .);
   PROVIDE (etext = .);
+  . = ALIGN(0x1000);
   .rodata         :
   {
     *(.rodata .rodata.* .gnu.linkonce.r.*)

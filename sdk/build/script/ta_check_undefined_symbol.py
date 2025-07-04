@@ -23,11 +23,13 @@ import sys
 import CppHeaderParser
 import shutil
 import logging
+import stat
 
 exception_files = []
 script_dir = os.path.dirname(os.path.realpath(__file__))
 whitelist_path = "temp/whitelist.txt"
-headers_check_path = script_dir + "/headers_check.txt"
+headers_check_path = os.path.join(script_dir, 'headers_check.txt')
+
 
 class SymbolInfo:
     ''' symbol table param  '''
@@ -55,11 +57,11 @@ def save_elf_symbol(elf_path):
     sym_info = SymbolInfo(0, 0, 0, 0, 0)
     cmd = "objdump -T %s" % elf_path
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    process.wait()
-    output = str(process.stdout.read(), encoding="utf-8").split('\n')[4:]
+    output, error = process.communicate()
+    output = (output.decode('utf-8')).split('\n')[4:]
 
     symbol_table = []
-    for i in range(len(output)):
+    for (i, _) in enumerate(output):
         info = output[i].split()
         if len(info) < len(sym_info):
             continue
@@ -73,7 +75,7 @@ def save_elf_symbol(elf_path):
 
 def find_undefine_symbol(symbol_table):
     ''' get undefined symbols '''
-    return [ info.name for info in symbol_table if info.part == "*UND*" ]
+    return [info.name for info in symbol_table if info.part == "*UND*"]
 
 
 def clean_temp_file():
@@ -82,14 +84,14 @@ def clean_temp_file():
         shutil.rmtree("temp")
 
 
-def get_whitelist(whitelist_path):
+def get_whitelist(whitelist_path_name):
     ''' get whitelist info from file '''
-    if not os.path.exists(whitelist_path):
-        logging.error("whitelist path not exist: " + whitelist_path)
+    if not os.path.exists(whitelist_path_name):
+        logging.error("whitelist path not exist: %s", whitelist_path_name)
         return []
 
-    with open(whitelist_path, 'r') as f:
-        return [ line.strip('\n') for line in f.readlines() ]
+    with open(whitelist_path_name, 'r') as f:
+        return [line.strip('\n') for line in f.readlines()]
 
 
 def check_symbol_in_whitelist(whitelist, function_table):
@@ -112,7 +114,7 @@ def get_all_headers_file_path(headers_path):
     for one_path in headers_path:
         real_path = os.path.realpath(one_path)
         if not os.path.exists(real_path):
-            logging.error("path not exist: " + real_path)
+            logging.error("path not exist: %s", real_path)
             continue
 
         for maindir, _, filename_list in os.walk(real_path):
@@ -129,7 +131,14 @@ def gen_whitelist_from_headers(headers_path):
     if not os.path.exists("temp"):
         os.mkdir("temp")
 
-    with open(whitelist_path, 'a+') as f:
+    if not os.path.exists(whitelist_path):
+        flag = os.O_RDWR | os.O_TRUNC | os.O_CREAT
+        mode = stat.S_IWUSR | stat.S_IRUSR
+    else:
+        flag = os.O_RDWR
+        mode = 0o600
+    whitelist_path_fd = os.open(whitelist_path, flag, mode)
+    with os.fdopen(whitelist_path_fd, 'a+') as f:
         paths = get_all_headers_file_path(headers_path)
         if paths == []:
             logging.critical("Not found any headers files!")
@@ -138,16 +147,18 @@ def gen_whitelist_from_headers(headers_path):
             try:
                 header = CppHeaderParser.CppHeader(file_name)
                 for func in header.functions:
-                    f.write(func['name'] + '\n')
+                    f.write('%s\n' % func['name'])
             except Exception as e:
                 exception_files.append(file_name)
-                logging.critical(file_name + " has exception, skip it.")
+                logging.critical("%s has exception, skip it.", file_name)
 
 
 def gen_temp_headers_without_note(exception_file):
     ''' del chinese words note in file '''
     file_name = "temp/" + exception_file.split("/")[-1]
-    with open(file_name, "w+") as f_f:
+    file_name_fd = os.open(file_name, os.O_RDWR | os.O_TRUNC | os.O_CREAT, \
+        stat.S_IWUSR | stat.S_IRUSR)
+    with os.fdopen(file_name_fd, "w+") as f_f:
         with open(exception_file, 'r', encoding='GBK') as e_f:
             for line in e_f.readlines():
                 if line.strip().startswith("*") or line.strip().startswith("/*") or line.strip().startswith("*/"):
@@ -157,20 +168,20 @@ def gen_temp_headers_without_note(exception_file):
     return file_name
 
 
-def proc_exception_files(exception_files):
+def proc_exception_files(exception_files_list):
     ''' proccess all exceptional file '''
-    [ logging.critical("exceptional file " + file.split("/")[-1] + " processing")
-      for file in list(map(gen_temp_headers_without_note, exception_files)) ]
+    [logging.critical("exceptional file " + file.split("/")[-1] + " processing")
+      for file in list(map(gen_temp_headers_without_note, exception_files_list))]
 
 
-def get_headers_path(headers_check_path):
+def get_headers_path(headers_check_path_name):
     ''' read headers_check.txt and get headers path '''
-    if not os.path.exists(headers_check_path):
+    if not os.path.exists(headers_check_path_name):
         logging.error("Not found headers_check.txt.")
         return []
 
-    with open(os.path.realpath(headers_check_path), 'r') as f:
-        return [ script_dir + '/' + line.strip('\n') for line in f.readlines() ]
+    with open(os.path.realpath(headers_check_path_name), 'r') as f:
+        return [script_dir + '/' + line.strip('\n') for line in f.readlines()]
 
 
 def main():
