@@ -187,6 +187,7 @@ def update_target_type(target_info):
         return (False, 0)
     return (True, target_type)
 
+
 class TargetInfo:
     def __init__(self, dyn_conf_target_type, service_name, target_type, uuid_val):
         self.dyn_conf_target_type = dyn_conf_target_type
@@ -233,6 +234,7 @@ def check_prop_info(prop_name, prop_value_v):
         logging.error("manifest format invalid, please check it")
         return False
     return True
+
 
 class PropInfo:
     def __init__(self, prop_name, prop_name_t, prop_value_t):
