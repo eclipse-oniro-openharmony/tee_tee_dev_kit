@@ -70,6 +70,7 @@ DEFAULT_INI_PATH = "../../../../../../vendor/huawei/base/tee/tee_dev_kit_ext/con
 SEC_HEADER_BYTES = 16
 logging.basicConfig(level=logging.INFO)
 
+
 def check_cfg_whitelist_format(intput_str):
     if intput_str != "":
         if whitelist_check(intput_str):

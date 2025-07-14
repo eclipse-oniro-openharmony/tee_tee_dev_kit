@@ -286,6 +286,7 @@ def check_drv_cmd_perm_info_item_permission(dyn_key, attrib, value, origin_value
         raise RuntimeError("you should set cmd while you set cmd permission")
     check_permssion_unique(value, origin_value)
 
+
 def check_drv_cmd_perm_info_item_cmd(dyn_key, attrib, value, origin_value):
 
     if len(dyn_key) == 0:
@@ -309,6 +310,7 @@ def check_drv_cmd_perm_info_item_cmd(dyn_key, attrib, value, origin_value):
         raise RuntimeError("you should set permission while \
             you set cmd permission")
     check_cmd_unique(value, origin_value)
+
 
 def check_mac_info_item_permission(dyn_key, attrib, value, origin_value):
     if len(value) == 0:
@@ -415,6 +417,7 @@ def check_ta_config_heap_size(dyn_key, attrib, value, origin_value):
 def check_ta_config_rpmb_size(dyn_key, attrib, value, origin_value):
     if int(value, 10) > 0xffffffff or int(value, 10) <= 0:
         raise Exception("rpmb size is invalid", value)
+
 
 def check_ta_config_device_id(dyn_key, attrib, value, origin_value):
     if len(value) != 64:
