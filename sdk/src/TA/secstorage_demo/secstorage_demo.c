@@ -199,8 +199,9 @@ TEE_Result enumerator_sample()
     }
 
     ret = TEE_GetNextPersistentObject(object_enumerator, &obj_info, object_id, &object_id_len);
-    if (ret != TEE_SUCCESS)
+    if (ret != TEE_SUCCESS) {
         tloge("Failed get next persistent object");
+    }
 clean:
     TEE_FreePersistentObjectEnumerator(object_enumerator);
     return ret;
