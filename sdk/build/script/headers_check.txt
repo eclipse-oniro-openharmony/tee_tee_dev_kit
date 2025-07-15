@@ -1,3 +1,3 @@
-../../../sysroot/usr/include/tee/
-../../../thirdparty/open_source/bounds_checking_function
-../../../thirdparty/open_source/musl
+../../../sysroot/usr/include/TEEKit/tee/
+../../../build/teekit/thirdparty/open_source/bounds_checking_function
+../../../build/teekit/thirdparty/open_source/musl

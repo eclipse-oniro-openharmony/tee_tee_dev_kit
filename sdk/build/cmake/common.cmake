@@ -16,16 +16,16 @@ include (${TEE_OH_BUILD_PATH}/cmake/common_flags.cmake)
 
 set(COMMON_INCLUDES
     ${COMMON_INCLUDES}
-    ${TEE_OH_PATH}/sysroot/usr/include/tee
-    ${TEE_OH_PATH}/thirdparty/open_source/bounds_checking_function/include
+    ${TEE_OH_PATH}/sysroot/usr/include/TEEKit/tee
+    ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/bounds_checking_function/include
 )
 
 if (NOT "${TARGET_IS_ARM64}" STREQUAL "y")
     list(APPEND COMMON_INCLUDES
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc_32
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc_32/arch/generic
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc_32/arch/arm/bits
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc_32/arch/arm
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc_32
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc_32/arch/generic
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc_32/arch/arm/bits
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc_32/arch/arm
     )
 
     list(APPEND COMMON_CFLAGS
@@ -38,10 +38,10 @@ if (NOT "${TARGET_IS_ARM64}" STREQUAL "y")
 
 else()
     list(APPEND COMMON_INCLUDES
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc/arch/generic
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc/arch/aarch64/bits
-        ${TEE_OH_PATH}/thirdparty/open_source/musl/libc/arch/aarch64
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc/arch/generic
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc/arch/aarch64/bits
+        ${TEE_OH_PATH}/build/teekit/thirdparty/open_source/musl/libc/arch/aarch64
     )
 
     list(APPEND COMMON_LDFLAGS

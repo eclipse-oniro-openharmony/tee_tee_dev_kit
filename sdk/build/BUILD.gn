@@ -47,6 +47,7 @@ copy("tee_ndk_script") {
     "./script/headers_check.txt",
     "./script/manifest.py",
     "./script/manifest_tag_parse_dict.csv",
+    "./script/memctrl_checker.py",
     "./script/signtool_sec.py",
     "./script/tag_parse_dict.csv",
     "./script/ta_check_undefined_symbol.py",
@@ -82,6 +83,13 @@ copy("tee_ndk_tools") {
   outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/tools/{{source_file_part}}" ]
 }
 
+copy("tee_ndk_import_shell") {
+  sources = [
+    "../../thirdparty/open_source/import_open_source_header.sh",
+  ]
+  outputs = [ "$ndk_os_irrelevant_out_dir/build/teekit/thirdparty/open_source/{{source_file_part}}" ]
+}
+
 group("tee_ndk_ta_linux_compile") {
     deps = [
         ":tee_ndk_make",
@@ -91,5 +99,6 @@ group("tee_ndk_ta_linux_compile") {
         ":tee_ndk_ld",
         ":tee_ndk_src",
         ":tee_ndk_tools",
+        ":tee_ndk_import_shell",
     ]
 }

@@ -12,8 +12,8 @@
 include $(TEE_OH_BUILD_PATH)/mk/common_flags.mk
 
 # set header directory
-INCLUDEDIR += -I$(TEE_OH_PATH)/sysroot/usr/include/tee \
-    -I$(TEE_OH_PATH)/thirdparty/open_source/bounds_checking_function/include
+INCLUDEDIR += -I$(TEE_OH_PATH)/sysroot/usr/include/TEEKit/tee
+INCLUDEDIR += -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/bounds_checking_function/include
 
 CFLAGS += -Wstack-protector --param ssp-buffer-size=4
 
@@ -22,15 +22,15 @@ ifneq ($(TARGET_IS_ARM64), y)
 endif
 
 ifneq ($(TARGET_IS_ARM64),y)
-    INCLUDEDIR += -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc_32 \
-                  -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc_32/arch/arm \
-                  -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc_32/arch/arm/bits \
-                  -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc_32/arch/generic
+    INCLUDEDIR += -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc_32 \
+                  -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc_32/arch/arm \
+                  -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc_32/arch/arm/bits \
+                  -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc_32/arch/generic
 else
-    INCLUDEDIR += -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc \
-                  -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc/arch/aarch64 \
-                  -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc/arch/aarch64/bits \
-                  -I$(TEE_OH_PATH)/thirdparty/open_source/musl/libc/arch/generic
+    INCLUDEDIR += -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc \
+                  -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc/arch/aarch64 \
+                  -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc/arch/aarch64/bits \
+                  -I$(TEE_OH_PATH)/build/teekit/thirdparty/open_source/musl/libc/arch/generic
 endif
 
 ifneq ($(TARGET_IS_ARM64),y)
