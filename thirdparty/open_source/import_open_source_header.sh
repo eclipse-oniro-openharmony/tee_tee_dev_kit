@@ -13,7 +13,7 @@
 
 set -e
 
-THIRD_PARTY_ORIGIN=$(pwd)/../../../../../third_party
+THIRD_PARTY_ORIGIN=$(pwd)/../../../../../../../../third_party
 
 MUSL_CODE=${THIRD_PARTY_ORIGIN}/musl
 EXPORT_MUSL_HEADER_PATH=$(pwd)/musl
@@ -40,6 +40,7 @@ function do_copy_musl_header_file() {
     mkdir -p ${LIBC_HEADER_PATH}/netinet
     mkdir -p ${LIBC_HEADER_PATH}/arpa
     mkdir -p ${LIBC_HEADER_PATH}/arch/generic
+    mkdir -p ${LIBC_HEADER_PATH}/fortify
     
     LIBC_ARCH_PATH=${LIBC_HEADER_PATH}/arch
     mkdir -p ${LIBC_ARCH_PATH}
@@ -101,6 +102,7 @@ function do_copy_musl_header_file() {
     cp ${MUSL_CODE}/include/netinet/in.h ${LIBC_HEADER_PATH}/netinet
     cp ${MUSL_CODE}/include/netinet/tcp.h ${LIBC_HEADER_PATH}/netinet
     cp ${MUSL_CODE}/include/arpa/inet.h ${LIBC_HEADER_PATH}/arpa
+    cp -r ${MUSL_CODE}/porting/linux/user/include/fortify/* ${LIBC_HEADER_PATH}/fortify
     cp -r ${MUSL_CODE}/arch/generic/* ${LIBC_HEADER_PATH}/arch/generic/
     cp -r ${MUSL_CODE}/arch/${ARCH} ${LIBC_ARCH_PATH}
 

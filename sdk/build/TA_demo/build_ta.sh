@@ -92,6 +92,7 @@ if [ "${1}" = "clean" ]; then
     build_clean
 else
     get_config
+    cd ../thirdparty/open_source/; bash import_open_source_header.sh; cd -
     case "$CONFIG_BUILD_TOOL" in
         "") echo "can not find config" ;;
         "cmake")
