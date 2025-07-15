@@ -399,6 +399,7 @@ def check_perm_apply_item(dyn_key, attrib, value, origin_value):
             you set drv's permission")
     check_permssion_unique(value, origin_value)
 
+
 def check_ta_config_service_name(dyn_key, attrib, value, origin_value):
     if len(value) == 0 or len(value) >= 40:
         raise Exception("service name is invalid", value)
