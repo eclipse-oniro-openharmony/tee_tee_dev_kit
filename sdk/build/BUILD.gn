@@ -9,6 +9,7 @@
 # NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 import("//build/ohos.gni")
+import("//build/ohos/ndk/ndk.gni")
 
 copy("tee_ndk_make") {
   sources = [
